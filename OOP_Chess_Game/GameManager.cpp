@@ -1,0 +1,394 @@
+#include "GameManager.h"
+
+GameManager::GameManager(const char* title, int xPos, int yPos, int width, int height) {
+
+	if (SDL_Init(SDL_INIT_EVERYTHING) == 0) {
+		std::cout << "Subsystems Initialized! ... " << std::endl;
+
+		window = SDL_CreateWindow(title, xPos, yPos, width, height, 0);
+
+		if (window) {
+			std::cout << "Window created!" << std::endl;
+		}
+		else {
+			//TODO:
+		}
+
+		renderer = SDL_CreateRenderer(window, -1, 0);
+		if (renderer) {
+			std::cout << "Renderer created!" << std::endl;
+		}
+		else {
+			//TODO:
+		}
+
+	}
+	else {
+		// TODO
+	}
+
+	board = new Board();
+	soundManager = new SoundManager();
+	computer = new Computer();
+	history = new History();
+	gui = new MenuGUI();
+
+	opponent = Opponent::HUMAN; // default
+	turn = 0; // start game, player1: 0; palyer2: 1
+	result = MatchResult::PLAYING; // The game is currently taking place
+	isRunning = true;
+
+}
+
+GameManager::~GameManager() {
+	//TODO: 
+	delete board, soundManager, computer, history, gui;
+	board = nullptr; soundManager = nullptr; computer = nullptr;  history = nullptr; gui = nullptr;
+	SDL_Quit();
+}
+
+void GameManager::render() {
+	SDL_RenderClear(renderer);
+	gui->render();
+	SDL_RenderPresent(renderer);
+}
+
+// TODO: try-catch
+void GameManager::handelEvents() {
+	//SDL_Event e;
+
+	//// 1 loop => perform 1 event
+	//while (SDL_PollEvent(&e)) {
+	//	switch (e.type) {
+	//	case SDL_QUIT:
+	//		isRunning = false;
+	//		break;
+	//	case SDL_MOUSEBUTTONDOWN:
+	//		handleClickedPiece(e);
+	//		handleClickedHightlightBox(e);
+
+	//		if (gui->getTypeGUI() == TypeGUI::MENU) {
+	//			// TODO: add more handles
+
+	//			if (checkFocus(e, MenuGUI::getRectOfBtnVsCom())) {
+	//				opponent = Opponent::COMPUTER;
+	//				delete gui;
+	//				gui = new ModeOptionGUI();
+	//				return;
+	//			}
+
+	//			if (checkFocus(e, MenuGUI::getRectOfBtnVsPlayer())) {
+	//				opponent = Opponent::HUMAN;
+	//				delete gui;
+	//				gui = new GamePlayGUI();
+	//				Board::resetPieces();
+	//				return;
+	//			}
+
+	//			if (checkFocus(e, MenuGUI::getRectOfBtnVolumeOption())) {
+	//				delete gui;
+	//				gui = new VolumeOptionGUI();
+	//				return;
+	//			}
+
+	//			if (checkFocus(e, MenuGUI::getRectOfBtnReplayRecentGame())) {
+	//				delete gui;
+	//				gui = new ReplayGameGUI();
+	//				return;
+	//			}
+
+	//			if (checkFocus(e, MenuGUI::getRectOfBtnExit())) {
+	//				isRunning = false;
+	//				return;
+	//			}
+	//		}
+
+	//		if (gui->getTypeGUI() == TypeGUI::MODE_OPTION) {
+	//			if (checkFocus(e, ModeOptionGUI::getRectOfBtnEasy())) {
+	//				computer->setMode(Mode::EASY);
+	//				delete gui;
+	//				gui = new GamePlayGUI();
+	//				Board::resetPieces();
+	//				return;
+	//			}
+
+	//			if (checkFocus(e, ModeOptionGUI::getRectOfBtnHard())) {
+	//				computer->setMode(Mode::HARD);
+	//				delete gui;
+	//				gui = new GamePlayGUI();
+	//				Board::resetPieces();
+	//				return;
+	//			}
+
+	//			if (checkFocus(e, ModeOptionGUI::getRectOfBtnBackToMenu())) {
+	//				backToMenu();
+	//				return;
+	//			}
+	//		}
+
+	//		if (gui->getTypeGUI() == TypeGUI::VOLUME_OPTION) {
+	//			Slider* sliderThemeMusic = VolumeOptionGUI::getSliderThemeMusic();
+	//			Slider* sliderEventMusic = VolumeOptionGUI::getSliderEventMusic();
+
+	//			if (checkFocus(e, sliderThemeMusic->getButtonRect())) {
+	//				handleDragButtonOfSlider(e, sliderThemeMusic);
+	//				soundManager->setThemeMusicVolume(sliderThemeMusic->getValueFromSlider());
+	//				return;
+	//			}
+
+	//			if (checkFocus(e, sliderEventMusic->getButtonRect())) {
+	//				handleDragButtonOfSlider(e, sliderEventMusic);
+	//				soundManager->setEventMusicVolume(sliderEventMusic->getValueFromSlider());
+	//				return;
+	//			}
+
+	//			if (checkFocus(e, VolumeOptionGUI::getRectOfBtnBackToMenu())) {
+	//				backToMenu();
+	//				return;
+	//			}
+	//		}
+
+	//		if (gui->getTypeGUI() == TypeGUI::REPLAY_RECENT_GAME) {
+
+	//		}
+
+	//		if (gui->getTypeGUI() == TypeGUI::GAME_PLAY) {
+	//			if (checkFocus(e, GamePlayGUI::getRectOfBtnSetting())) {
+	//				delete gui;
+	//				gui = new SettingGUI();
+	//				return;
+	//			}
+
+	//			if (checkFocus(e, GamePlayGUI::getRectOfBtnUndo())) {
+	//				undo();
+	//				return;
+	//			}
+
+	//			if (checkFocus(e, GamePlayGUI::getRectOfBtnRedo())) {
+	//				redo();
+	//				return;
+	//			}
+	//		}
+
+	//		if (gui->getTypeGUI() == TypeGUI::RESULT_NOTICE) {
+	//			if (checkFocus(e, MatchResultGUI::getRectOfBtnPlayAgain())) {
+	//				delete gui;
+	//				gui = new GamePlayGUI();
+	//				Board::resetPieces();
+	//				return;
+	//			}
+
+	//			if (checkFocus(e, MatchResultGUI::getRectOfBtnBackToMenu())) {
+	//				backToMenu();
+	//				return;
+	//			}
+	//		}
+
+	//		if (gui->getTypeGUI() == TypeGUI::PROMOTION_NOTICE) {
+	//			Pawn* pawn = dynamic_cast<Pawn*>(Board::pieces[dynamic_cast<PromotionNoticeGUI*>(gui)->getIdOfPromotionPiece()]);
+
+	//			if (checkFocus(e, PromotionNoticeGUI::getRectOfBtnQueen()) && pawn) {
+	//				// TODO: Promote Queen
+	//				delete gui;
+	//				gui = new GamePlayGUI();
+	//				return;
+	//			}
+
+	//			if (checkFocus(e, PromotionNoticeGUI::getRectOfBtnBishop()) && pawn) {
+	//				// TODO: Promote Bishop
+	//				delete gui;
+	//				gui = new GamePlayGUI();
+	//				return;
+	//			}
+
+	//			if (checkFocus(e, PromotionNoticeGUI::getRectOfBtnKnight()) && pawn) {
+	//				// TODO: Promote Knight
+	//				delete gui;
+	//				gui = new GamePlayGUI();
+	//				return;
+	//			}
+
+	//			if (checkFocus(e, PromotionNoticeGUI::getRectOfBtnRook()) && pawn) {
+	//				// TODO: Promote Rook
+	//				delete gui;
+	//				gui = new GamePlayGUI();
+	//				return;
+	//			}
+	//		}
+
+	//		if (gui->getTypeGUI() == TypeGUI::SETTINGS) {
+	//			if (checkFocus(e, SettingGUI::getRectOfBtnContinue())) {
+	//				delete gui;
+	//				gui = new GamePlayGUI();
+	//				return;
+	//			}
+
+	//			if (checkFocus(e, SettingGUI::getRectOfBtnVolumeOption())) {
+	//				//TODO:
+	//			}
+
+	//			if (checkFocus(e, SettingGUI::getRectOfBtnBackToMenu())) {
+	//				backToMenu();
+	//				return;
+	//			}
+	//		}
+
+	//		// TODO:
+	//		break;
+	//	case SDL_KEYDOWN:
+	//		// TODO:
+	//		break;
+	//	default:
+	//		break;
+	//	}
+	//}
+}
+
+Coordinate GameManager::getClickedBox(const SDL_Event& e) const {
+	int x = e.motion.x;
+	int y = e.motion.y;
+	SDL_Rect boardRect = board->getRectangle();
+
+	if (x < boardRect.x || y < boardRect.y || x > boardRect.x + boardRect.w || y > boardRect.y + boardRect.h) return Coordinate(-1, -1);
+
+	double widthBox = boardRect.w / Board::XBOXES;
+	double heightBox = boardRect.h / Board::YBOXES;
+
+	Coordinate res;
+	res.setX((x - boardRect.x) / widthBox);
+	res.setY((y - boardRect.y) / heightBox);
+
+	return res;
+}
+
+// TODO: return enum; unfinished game, win game, lose game and draw game
+MatchResult GameManager::checkMatchStatus() const {
+	/*if (board->pieces[0]->getDead()) return MatchResult::PLAYER2_WIN;
+
+	if (board->pieces[16]->getDead()) return MatchResult::PLAYER1_WIN;
+	*/
+	return MatchResult::PLAYING;
+}
+
+// TODO: (current default, white -> turn even, black turn odd;) make it flexible; add music;
+void GameManager::handleClickedPiece(const SDL_Event& e) {
+	/*Coordinate c = getClickedBox(e);
+	if (c.getX() < 0 && c.getY() < 0) return;
+
+	Piece* piece = Board::getPieceAt(c);
+	if (!piece) return;
+
+	if (piece->getColor() == Color::White && turn % 2 == 1 || piece->getColor() == Color::Black && turn % 2 == 0) return;
+
+	for (int i = 0; i < 32; i++) board->pieces[i]->setChosen(false);
+
+	piece->setChosen(true);*/
+}
+
+//TODO: add music
+void GameManager::handleClickedHightlightBox(const SDL_Event& e) {
+	//std::vector<Coordinate> possibleMoves;
+	//Coordinate c = getClickedBox(e);
+	//if (c.getX() < 0 && c.getY() < 0) return;
+
+	//Piece* chosenPiece = nullptr;
+	//for (int i = 0; i < 32; i++) {
+	//	if (board->pieces[i]->getChosen()) {
+	//		history->setInitalState(chosenPiece);
+	//		break;
+	//	}
+	//}
+
+	//if (!chosenPiece) return;
+
+	//possibleMoves = chosenPiece->getPossibleMoves();
+
+	//for (auto move : possibleMoves) {
+	//	if (c == move) {
+	//		Piece* capturedPiece = nullptr;
+	//		capturedPiece = chosenPiece->move(c);
+	//		history->setCapturedPiece(capturedPiece);
+	//		capturedPiece->setDead(true);
+	//		chosenPiece->setChosen(false);
+	//		break;
+	//	}
+	//}
+
+	//history->updateData(turn);
+	//turn++;
+
+	//// check promotion
+	//if (checkPromotion(chosenPiece)) {
+	//	delete gui;
+	//	gui = new PromotionNoticeGUI(chosenPiece->getId());
+	//}
+
+	//chosenPiece = nullptr;
+}
+
+void GameManager::handleDragButtonOfSlider(const SDL_Event& e, Slider* slider) {
+	int x = e.motion.x;
+	slider->setButtonRectX(x);
+}
+
+bool GameManager::checkFocus(const SDL_Event& e, const SDL_Rect& rect) const {
+	int x = e.motion.x;
+	int y = e.motion.y;
+
+	if (x < rect.x || y < rect.y || x > rect.x + rect.w || y > rect.y + rect.h) return false;
+
+	return true;
+}
+
+bool GameManager::checkPromotion(Piece* piece) {
+	if (piece->getNameClass() != "Pawn") return false;
+
+	Coordinate c = piece->getPosition();
+	if ((c.getY() == 0 || c.getY() == 7) && !(dynamic_cast<Pawn*>(piece)->getPromotion())) return true;
+
+	return false;
+}
+
+// TODO: try catch(maybe in main)
+void GameManager::backToMenu() {
+	delete gui;
+	gui = new MenuGUI();
+}
+
+int GameManager::getValueFromSlider(const SDL_Rect* buttonRect, const SDL_Rect* trackerRect) {
+	return (trackerRect->x - buttonRect->x) * 100 / trackerRect->w;
+}
+
+void GameManager::undo() {
+	/*if (turn <= 0) return;
+	turn--;
+	std::vector<Piece*> temp = history->getData(turn);
+	*(Board::pieces[temp[0]->getId()]) = *temp[0];
+	if (temp[2]) *(Board::pieces[temp[2]->getId()]) = *temp[2];*/
+}
+
+void GameManager::redo() {
+	/*if (turn >= history->getLengthData() - 1) return;
+	turn++;
+	std::vector<Piece*> temp = history->getData(turn);
+	*(Board::pieces[temp[1]->getId()]) = *temp[1];
+	if (temp[2]) *(Board::pieces[temp[2]->getId()]) = *temp[2];*/
+}
+
+void GameManager::gameLoop(int fps) {
+	int frameDelay = 1000 / fps;
+	Uint32 frameStart = 0;
+	int frameTime = 0;
+
+	while (isRunning) {
+		frameStart = SDL_GetTicks();
+		handelEvents();
+		render();
+
+		frameTime = SDL_GetTicks() - frameStart;
+
+		if (frameDelay > frameTime) {
+			SDL_Delay(frameDelay - frameTime);
+		}
+	}
+}
