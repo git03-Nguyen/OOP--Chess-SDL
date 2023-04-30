@@ -86,7 +86,7 @@ King::King(const King& king) : Piece(king) {
 	else {
 		this->imagePath = pathToString(Path::kingBlack);
 	}
-	this->castling = false;
+	this->castling = king.castling;
 }
 King::King(const Coordinate& position, Color color, const std::string& pathImage) : Piece(position, color, pathImage) {
 	if (this->color == Color::White) {
@@ -206,7 +206,10 @@ void King::performCastling() {
 }
 
 King& King::operator=(const King& piece) {
-	//*this = King(piece);
+	if (this == &piece) return *this;
+
+	*this = piece;
+	this->castling = piece.castling;
 
 	return *this;
 }
@@ -311,11 +314,9 @@ std::string Queen::getNameClass() const {
 }
 
 Queen& Queen::operator=(const Queen& piece) {
-	// them cai dieu kien nay vao
 	if (this == &piece) return *this;
 
-	// Viet ro ra chu viet nhu nay la se bi stackoverflow
-	//*this = Queen(piece);
+	*this = piece;
 
 	return *this;
 }
@@ -391,7 +392,9 @@ std::string Bishop::getNameClass() const {
 }
 
 Bishop& Bishop::operator=(const Bishop& piece) {
-	//*this = Bishop(piece);
+	if (this == &piece) return *this;
+
+	*this = piece;
 
 	return *this;
 }
@@ -475,7 +478,9 @@ void Rook::performCastling() {
 }
 
 Rook& Rook::operator=(const Rook& piece) {
-	//*this = Rook(piece);
+	if (this == &piece) return *this;
+
+	*this = piece;
 
 	return *this;
 }
@@ -571,7 +576,9 @@ Piece* Knight::clone() {
 }
 
 Knight& Knight::operator=(const Knight& piece) {
-	//*this = Knight(piece);
+	if (this == &piece) return *this;
+
+	*this = piece;
 
 	return *this;
 }
@@ -589,6 +596,7 @@ Pawn::Pawn(const Pawn& pawn) : Piece(pawn) {
 		this->imagePath = pathToString(Path::pawnBlack);
 	}
 	this->promotion = pawn.promotion;
+	delete this->promotion;
 	this->firstMove = pawn.firstMove;
 }
 Pawn::Pawn(const Coordinate& position, Color color, const std::string& pathImage) : Piece(position, color, pathImage) {
@@ -744,7 +752,12 @@ void Pawn::enPassant() {
 
 }
 Pawn& Pawn::operator=(const Pawn& piece) {
-	//*this = Pawn(piece);
+	if (this == &piece) return *this;
+
+	*this = piece;
+	this->firstMove = piece.firstMove;
+	delete this->promotion;
+	this->promotion = piece.promotion;
 
 	return *this;
 }
