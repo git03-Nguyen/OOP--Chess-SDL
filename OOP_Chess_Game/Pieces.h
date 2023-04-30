@@ -25,8 +25,9 @@ enum class Path {
 	bishopWhite,
 	bishopBlack,
 	pawnWhite,
-	pawnBlack,
+	pawnBlack
 };
+
 inline std::string pathToString(Path p) {
 	switch (p) {
 	case Path::queenWhite:	return "QueenWhite.png";

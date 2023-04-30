@@ -2,33 +2,23 @@
 
 GameManager::GameManager(const char* title, int xPos, int yPos, int width, int height) {
 
-	if (SDL_Init(SDL_INIT_EVERYTHING) == 0) {
-		std::cout << "Subsystems Initialized! ... " << std::endl;
+	if (SDL_Init(SDL_INIT_EVERYTHING) < 0) throw SDL_GetError();
 
-		window = SDL_CreateWindow(title, xPos, yPos, width, height, 0);
+	std::cout << "Subsystems Initialized! ... " << std::endl;
 
-		if (window) {
-			std::cout << "Window created!" << std::endl;
-		}
-		else {
-			//TODO:
-		}
+	window = SDL_CreateWindow(title, xPos, yPos, width, height, 0);
+	if (!window) throw SDL_GetError();
+	std::cout << "Window created!" << std::endl;
 
-		renderer = SDL_CreateRenderer(window, -1, 0);
-		if (renderer) {
-			std::cout << "Renderer created!" << std::endl;
-		}
-		else {
-			//TODO:
-		}
+	renderer = SDL_CreateRenderer(window, -1, 0);
+	if (!renderer) throw SDL_GetError();
+	std::cout << "Renderer created!" << std::endl;
 
-	}
-	else {
-		// TODO
-	}
+	SCREEN_HEIGHT = height;
+	SCREEN_WIDTH = width;
 
-	board = new Board();
 	soundManager = new SoundManager();
+	board = new Board();
 	computer = new Computer();
 	history = new History();
 	gui = new MenuGUI();
@@ -41,10 +31,33 @@ GameManager::GameManager(const char* title, int xPos, int yPos, int width, int h
 }
 
 GameManager::~GameManager() {
-	//TODO: 
+
 	delete board, soundManager, computer, history, gui;
 	board = nullptr; soundManager = nullptr; computer = nullptr;  history = nullptr; gui = nullptr;
+	SDL_DestroyRenderer(renderer);
+	SDL_DestroyWindow(window);
 	SDL_Quit();
+
+}
+
+void GameManager::gameLoop(int fps) {
+
+	int frameDelay = 1000 / fps;
+	Uint32 frameStart = 0;
+	int frameTime = 0;
+
+	while (isRunning) {
+		frameStart = SDL_GetTicks();
+		handelEvents();
+		render();
+
+		frameTime = SDL_GetTicks() - frameStart;
+
+		if (frameDelay > frameTime) {
+			SDL_Delay(frameDelay - frameTime);
+		}
+	}
+
 }
 
 void GameManager::render() {
@@ -55,10 +68,22 @@ void GameManager::render() {
 
 // TODO: try-catch
 void GameManager::handelEvents() {
-	//SDL_Event e;
+	SDL_Event e;
 
-	//// 1 loop => perform 1 event
-	//while (SDL_PollEvent(&e)) {
+	// 1 loop => perform 1 event
+	while (SDL_WaitEvent(&e)) { //=> Khac biet giua SDL_PollEvent va SDL_WaitEvent
+		switch (e.type) {
+		case SDL_QUIT:
+			isRunning = false;
+			return;
+		
+		default:
+			break;
+		}
+
+	}
+
+	/*while (SDL_PollEvent(&e)) {
 	//	switch (e.type) {
 	//	case SDL_QUIT:
 	//		isRunning = false;
@@ -241,7 +266,7 @@ void GameManager::handelEvents() {
 	//	default:
 	//		break;
 	//	}
-	//}
+	//}*/
 }
 
 Coordinate GameManager::getClickedBox(const SDL_Event& e) const {
@@ -375,20 +400,4 @@ void GameManager::redo() {
 	if (temp[2]) *(Board::pieces[temp[2]->getId()]) = *temp[2];*/
 }
 
-void GameManager::gameLoop(int fps) {
-	int frameDelay = 1000 / fps;
-	Uint32 frameStart = 0;
-	int frameTime = 0;
 
-	while (isRunning) {
-		frameStart = SDL_GetTicks();
-		handelEvents();
-		render();
-
-		frameTime = SDL_GetTicks() - frameStart;
-
-		if (frameDelay > frameTime) {
-			SDL_Delay(frameDelay - frameTime);
-		}
-	}
-}

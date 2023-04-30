@@ -16,8 +16,8 @@ enum class Opponent { HUMAN, COMPUTER };
 class GameManager {
 private:
 	// control window
-	const int WIDTH = 800;
-	const int HEIGHT = 600;
+	int SCREEN_HEIGHT;
+	int SCREEN_WIDTH;
 	SDL_Window* window;
 	SDL_Renderer* renderer;
 
@@ -44,11 +44,11 @@ public:
 
 	void gameLoop(int fps);
 
+	void handelEvents();
+
 	void render();
 
-	void handelEvents();;
-
-	Coordinate getClickedBox(const SDL_Event& e) const;;
+	Coordinate getClickedBox(const SDL_Event& e) const;
 
 	MatchResult checkMatchStatus() const;
 
