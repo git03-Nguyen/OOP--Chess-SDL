@@ -1,7 +1,9 @@
 #pragma once
+#include <iostream>
 #include <vector>
 #include <string>
 #include <SDL.h>
+#include <SDL_image.h>
 
 #include "Coordinate.h"
 
@@ -12,7 +14,9 @@ enum class Color {
 	White,
 	Black
 };
-
+enum class PieceType {
+	King, Queen, Rook, Bishop, Knight, Pawn
+};
 enum class Path {
 	queenWhite,
 	queenBlack,
@@ -25,9 +29,8 @@ enum class Path {
 	bishopWhite,
 	bishopBlack,
 	pawnWhite,
-	pawnBlack
+	pawnBlack,
 };
-
 inline std::string pathToString(Path p) {
 	switch (p) {
 	case Path::queenWhite:	return "QueenWhite.png";
@@ -55,9 +58,9 @@ protected:
 	bool chosen;
 	std::string imagePath;
 	SDL_Texture* texture;
-	int id;
-
+	PieceType type;
 public:
+	std::vector<int> tableMove;
 	Piece();
 	Piece(const Piece& pieces);
 	Piece(const Coordinate& position, Color color, const std::string& imagePath);
@@ -72,14 +75,12 @@ public:
 	Color getColor() const;
 	bool getDead() const;
 	bool getChosen() const;
-	int getId() const;
+	PieceType getType() const;
 
 	virtual Piece* move(const Coordinate& c) = 0;
 	virtual std::vector<Coordinate> getPossibleMoves() const = 0;
 	virtual Piece* clone() = 0;
-	virtual std::string getNameClass() const = 0;
-	void loadImage();
-	void destroyImage();
+	void loadImage(SDL_Renderer* renderer);
 
 	virtual Piece& operator = (const Piece& piece);
 };
@@ -97,7 +98,6 @@ public:
 	bool getCastling() const;
 	Piece* move(const Coordinate& c);
 	std::vector<Coordinate> getPossibleMoves() const;
-	std::string getNameClass() const;
 	Piece* clone();
 	void performCastling();
 
@@ -115,7 +115,6 @@ public:
 	Piece* move(const Coordinate& c);
 	std::vector<Coordinate> getPossibleMoves() const;
 	Piece* clone();
-	std::string getNameClass() const;
 
 	Queen& operator = (const Queen& piece);
 };
@@ -131,7 +130,6 @@ public:
 	Piece* move(const Coordinate& c);
 	std::vector<Coordinate> getPossibleMoves() const;
 	Piece* clone();
-	std::string getNameClass() const;
 
 	Bishop& operator = (const Bishop& piece);
 };
@@ -148,7 +146,6 @@ public:
 	Piece* move(const Coordinate& c);
 	std::vector<Coordinate> getPossibleMoves() const;
 	Piece* clone();
-	std::string getNameClass() const;
 	void performCastling();
 
 	Rook& operator = (const Rook& piece);
@@ -164,7 +161,6 @@ public:
 
 	Piece* move(const Coordinate& c);
 	std::vector<Coordinate> getPossibleMoves() const;
-	std::string getNameClass() const;
 	Piece* clone();
 
 	Knight& operator = (const Knight& piece);
@@ -185,11 +181,10 @@ public:
 	void setFirstMoveFalse();
 	Piece* move(const Coordinate& c);
 	std::vector<Coordinate> getPossibleMoves() const;
-	std::string getNameClass() const;
 	Piece* clone();
 	Piece* getPromotion();
-	friend void promote(Piece* newPiece, std::string nameClass);
-	void enPassant();
+	friend void promote(Piece* newPiece, PieceType& type);
+	void enPassant(Pawn& enemy);
 
 	Pawn& operator = (const Pawn& piece);
 };

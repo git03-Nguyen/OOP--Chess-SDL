@@ -6,13 +6,15 @@
 class Board {
 private:
 	static Board* _instance;
-	static std::vector<std::vector<Piece*>> board;
+	static std::vector<Piece*> piecesList;
 	SDL_Rect rect;
-
+	static void setStartBoard();
 public:
+	static std::vector<std::vector<Piece*>> piecesOnBoard;
+
 	Board();
+	Board(const Board& obj) = delete;
 	~Board();
-	//static std::vector<Piece*> pieces;
 	static const int XBOXES = 8;
 	static const int YBOXES = 8;
 
@@ -20,11 +22,11 @@ public:
 
 	void setRectangle();
 	SDL_Rect getRectangle();
-	static void updateBoard();
-	static Piece* getPieceAt(const Coordinate& c);
-	static void resetPieces(); // call when init GamePlayGUI
+	bool movePiece(Piece* piece, Coordinate& newPos); // move a piece to new position
+	static void updateBoard(Piece* piece); // update table after a move
+	static Piece* getPieceAt(const Coordinate& c); // call when want to get Piece at specific coordinate
+	static void resetPieces(); // call when reinit board
 };
 
 //Board* Board::_instance = nullptr;
 //std::vector<Piece*> Board::pieces;
-
