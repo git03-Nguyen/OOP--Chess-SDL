@@ -58,9 +58,16 @@ bool Piece::getChosen() const {
 PieceType Piece::getType() const {
 	return this->type;
 }
-
+Texture* Piece::getTexture() {
+	return this->texture;
+}
 void Piece::loadImage(SDL_Renderer* renderer) {
-	texture = IMG_LoadTexture(renderer, imagePath.c_str());
+	SDL_Surface* img = IMG_Load(this->pathImage.c_str());
+	if (!img) {
+		std::cout << "Can't load\n";
+	}
+	SDL_Texture* gTexture = SDL_CreateTextureFromSurface(renderer, img);
+	this->texture = gTexture;
 }
 
 Piece& Piece::operator=(const Piece& piece) {
