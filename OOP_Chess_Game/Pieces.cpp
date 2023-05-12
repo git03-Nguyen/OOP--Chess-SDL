@@ -23,6 +23,13 @@ Piece::Piece(const Coordinate& position, Color color, const std::string& imagePa
 	this->position = position;
 	this->color = color;
 	this->imagePath = imagePath;
+	SDL_Renderer* renderer;
+	SDL_Surface* img = IMG_Load(this->pathImage.c_str());
+	if (!img) {
+		std::cout << "Can't load\n";
+	}
+	SDL_Texture* gTexture = SDL_CreateTextureFromSurface(renderer, img);
+	this->texture = gTexture;
 }
 Piece::~Piece() {
 	SDL_DestroyTexture(texture);
