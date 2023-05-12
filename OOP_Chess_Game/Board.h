@@ -6,10 +6,10 @@
 class Board {
 private:
 	static Board* _instance;
-	static std::vector<Piece*> piecesList;
 	SDL_Rect rect;
 	static void setStartBoard();
 public:
+	static std::vector<Piece*> piecesList;
 	static std::vector<std::vector<Piece*>> piecesOnBoard;
 
 	Board();

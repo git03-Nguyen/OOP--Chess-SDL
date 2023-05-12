@@ -56,7 +56,7 @@ Board::Board() {
     piecesList.push_back(new Knight(Coordinate(1, 7), Color::Black, pathToString(Path::knightBlack)));
     piecesList.push_back(new Knight(Coordinate(6, 7), Color::Black, pathToString(Path::knightBlack)));
     piecesList.push_back(new Rook(Coordinate(0, 7), Color::Black, pathToString(Path::rookBlack)));
-    piecesList.push_back(new Rook(Coordinate(7, 0), Color::Black, pathToString(Path::rookBlack)));
+    piecesList.push_back(new Rook(Coordinate(7, 7), Color::Black, pathToString(Path::rookBlack)));
 
     for (int i = 0; i < 8; i++) { 
         piecesList.push_back(new Pawn(Coordinate(i, 6), Color::Black, pathToString(Path::pawnBlack)));

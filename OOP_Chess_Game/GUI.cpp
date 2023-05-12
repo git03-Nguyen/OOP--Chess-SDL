@@ -148,6 +148,7 @@ GamePlayGUI::GamePlayGUI() {
 }
 
 GamePlayGUI::~GamePlayGUI() {
+
 }
 
 void GamePlayGUI::init(Board* board) {
