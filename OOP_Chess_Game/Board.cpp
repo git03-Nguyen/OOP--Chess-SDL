@@ -1,5 +1,10 @@
 #include "Board.h"
 
+// init static attribute
+Board* Board::_instance = nullptr;
+std::vector<Piece*> Board::piecesList;
+std::vector<std::vector<Piece*>> Board::piecesOnBoard;
+
 //TODO: check try catch
 Board* Board::getInstance() {
     if (_instance == nullptr) {
@@ -80,9 +85,12 @@ Board::~Board() {
     delete _instance;
 }
 
+/*
+// TODO: there is two this method
 Board* Board::getInstance() {
     return _instance;
 }
+*/
 
 void Board::setRectangle() {
     rect.h = YBOXES;
@@ -115,6 +123,7 @@ void Board::updateBoard(Piece* piece) {
     if (piece->getDead()) {
         return;
     }
+
     if (piece->getType() == PieceType::Pawn) {
         for (int x = 0; x < 8; x++) {
             for (int y = 0; y < 8; y++) {

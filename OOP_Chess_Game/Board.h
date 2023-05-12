@@ -27,6 +27,3 @@ public:
 	static Piece* getPieceAt(const Coordinate& c); // call when want to get Piece at specific coordinate
 	static void resetPieces(); // call when reinit board
 };
-
-//Board* Board::_instance = nullptr;
-//std::vector<Piece*> Board::pieces;

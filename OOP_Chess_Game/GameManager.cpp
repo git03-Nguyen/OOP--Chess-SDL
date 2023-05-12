@@ -21,7 +21,7 @@ GameManager::GameManager(const char* title, int xPos, int yPos, int width, int h
 	board = new Board();
 	computer = new Computer();
 	history = new History();
-	gui = new MenuGUI();
+	mainGui = new GamePlayGUI();
 
 	opponent = Opponent::HUMAN; // default
 	turn = 0; // start game, player1: 0; palyer2: 1
@@ -31,13 +31,11 @@ GameManager::GameManager(const char* title, int xPos, int yPos, int width, int h
 }
 
 GameManager::~GameManager() {
-
-	delete board, soundManager, computer, history, gui;
-	board = nullptr; soundManager = nullptr; computer = nullptr;  history = nullptr; gui = nullptr;
+	delete board, soundManager, computer, history, mainGui, subGui;
+	board = nullptr; soundManager = nullptr; computer = nullptr;  history = nullptr; mainGui = nullptr; subGui = nullptr;
 	SDL_DestroyRenderer(renderer);
 	SDL_DestroyWindow(window);
 	SDL_Quit();
-
 }
 
 void GameManager::gameLoop(int fps) {
@@ -62,7 +60,7 @@ void GameManager::gameLoop(int fps) {
 
 void GameManager::render() {
 	SDL_RenderClear(renderer);
-	gui->render();
+	mainGui->render(renderer);
 	SDL_RenderPresent(renderer);
 }
 
@@ -70,18 +68,18 @@ void GameManager::render() {
 void GameManager::handelEvents() {
 	SDL_Event e;
 
-	// 1 loop => perform 1 event
-	while (SDL_WaitEvent(&e)) { //=> Khac biet giua SDL_PollEvent va SDL_WaitEvent
-		switch (e.type) {
-		case SDL_QUIT:
-			isRunning = false;
-			return;
-		
-		default:
-			break;
-		}
+	//// 1 loop => perform 1 event
+	//while (SDL_WaitEvent(&e)) { //=> Khac biet giua SDL_PollEvent va SDL_WaitEvent
+	//	switch (e.type) {
+	//	case SDL_QUIT:
+	//		isRunning = false;
+	//		return;
+	//	
+	//	default:
+	//		break;
+	//	}
 
-	}
+	//}
 
 	/*while (SDL_PollEvent(&e)) {
 	//	switch (e.type) {
@@ -351,10 +349,12 @@ void GameManager::handleClickedHightlightBox(const SDL_Event& e) {
 	//chosenPiece = nullptr;
 }
 
+/*
 void GameManager::handleDragButtonOfSlider(const SDL_Event& e, Slider* slider) {
 	int x = e.motion.x;
 	slider->setButtonRectX(x);
 }
+*/
 
 bool GameManager::checkFocus(const SDL_Event& e, const SDL_Rect& rect) const {
 	int x = e.motion.x;
@@ -366,7 +366,7 @@ bool GameManager::checkFocus(const SDL_Event& e, const SDL_Rect& rect) const {
 }
 
 bool GameManager::checkPromotion(Piece* piece) {
-	if (piece->getNameClass() != "Pawn") return false;
+	if (piece->getType() != PieceType::Pawn) return false;
 
 	Coordinate c = piece->getPosition();
 	if ((c.getY() == 0 || c.getY() == 7) && !(dynamic_cast<Pawn*>(piece)->getPromotion())) return true;
@@ -374,11 +374,13 @@ bool GameManager::checkPromotion(Piece* piece) {
 	return false;
 }
 
+/*
 // TODO: try catch(maybe in main)
 void GameManager::backToMenu() {
-	delete gui;
-	gui = new MenuGUI();
+	delete mainGui;
+	mainGui = new MenuGUI();
 }
+*/
 
 int GameManager::getValueFromSlider(const SDL_Rect* buttonRect, const SDL_Rect* trackerRect) {
 	return (trackerRect->x - buttonRect->x) * 100 / trackerRect->w;

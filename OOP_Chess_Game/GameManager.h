@@ -29,7 +29,8 @@ private:
 
 	// control view
 	// TODO: create subGui (display on gui)
-	GUI* gui;
+	GUI* mainGui;
+	GUI* subGui;
 
 	// flags
 	bool isRunning;
@@ -56,7 +57,7 @@ public:
 
 	void handleClickedHightlightBox(const SDL_Event& e);
 
-	void handleDragButtonOfSlider(const SDL_Event& e, Slider* slider);
+	//void handleDragButtonOfSlider(const SDL_Event& e, Slider* slider);
 
 	bool checkFocus(const SDL_Event& e, const SDL_Rect& rect) const;
 
