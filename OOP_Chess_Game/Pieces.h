@@ -76,6 +76,7 @@ public:
 	bool getDead() const;
 	bool getChosen() const;
 	PieceType getType() const;
+	Texture* getTexture();
 
 	virtual Piece* move(const Coordinate& c) = 0;
 	virtual std::vector<Coordinate> getPossibleMoves() const = 0;
