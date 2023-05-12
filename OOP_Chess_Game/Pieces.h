@@ -82,6 +82,7 @@ public:
 	virtual std::vector<Coordinate> getPossibleMoves() const = 0;
 	virtual Piece* clone() = 0;
 	void loadImage(SDL_Renderer* renderer);
+	void destroyImage();
 
 	virtual Piece& operator = (const Piece& piece);
 };
