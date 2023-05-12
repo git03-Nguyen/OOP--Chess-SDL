@@ -24,9 +24,9 @@ Piece::Piece(const Coordinate& position, Color color, const std::string& imagePa
 	this->color = color;
 	this->imagePath = imagePath;
 	SDL_Renderer* renderer;
-	SDL_Surface* img = IMG_Load(this->pathImage.c_str());
+	SDL_Surface* img = IMG_Load(this->imagePath.c_str());
 	if (!img) {
-		throw string("Can't load ") + imagePath;
+		throw std::string("Can't load ") + imagePath;
 	}
 	SDL_Texture* gTexture = SDL_CreateTextureFromSurface(renderer, img);
 	this->texture = gTexture;
@@ -66,13 +66,13 @@ bool Piece::getChosen() const {
 PieceType Piece::getType() const {
 	return this->type;
 }
-Texture* Piece::getTexture() {
+SDL_Texture* Piece::getTexture() {
 	return this->texture;
 }
 void Piece::loadImage(SDL_Renderer* renderer) {
-	SDL_Surface* img = IMG_Load(this->pathImage.c_str());
+	SDL_Surface* img = IMG_Load(this->imagePath.c_str());
 	if (!img) {
-		throw string("Can't load ") + imagePath;
+		throw std::string("Can't load ") + imagePath;
 	}
 	SDL_Texture* gTexture = SDL_CreateTextureFromSurface(renderer, img);
 	this->texture = gTexture;
