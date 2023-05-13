@@ -6,6 +6,7 @@
 #include <SDL_image.h>
 
 #include "Coordinate.h"
+#include "Window.h"
 
 #define _BOARD_HEIGHT 7
 #define _BOARD_WIDTH 7
@@ -33,18 +34,18 @@ enum class Path {
 };
 inline std::string pathToString(Path p) {
 	switch (p) {
-	case Path::queenWhite:	return "QueenWhite.png";
-	case Path::queenBlack:	return "QueenBlack.png";
-	case Path::kingWhite:	return "KingWhite.png";
-	case Path::kingBlack:	return "KingBlack.png";
-	case Path::rookWhite:	return "RookWhite.png";
-	case Path::rookBlack:	return "RookBlack.png";
-	case Path::knightWhite:	return "KnightWhite.png";
-	case Path::knightBlack:	return "KnightBlack.png";
-	case Path::bishopWhite:	return "BishopWhite.png";
-	case Path::bishopBlack:	return "BishopBlack.png";
-	case Path::pawnWhite:	return "PawnWhite.png";
-	case Path::pawnBlack:	return "PawnBlack.png";
+	case Path::queenWhite:	return "..\\Assets\\Pieces\\QueenWhite.png";
+	case Path::queenBlack:	return "..\\Assets\\Pieces\\QueenBlack.png";
+	case Path::kingWhite:	return "..\\Assets\\Pieces\\KingWhite.png";
+	case Path::kingBlack:	return "..\\Assets\\Pieces\\KingBlack.png";
+	case Path::rookWhite:	return "..\\Assets\\Pieces\\RookWhite.png";
+	case Path::rookBlack:	return "..\\Assets\\Pieces\\RookBlack.png";
+	case Path::knightWhite:	return "..\\Assets\\Pieces\\KnightWhite.png";
+	case Path::knightBlack:	return "..\\Assets\\Pieces\\KnightBlack.png";
+	case Path::bishopWhite:	return "..\\Assets\\Pieces\\BishopWhite.png";
+	case Path::bishopBlack:	return "..\\Assets\\Pieces\\BishopBlack.png";
+	case Path::pawnWhite:	return "..\\Assets\\Pieces\\PawnWhite.png";
+	case Path::pawnBlack:	return "..\\Assets\\Pieces\\PawnBlack.png";
 	default: 
 		throw "Unimplemented item!";
 	}

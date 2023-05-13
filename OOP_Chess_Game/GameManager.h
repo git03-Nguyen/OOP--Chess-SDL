@@ -9,18 +9,13 @@
 #include "History.h"
 #include "Computer.h"
 #include "Coordinate.h"
+#include "Window.h"
 
 enum class MatchResult { PLAYING, PLAYER1_WIN, PLAYER2_WIN, DRAW };
 enum class Opponent { HUMAN, COMPUTER };
 
 class GameManager {
 private:
-	// control window
-	int SCREEN_HEIGHT;
-	int SCREEN_WIDTH;
-	SDL_Window* window;
-	SDL_Renderer* renderer;
-
 	// control model
 	Board* board;
 	SoundManager* soundManager;
@@ -40,6 +35,7 @@ private:
 
 public:
 	
+
 	GameManager(const char* title, int xPos, int yPos, int width, int height);
 	~GameManager();
 

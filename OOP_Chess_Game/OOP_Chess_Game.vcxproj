@@ -145,6 +145,7 @@
     <ClInclude Include="GUI.h" />
     <ClInclude Include="History.h" />
     <ClInclude Include="Main.h" />
+    <ClInclude Include="Window.h" />
     <ClInclude Include="SoundManager.h" />
   </ItemGroup>
   <ItemGroup>
@@ -157,6 +158,7 @@
     <ClCompile Include="Pieces.cpp" />
     <ClCompile Include="GameManager.cpp" />
     <ClCompile Include="Main.cpp" />
+    <ClCompile Include="Window.cpp" />
     <ClCompile Include="SoundManager.cpp" />
   </ItemGroup>
   <ItemGroup>

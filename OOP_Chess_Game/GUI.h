@@ -5,6 +5,7 @@
 #include "Button.h"
 #include "Board.h"
 #include "Pieces.h"
+#include "Window.h"
 
 enum class TypeGUI { MENU, MODE_OPTION, VOLUME_OPTION, REPLAY_RECENT_GAME, GAME_PLAY, RESULT_NOTICE, PROMOTION_NOTICE, SETTINGS };
 

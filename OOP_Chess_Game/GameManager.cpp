@@ -1,21 +1,25 @@
 #include "GameManager.h"
 
+// init static attribute
+//* GameManager::window = nullptr;
+//SDL_Renderer* GameManager::renderer = nullptr;
+
 GameManager::GameManager(const char* title, int xPos, int yPos, int width, int height) {
 
 	if (SDL_Init(SDL_INIT_EVERYTHING) < 0) throw SDL_GetError();
 
 	std::cout << "Subsystems Initialized! ... " << std::endl;
 
-	window = SDL_CreateWindow(title, xPos, yPos, width, height, 0);
-	if (!window) throw SDL_GetError();
+	Window::window = SDL_CreateWindow(title, xPos, yPos, width, height, 0);
+	if (!Window::window) throw SDL_GetError();
 	std::cout << "Window created!" << std::endl;
 
-	renderer = SDL_CreateRenderer(window, -1, 0);
-	if (!renderer) throw SDL_GetError();
+	Window::renderer = SDL_CreateRenderer(Window::window, -1, 0);
+	if (!Window::renderer) throw SDL_GetError();
 	std::cout << "Renderer created!" << std::endl;
 
-	SCREEN_HEIGHT = height;
-	SCREEN_WIDTH = width;
+	Window::SCREEN_HEIGHT = height;
+	Window::SCREEN_WIDTH = width;
 
 	soundManager = new SoundManager();
 	board = new Board();
@@ -33,8 +37,8 @@ GameManager::GameManager(const char* title, int xPos, int yPos, int width, int h
 GameManager::~GameManager() {
 	delete board, soundManager, computer, history, mainGui, subGui;
 	board = nullptr; soundManager = nullptr; computer = nullptr;  history = nullptr; mainGui = nullptr; subGui = nullptr;
-	SDL_DestroyRenderer(renderer);
-	SDL_DestroyWindow(window);
+	SDL_DestroyRenderer(Window::renderer);
+	SDL_DestroyWindow(Window::window);
 	SDL_Quit();
 }
 
@@ -59,9 +63,10 @@ void GameManager::gameLoop(int fps) {
 }
 
 void GameManager::render() {
-	SDL_RenderClear(renderer);
-	mainGui->render(renderer);
-	SDL_RenderPresent(renderer);
+	SDL_RenderClear(Window::renderer);
+	// TODO: DON'T PASS PARAMETER
+	mainGui->render(Window::renderer);
+	SDL_RenderPresent(Window::renderer);
 }
 
 // TODO: try-catch
