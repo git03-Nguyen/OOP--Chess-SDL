@@ -4,6 +4,8 @@
 #include <vector>
 #include <SDL.h>
 #include <SDL_image.h>
+#include "Window.h"
+#include "Pieces.h"
 
 //class TextObject {
 //private:
@@ -34,32 +36,33 @@
 
 //class Button {
 //private:
-//	std::string pathImage;
+//	std::string imagePath;
 //	SDL_Rect rect;
 //public:
 //	Button();
-//	Button(const SDL_Rect& rect, const std::string& pathImage);
+//	Button(const SDL_Rect& rect, const std::string& imagePath);
 //	virtual ~Button();
 //
 //	void setRectangle(const SDL_Rect& rect);
-//	void setPathImage(const std::string& pathImage);
+//	void setimagePath(const std::string& imagePath);
 //	SDL_Rect getRectangle();
-//	std::string getPathImage();
+//	std::string getimagePath();
 //	void render(SDL_Renderer* renderer);
 //	Button& operator = (const Button& button);
 //};
 class Image {
 private:
-	std::string pathImage;
 	SDL_Rect rect;
+	SDL_Texture* texture;
+	//SDL_Surface* img;
 public:
 	Image();
-	Image(const SDL_Rect& rect, const std::string& pathImage);
+	Image(SDL_Rect rect, const std::string& imagePath);
 	~Image();
-
 	SDL_Rect getRectangle();
-	void renderImage(SDL_Renderer* renderer);
-	Image& operator = (const Image& button);
+	void setRectangle(SDL_Rect rect);
+	void renderImage();
+	void destroy();
 };
 
 //class Slider {
