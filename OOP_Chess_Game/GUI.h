@@ -5,22 +5,21 @@
 #include "Button.h"
 #include "Board.h"
 #include "Pieces.h"
-#include "Window.h"
 
 enum class TypeGUI { MENU, MODE_OPTION, VOLUME_OPTION, REPLAY_RECENT_GAME, GAME_PLAY, RESULT_NOTICE, PROMOTION_NOTICE, SETTINGS };
 
 class GUI {
-private:
-	const std::string pathImageBackground = "..\\Assets\\Chess\\back.jpg";
 protected:
+	Image background;
 	bool active;
 public:
 	GUI();
 	virtual ~GUI();
 	virtual TypeGUI getTypeGUI() const;
-	void renderBackground(SDL_Renderer* renderer);
-	void clear(SDL_Renderer* renderer);
-	virtual void render(SDL_Renderer* renderer) = 0;
+	void renderBackground();
+	void clear();
+	virtual void render() = 0;
+	virtual void destroy() = 0;
 	bool isActive();
 	void activate();
 	void deactivate();
@@ -96,10 +95,10 @@ public:
 
 class GamePlayGUI : public GUI {
 protected:
-	//
 	std::vector<Image> piece;
-	std::vector<Image> possibleMove;
+	Piece* chosenPiece;
 	//
+	Image possibleMove;
 	Image board;
 	Image btnSetting;
 	Image btnUndo;
@@ -117,8 +116,8 @@ public:
 	//
 	TypeGUI getTypeGUI() const;
 	//
-	void init(Board* board);
-	void render(SDL_Renderer* renderer);
+	void set();
+	void render();
 	//
 	void initPromotionButtons();	 //call when needed
 	void clearPromotionButtons();    //must call after use
@@ -133,7 +132,7 @@ public:
 	SDL_Rect getRectOfBtnPromoteBishop();
 	SDL_Rect getRectOfBtnPromoteKnight();
 	//
-	void clear(SDL_Renderer* renderer);
+	void destroy();
 };
 
 // TODO: use full parameter constructor
