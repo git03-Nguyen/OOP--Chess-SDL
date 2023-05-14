@@ -3,7 +3,7 @@
 //Slider::Slider() {
 //}
 //
-//Slider::Slider(const std::string& iconImagePath, const std::string& trackerImagePath, const std::string& buttonImagePath, const SDL_Rect& trackerRect) {
+//Slider::Slider(const std::string& iconimagePath, const std::string& trackerimagePath, const std::string& buttonimagePath, const SDL_Rect& trackerRect) {
 //}
 //
 //Slider::~Slider() {
@@ -84,67 +84,77 @@
 //    return *this;
 //}
 //Button::Button() {
-//	this->pathImage = "";
+//	this->imagePath = "";
 //	this->rect = SDL_Rect();
 //}
-//Button::Button(const SDL_Rect& rect, const std::string& pathImage) {
+//Button::Button(const SDL_Rect& rect, const std::string& imagePath) {
 //	this->rect = rect;
-//	this->pathImage = pathImage;
+//	this->imagePath = imagePath;
 //}
 //Button::~Button() {
-//	this->pathImage.clear();
+//	this->imagePath.clear();
 //}
 //void Button::setRectangle(const SDL_Rect& rect) {
 //	this->rect = rect;
 //}
-//void Button::setPathImage(const std::string& pathImage) {
-//	this->pathImage = pathImage;
+//void Button::setimagePath(const std::string& imagePath) {
+//	this->imagePath = imagePath;
 //}
-//std::string Button::getPathImage() {
-//	return this->pathImage;
+//std::string Button::getimagePath() {
+//	return this->imagePath;
 //}
 //SDL_Rect Button::getRectangle() {
 //	return this->rect;
 //}
 //void Button::render(SDL_Renderer* renderer) {
-//	SDL_Surface* image = IMG_Load(this->pathImage.c_str());
+//	SDL_Surface* image = IMG_Load(this->imagePath.c_str());
 //	SDL_Texture* texture = SDL_CreateTextureFromSurface(renderer, image);
 //	SDL_FreeSurface(image);
 //	SDL_RenderCopy(renderer, texture, &this->rect, nullptr);
 //}
 //Button& Button::operator=(const Button& button) {
-//	this->pathImage = button.pathImage;
+//	this->imagePath = button.imagePath;
 //	this->rect = button.rect;
 //	return *this;
 //}
 //
 Image::Image() {
-	this->pathImage = "";
 	this->rect = { 0,0,0,0 };
+	this->texture = nullptr;
+	//this->img = nullptr;
 }
-Image::Image(const SDL_Rect& rect, const std::string& pathImage) {
+Image::Image(SDL_Rect rect, const std::string& imagePath) {
 	this->rect = rect;
-	this->pathImage = pathImage;
-}
-Image::~Image() {
-	this->pathImage.clear();
-}
-SDL_Rect Image::getRectangle() {
-	return this->rect;
-}
-void Image::renderImage(SDL_Renderer* renderer) {
-	SDL_Surface* img = IMG_Load(this->pathImage.c_str());
+	this->texture = nullptr;
+	//
+	SDL_Surface* img = IMG_Load(imagePath.c_str());
 	if (!img) {
 		std::cout << "can't load\n";
 		return;
 	}
-	SDL_Texture* texture = SDL_CreateTextureFromSurface(renderer, img);
+	this->texture = SDL_CreateTextureFromSurface(Window::renderer, img);
 	SDL_FreeSurface(img);
-	SDL_RenderCopy(renderer, texture, nullptr, &this->rect);
-	SDL_RenderPresent(renderer);
 }
-Image& Image::operator=(const Image& img) {
-	this->pathImage = img.pathImage;
-	this->rect = img.rect;
-	return *this;
+Image::~Image() {
+	//SDL_FreeSurface(this->img);
+	//this->img = nullptr;
+	SDL_DestroyTexture(this->texture);
+	this->texture = nullptr;
+}
+SDL_Rect Image::getRectangle() {
+	return this->rect;
+}
+void Image::setRectangle(SDL_Rect rect) {
+	this->rect = rect;
+}
+void Image::renderImage() {
+	if (!texture || !(&rect) || !Window::renderer) std::cout << "ERROR\n";
+	SDL_RenderCopy(Window::renderer, this->texture, nullptr, &this->rect);
+	SDL_RenderPresent(Window::renderer);
+}
+void Image::destroy() {
+	//SDL_FreeSurface(this->img);
+	//this->img = nullptr;
+	SDL_DestroyTexture(this->texture);
+	this->texture = nullptr;
 }
