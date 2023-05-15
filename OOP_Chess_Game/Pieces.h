@@ -79,7 +79,7 @@ public:
 	PieceType getType() const;
 	SDL_Texture* getTexture();
 
-	virtual Piece* move(const Coordinate& c) = 0;
+	virtual Piece* move(const Coordinate& c, std::vector<std::vector<Piece*>>) = 0;
 	virtual std::vector<Coordinate> getPossibleMoves(std::vector<std::vector<Piece*>>) const = 0;
 	virtual Piece* clone() = 0;
 	void loadImage(SDL_Renderer* renderer);
@@ -99,7 +99,7 @@ public:
 
 	void setCastling();
 	bool getCastling() const;
-	Piece* move(const Coordinate& c);
+	Piece* move(const Coordinate& c, std::vector<std::vector<Piece*>>);
 	std::vector<Coordinate> getPossibleMoves(std::vector<std::vector<Piece*>>) const;
 	Piece* clone();
 	void performCastling();
@@ -115,7 +115,7 @@ public:
 	Queen(const Coordinate& position, Color color, const std::string& pathImage);
 	virtual ~Queen();
 
-	Piece* move(const Coordinate& c);
+	Piece* move(const Coordinate& c, std::vector<std::vector<Piece*>>);
 	std::vector<Coordinate> getPossibleMoves(std::vector<std::vector<Piece*>>) const;
 	Piece* clone();
 
@@ -130,7 +130,7 @@ public:
 	Bishop(const Coordinate& position, Color color, const std::string& pathImage);
 	virtual ~Bishop();
 
-	Piece* move(const Coordinate& c);
+	Piece* move(const Coordinate& c, std::vector<std::vector<Piece*>>);
 	std::vector<Coordinate> getPossibleMoves(std::vector<std::vector<Piece*>>) const;
 	Piece* clone();
 
@@ -146,7 +146,7 @@ public:
 	Rook(const Coordinate& position, Color color, const std::string& pathImage);
 	virtual ~Rook();
 
-	Piece* move(const Coordinate& c);
+	Piece* move(const Coordinate& c, std::vector<std::vector<Piece*>>);
 	std::vector<Coordinate> getPossibleMoves(std::vector<std::vector<Piece*>>) const;
 	Piece* clone();
 	void performCastling();
@@ -162,7 +162,7 @@ public:
 	Knight(const Coordinate& position, Color color, const std::string& pathImage);
 	virtual ~Knight();
 
-	Piece* move(const Coordinate& c);
+	Piece* move(const Coordinate& c, std::vector<std::vector<Piece*>>);
 	std::vector<Coordinate> getPossibleMoves(std::vector<std::vector<Piece*>>) const;
 	Piece* clone();
 
@@ -182,7 +182,7 @@ public:
 	Piece* getPromotion() const;
 	bool getFirstMove();
 	void setFirstMove();
-	Piece* move(const Coordinate& c);
+	Piece* move(const Coordinate& c, std::vector<std::vector<Piece*>>);
 	std::vector<Coordinate> getPossibleMoves(std::vector<std::vector<Piece*>>) const;
 	Piece* clone();
 	Piece* getPromotion();
