@@ -38,7 +38,7 @@ Piece::~Piece() {
 	tableMove.clear();
 }
 
-void Piece::setPosition(Coordinate postion) {
+void Piece::setPosition(Coordinate position) {
 	this->position = position;
 }
 void Piece::setColor(Color color) {

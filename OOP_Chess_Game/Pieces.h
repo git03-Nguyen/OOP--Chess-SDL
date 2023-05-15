@@ -67,7 +67,7 @@ public:
 	Piece(const Coordinate& position, Color color, const std::string& imagePath);
 	virtual ~Piece();
 
-	void setPosition(Coordinate postion);
+	void setPosition(Coordinate position);
 	void setColor(Color color);
 	void setDead(bool dead);
 	void setChosen(bool chosen);
