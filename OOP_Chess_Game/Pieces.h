@@ -187,7 +187,7 @@ public:
 	Piece* clone();
 	Piece* getPromotion();
 	friend void promote(Piece* newPiece, PieceType& type);
-	void enPassant(std::vector<std::vector<Piece*>>);
+	void enPassant(Pawn& enemy);
 
 	Pawn& operator = (const Pawn& piece);
 };
