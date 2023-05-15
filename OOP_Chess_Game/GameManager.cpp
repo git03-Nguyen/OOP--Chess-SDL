@@ -93,6 +93,7 @@ void GameManager::handelEvents() {
 			Coordinate c = getClickedBox(e);
 			std::cout << c.getX() << " " << c.getY() << std::endl;
 			handleClickedPiece(e);
+			handleClickedHightlightBox(e);
 		}
 	}
 
@@ -336,6 +337,7 @@ void GameManager::handleClickedHightlightBox(const SDL_Event& e) {
 	Piece* chosenPiece = nullptr;
 	for (int i = 0; i < 32; i++) {
 		if (Board::piecesList[i]->getChosen()) {
+			chosenPiece = Board::piecesList[i];
 			history->setInitalState(chosenPiece);
 			break;
 		}
@@ -348,15 +350,15 @@ void GameManager::handleClickedHightlightBox(const SDL_Event& e) {
 		if (c == move) {
 			Piece* capturedPiece = nullptr;
 			capturedPiece = chosenPiece->move(c);
-			history->setCapturedPiece(capturedPiece);
-			capturedPiece->setDead(true);
+			//history->setCapturedPiece(capturedPiece);
+			//capturedPiece->setDead(true);
 			chosenPiece->setChosen(false);
 			break;
 		}
 	}
 
-	history->setFinalState(chosenPiece);
-	history->updateData(turn);
+	//history->setFinalState(chosenPiece);
+	//history->updateData(turn);
 	turn++;
 
 	// TODO - check promotion
