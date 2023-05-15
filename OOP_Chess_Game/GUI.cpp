@@ -131,7 +131,7 @@ GamePlayGUI::GamePlayGUI() { //LOAD ALL THE ESSENTIALS
 	//load board image
 	this->board = new Image({ 0,0,560,560 }, "..\\Assets\\chess\\ChessBoard.png");
 	//load possible move image
-	this->possibleMove = new Image({ 0,0,0,0 }, "..\\Assets\\PossibleMove.png");
+	this->possibleMove = new Image({ 0,0,0,0 }, "..\\Assets\\chess\\PossibleMove.png");
 	//buttons
 	this->btnSetting = new Image({ 800,20,100,100 }, "..\\Assets\\chess\\settings.png");
 	this->btnUndo = new Image({ 800,140,100,100 }, "..\\Assets\\chess\\undo.png");
@@ -200,6 +200,8 @@ void GamePlayGUI::set() {
 }
 
 void GamePlayGUI::render() {
+	//set
+	this->set();
 	//background
 	this->background->renderImage();
 	//board
