@@ -38,7 +38,7 @@ Piece::~Piece() {
 	tableMove.clear();
 }
 
-void Piece::setPosition(Coordinate postion) {
+void Piece::setPosition(Coordinate position) {
 	this->position = position;
 }
 void Piece::setColor(Color color) {
@@ -488,6 +488,20 @@ std::vector<Coordinate> Bishop::getPossibleMoves(std::vector<std::vector<Piece*>
 		}
 		else { break; }
 	}
+	int X = tmp.getX() + 1;
+	int Y = tmp.getY() + 1;
+	while (X <= _BOARD_HEIGHT && Y <= _BOARD_WIDTH) {
+		if (!board[X][Y]) {
+			moves.push_back(Coordinate(X, Y));
+			X++;
+			Y++;
+		}
+		else if (this->getColor() != board[X][Y]->getColor()) {
+			moves.push_back(Coordinate(X, Y));
+			break;
+		}
+		else { break; }
+	}
 
 	//x - 1, y - 1
 	X = tmp.getX() - 1;
@@ -829,7 +843,12 @@ Knight& Knight::operator=(const Knight& piece) {
 //---------------------------------------------------------------------------
 Pawn::Pawn() {
 	promotion = nullptr;
-	firstMove = true;
+	if (this->getColor() == Color::White) {	
+		firstMove = true;
+	}
+	else {
+		firstMove = false;
+	}
 }
 Pawn::Pawn(const Pawn& pawn) : Piece(pawn) {
 	if (this->color == Color::White) {
@@ -854,7 +873,12 @@ Pawn::Pawn(const Coordinate& position, Color color, const std::string& pathImage
 	this->dead = false;
 	this->chosen = false;
 	promotion = nullptr;
-	firstMove = true;
+	if (this->getColor() == Color::White) {	
+		firstMove = true;
+	}
+	else {
+		firstMove = false;
+	}
 }
 Pawn::~Pawn() {
 	delete promotion;

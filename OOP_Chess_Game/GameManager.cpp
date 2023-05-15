@@ -93,6 +93,7 @@ void GameManager::handelEvents() {
 			Coordinate c = getClickedBox(e);
 			std::cout << c.getX() << " " << c.getY() << std::endl;
 			handleClickedPiece(e);
+			handleClickedHightlightBox(e);
 		}
 	}
 
@@ -317,7 +318,7 @@ void GameManager::handleClickedPiece(const SDL_Event& e) {
 
 	Piece* piece = Board::getPieceAt(c);
 	if (!piece) return;
-
+	std::cout << "Turn:" << turn << std::endl;
 	if (piece->getColor() == Color::White && turn % 2 == 1 || piece->getColor() == Color::Black && turn % 2 == 0) return;
 
 	for (int i = 0; i < 32; i++) Board::piecesList[i]->setChosen(false);
@@ -336,7 +337,8 @@ void GameManager::handleClickedHightlightBox(const SDL_Event& e) {
 	Piece* chosenPiece = nullptr;
 	for (int i = 0; i < 32; i++) {
 		if (Board::piecesList[i]->getChosen()) {
-			history->setInitalState(chosenPiece);
+			chosenPiece = Board::piecesList[i];
+			//history->setInitalState(chosenPiece);
 			break;
 		}
 	}
@@ -348,16 +350,18 @@ void GameManager::handleClickedHightlightBox(const SDL_Event& e) {
 		if (c == move) {
 			Piece* capturedPiece = nullptr;
 			capturedPiece = chosenPiece->move(c, Board::piecesOnBoard);
-			history->setCapturedPiece(capturedPiece);
-			capturedPiece->setDead(true);
+			//history->setCapturedPiece(capturedPiece);
+			//capturedPiece->setDead(true);
 			chosenPiece->setChosen(false);
+			turn++;
+			Board::updateBoard();
+
 			break;
 		}
 	}
 
-	history->setFinalState(chosenPiece);
-	history->updateData(turn);
-	turn++;
+	//history->setFinalState(chosenPiece);
+	//history->updateData(turn);
 
 	// TODO - check promotion
 	//if (checkPromotion(chosenPiece)) {

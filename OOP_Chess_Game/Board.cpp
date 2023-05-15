@@ -43,6 +43,7 @@ void Board::updateBoard() {
         for (auto& pPiece : vpPieces) pPiece = nullptr;
     }
     for (auto piece : piecesList) {
+        if (piece->getDead()) continue;
         Coordinate c = piece->getPosition();
         piecesOnBoard[c.getX()][c.getY()] = piece;
     }

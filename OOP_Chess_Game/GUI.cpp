@@ -179,6 +179,7 @@ GamePlayGUI::~GamePlayGUI() {
 
 void GamePlayGUI::set() {
 	//set chosen one
+	chosenPiece = nullptr;
 	for (int i = 0; i < Board::piecesList.size(); i++) {
 		if (!Board::piecesList[i]->getDead())
 		if (Board::piecesList[i]->getChosen()) {
