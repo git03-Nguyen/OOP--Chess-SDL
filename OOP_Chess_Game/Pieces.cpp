@@ -897,8 +897,12 @@ std::vector<Coordinate> Pawn::getPossibleMoves(std::vector<std::vector<Piece*>> 
 			return moves;
 		}
 		if (this->firstMove) {
-			moves.push_back(Coordinate(X, Y + 1));
-			moves.push_back(Coordinate(X, Y + 2));
+			if (!board[X][Y + 1]) {
+				moves.push_back(Coordinate(X, Y + 1));
+			}
+			if (!board[X][Y + 2] && !board[X][Y + 1]) {
+				moves.push_back(Coordinate(X, Y + 2));
+			}
 
 			if (Y < _BOARD_WIDTH) {
 				if (X < _BOARD_HEIGHT) {
@@ -938,8 +942,12 @@ std::vector<Coordinate> Pawn::getPossibleMoves(std::vector<std::vector<Piece*>> 
 			return moves;
 		}
 		if (this->firstMove) {
-			moves.push_back(Coordinate(X, Y - 1));	
-			moves.push_back(Coordinate(X, Y - 2));
+			if (!board[X][Y - 1]) {
+				moves.push_back(Coordinate(X, Y - 1));
+			}
+			if (!board[X][Y - 2] && !board[X][Y - 1]) {
+				moves.push_back(Coordinate(X, Y - 2));
+			}
 
 			if (Y > 0) {
 				if (X < _BOARD_HEIGHT) {
