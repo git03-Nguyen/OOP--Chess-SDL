@@ -1,215 +1,90 @@
 #pragma once
+#include <iostream>
+#include <string>
 #include <vector>
-#include <String>
 #include <SDL.h>
-#include "Button.h"
-#include "Board.h"
+#include <SDL_image.h>
+#include "Window.h"
 #include "Pieces.h"
 
-enum class TypeGUI { MENU, MODE_OPTION, VOLUME_OPTION, REPLAY_RECENT_GAME, GAME_PLAY, RESULT_NOTICE, PROMOTION_NOTICE, SETTINGS };
+//class TextObject {
+//private:
+//	std::string value;
+//	std::vector<int> rgb;
+//	int size;
+//	std::string font;
+//	SDL_Rect rect;
+//public:
+//	TextObject();
+//	TextObject(const std::string& value, const std::vector<int>& rgb, int size, const std::string& font, const SDL_Rect& rect);
+//	virtual ~TextObject();
+//
+//	void setValue(const std::string& value);
+//	void setRGB(const std::vector<int>& rgb);
+//	void setSize(int size);
+//	void setFont(const std::string& font);
+//	void setRectangle(const SDL_Rect& rect);
+//
+//	std::string getValue() const;
+//	std::vector<int> getRGB() const;
+//	int getSize() const;
+//	std::string getFont() const;
+//	SDL_Rect getRectangle();
+//
+//	TextObject& operator = (const TextObject& text);
+//};
 
-class GUI {
-protected:
-	Image background;
-	bool active;
+//class Button {
+//private:
+//	std::string imagePath;
+//	SDL_Rect rect;
+//public:
+//	Button();
+//	Button(const SDL_Rect& rect, const std::string& imagePath);
+//	virtual ~Button();
+//
+//	void setRectangle(const SDL_Rect& rect);
+//	void setimagePath(const std::string& imagePath);
+//	SDL_Rect getRectangle();
+//	std::string getimagePath();
+//	void render(SDL_Renderer* renderer);
+//	Button& operator = (const Button& button);
+//};
+class Image {
+private:
+	SDL_Rect rect;
+	SDL_Texture* texture;
+	//SDL_Surface* img;
 public:
-	GUI();
-	virtual ~GUI();
-	virtual TypeGUI getTypeGUI() const;
-	void renderBackground();
-	void clear();
-	virtual void render() = 0;
-	virtual void destroy() = 0;
-	bool isActive();
-	void activate();
-	void deactivate();
-};
-//
-//class MenuGUI : public GUI {
-//private:
-//	static Button btnVsCom;
-//	static Button btnVsPlayer;
-//	static Button btnVolumeOption;
-//	static Button btnReplayRecentGame;
-//	static Button btnExit;
-//public:
-//	MenuGUI();
-//	virtual ~MenuGUI();
-//
-//	void init();
-//	void render();
-//	TypeGUI getTypeGUI() const;
-//
-//	static SDL_Rect getRectOfBtnVsCom();
-//	static SDL_Rect getRectOfBtnVsPlayer();
-//	static SDL_Rect getRectOfBtnVolumeOption();
-//	static SDL_Rect getRectOfBtnReplayRecentGame();
-//	static SDL_Rect getRectOfBtnExit();
-//};
-
-// TODO: use full parameter constructor
-//Button MenuGUI::btnVsCom;
-//Button MenuGUI::btnVsPlayer;
-//Button MenuGUI::btnVolumeOption;
-//Button MenuGUI::btnReplayRecentGame;
-//Button MenuGUI::btnExit;
-
-//class ModeOptionGUI : public GUI {
-//private:
-//	static Button btnEasy;
-//	static Button btnHard;
-//	static Button btnBackToMenu;
-//public:
-//	ModeOptionGUI();
-//	virtual ~ModeOptionGUI();
-//
-//	void init();
-//	void render();
-//	TypeGUI getTypeGUI() const;
-//
-//	static SDL_Rect getRectOfBtnEasy();
-//	static SDL_Rect getRectOfBtnHard();
-//	static SDL_Rect getRectOfBtnBackToMenu();
-//};
-
-//class VolumeOptionGUI : public GUI {
-//private:
-//	static Slider sliderThemeMusic;
-//	static Slider sliderEventMusic;
-//	static Button btnBackToMenu;
-//public:
-//	VolumeOptionGUI();
-//	virtual ~VolumeOptionGUI();
-//
-//	void init();
-//	void render();
-//	TypeGUI getTypeGUI() const;
-//
-//	static Slider* getSliderThemeMusic();
-//	static Slider* getSliderEventMusic();
-//	static SDL_Rect getRectOfBtnBackToMenu();
-//};
-
-//class ReplayGameGUI : public GUI {
-//};
-
-class GamePlayGUI : public GUI {
-protected:
-	std::vector<Image> piece;
-	Piece* chosenPiece;
-	//
-	Image possibleMove;
-	Image board;
-	Image btnSetting;
-	Image btnUndo;
-	Image btnRedo;
-	Image btnQuit;
-	//at first, rect all {0,0,0,0}
-	Image btnPromoteQueen;
-	Image btnPromoteRook;
-	Image btnPromoteBishop;
-	Image btnPromoteKnight;
-public:
-	GamePlayGUI();
-	//
-	~GamePlayGUI();
-	//
-	TypeGUI getTypeGUI() const;
-	//
-	void set();
-	void render();
-	//
-	void initPromotionButtons();	 //call when needed
-	void clearPromotionButtons();    //must call after use
-	//
-	SDL_Rect getRectOfBtnSetting();
-	SDL_Rect getRectOfBtnUndo();
-	SDL_Rect getRectOfBtnRedo();
-	SDL_Rect getRectOfBtnQuit();
-	//
-	SDL_Rect getRectOfBtnPromoteQueen();
-	SDL_Rect getRectOfBtnPromoteRook();
-	SDL_Rect getRectOfBtnPromoteBishop();
-	SDL_Rect getRectOfBtnPromoteKnight();
-	//
+	Image();
+	Image(SDL_Rect rect, const std::string& imagePath);
+	~Image();
+	SDL_Rect getRectangle();
+	void setRectangle(SDL_Rect rect);
+	void renderImage();
 	void destroy();
 };
 
-// TODO: use full parameter constructor
-//Button GamePlayGUI::btnSetting;
-//Button GamePlayGUI::btnUndo;
-//Button GamePlayGUI::btnRedo;
-
-//class MatchResultGUI : public GUI {
+//class Slider {
 //private:
-//	TextObject text;
-//	static Button btnPlayAgain;
-//	static Button btnBackToMenu;
+//	SDL_Texture* icon;
+//	SDL_Rect iconRect;
+//	SDL_Texture* trackerTexture;
+//	SDL_Rect trackerRect;
+//	SDL_Texture* buttonTexture;
+//	SDL_Rect buttonRect;
+//
 //public:
-//	MatchResultGUI();
-//	virtual ~MatchResultGUI();
+//	Slider();
+//	Slider(const std::string& iconImagePath, const std::string& trackerImagePath, const std::string& buttonImagePath, const SDL_Rect& trackerRect);
+//	virtual ~Slider();
 //
-//	void init();
-//	void render();
-//	TypeGUI getTypeGUI() const;
-//	void setText(const TextObject& text);
+//	SDL_Texture* loadImage(const std::string& imagePath) const;
+//	void initIconRect(const SDL_Rect& rect);
+//	void initButtonRect(const SDL_Rect& rect);
+//	void setButtonRectX(int x);
+//	SDL_Rect getButtonRect() const;
+//	int getValueFromSlider() const;
 //
-//	static SDL_Rect getRectOfBtnPlayAgain();
-//	static SDL_Rect getRectOfBtnBackToMenu();
+//	Slider& operator = (const Slider& slider);
 //};
-
-// TODO: use full parameter constructor
-//static Button btnPlayAgain;
-//static Button btnBackToMenu;
-
-//class PromotionNoticeGUI : public GUI {
-//private:
-//	int idOfPromotionPiece;
-//	static Button btnQueen;
-//	static Button btnBishop;
-//	static Button btnKnight;
-//	static Button btnRook;
-//public:
-//	PromotionNoticeGUI(int idOfPromotionPiece);
-//	virtual ~PromotionNoticeGUI();
-//
-//	void init();
-//	void render();
-//	TypeGUI getTypeGUI() const;
-//	int getIdOfPromotionPiece() const;
-//
-//	static SDL_Rect getRectOfBtnQueen();
-//	static SDL_Rect getRectOfBtnBishop();
-//	static SDL_Rect getRectOfBtnKnight();
-//	static SDL_Rect getRectOfBtnRook();
-//};
-
-// TODO: use full parameter constructor
-//static Button btnQueen;
-//static Button btnBishop;
-//static Button btnKnight;
-//static Button btnRook;
-
-
-//class SettingGUI : public GUI {
-//private:
-//	static Button btnContinue;
-//	static Button btnVolumeOption;
-//	static Button btnBackToMenu;
-//public:
-//	SettingGUI();
-//	virtual ~SettingGUI();
-//
-//	void init();
-//	void render();
-//	TypeGUI getTypeGUI() const;
-//
-//	static SDL_Rect getRectOfBtnContinue();
-//	static SDL_Rect getRectOfBtnVolumeOption();
-//	static SDL_Rect getRectOfBtnBackToMenu();
-//};
-
-//TODO: use full parameter constructor
-//static Button btnContinue;
-//static Button btnVolumeOption;
-//static Button btnBackToMenu;
