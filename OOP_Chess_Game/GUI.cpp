@@ -127,7 +127,7 @@ GamePlayGUI::GamePlayGUI() { //LOAD ALL THE ESSENTIALS
 	//load board image
 	this->board = new Image({ 0,0,560,560 }, "..\\Assets\\chess\\ChessBoard.png");
 	//load possible move image
-	this->possibleMove = new Image({ 0,0,0,0 }, "..\\Assets\\PossibleMove.png");
+	this->possibleMove = new Image({ 0,0,0,0 }, "..\\Assets\\chess\\PossibleMove.png");
 	//buttons
 	this->btnSetting = new Image({ 800,20,100,100 }, "..\\Assets\\chess\\settings.png");
 	this->btnUndo = new Image({ 800,140,100,100 }, "..\\Assets\\chess\\undo.png");
@@ -196,6 +196,8 @@ void GamePlayGUI::set() {
 }
 
 void GamePlayGUI::render() {
+	//set
+	this->set();
 	//background
 	this->background->renderImage();
 	//board
@@ -210,7 +212,6 @@ void GamePlayGUI::render() {
 	this->btnPromoteBishop->renderImage();
 	this->btnPromoteRook->renderImage();
 	this->btnPromoteKnight->renderImage();
-	std::cout << "done\n";
 	//possible moves
 	if (this->chosenPiece != nullptr) 
 	for (int i = 0; i < this->chosenPiece->getPossibleMoves().size(); i++) {
@@ -219,12 +220,11 @@ void GamePlayGUI::render() {
 		this->possibleMove->setRectangle({ x,y,70,70 });
 		this->possibleMove->renderImage();
 	}
-	std::cout << "done\n";
 	//pieces
 	for (int i = 0; i < this->piece.size(); i++) {
 		this->piece[i]->renderImage();
 	}
-	std::cout << "done\n";
+	SDL_RenderPresent(Window::renderer);
 }
 void GamePlayGUI::initPromotionButtons() {
 	this->btnPromoteQueen->setRectangle({ 570,300,70,70 });
