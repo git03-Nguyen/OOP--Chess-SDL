@@ -342,7 +342,7 @@ void GameManager::handleClickedHightlightBox(const SDL_Event& e) {
 	}
 
 	if (!chosenPiece) return;
-	possibleMoves = chosenPiece->getPossibleMoves();
+	possibleMoves = chosenPiece->getPossibleMoves(Board::piecesOnBoard);
 
 	for (auto move : possibleMoves) {
 		if (c == move) {

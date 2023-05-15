@@ -132,75 +132,140 @@ Piece* King::move(const Coordinate& c) {
 
 	return this;
 }
-std::vector<Coordinate> King::getPossibleMoves() const {
+std::vector<Coordinate> King::getPossibleMoves(std::vector<std::vector<Piece*>> board) const {
 	std::vector<Coordinate> moves;
+	Coordinate tmp(this->getPosition().getX(), this->getPosition().getY());
 
 	if (this->getColor() == Color::White) {
-		Coordinate tmp(this->getPosition().getX() - 1, this->getPosition().getY() - 1);
-		int X = tmp.getX();
-		int Y = tmp.getY();
-		if (X >= 0 && Y >= 0) {
-			for (int i = 0; i < 3; i++, Y++) {
-				if (Y >= 0 && Y <= _BOARD_WIDTH) {
-					moves.push_back(tmp);
-				}
+		//x - 1, y - 1
+		int X = tmp.getX() - 1;
+		int Y = tmp.getY() - 1;
+		if (!board[X][Y] || board[X][Y]->getColor() == Color::White) {
+			if (X >= 0 && Y >= 0) {
+				moves.push_back(Coordinate(X, Y));
 			}
 		}
-		tmp = Coordinate(tmp.getX() + 1, tmp.getY() - 1);
-		X = tmp.getX();
-		Y = tmp.getY();
-		if (X <= _BOARD_HEIGHT && Y >= 0) {
-			for (int i = 0; i < 3; i++, Y++) {
-				if (Y >= 0 && Y <= _BOARD_WIDTH) {
-					moves.push_back(tmp);
-				}
+		//x + 1, y - 1
+		X = tmp.getX() + 1;
+		Y = tmp.getY() - 1;
+		if (!board[X][Y] || board[X][Y]->getColor() == Color::White) {
+			if (X <= _BOARD_HEIGHT && Y >= 0) {
+				moves.push_back(Coordinate(X, Y));
 			}
 		}
-		tmp = Coordinate(tmp.getX(), tmp.getY() + 1);
-		X = tmp.getX();
-		Y = tmp.getY();
-		if (Y <= _BOARD_HEIGHT) {
-			moves.push_back(tmp);
+		//x - 1, y + 1
+		X = tmp.getX() - 1;
+		Y = tmp.getY() + 1;
+		if (!board[X][Y] || board[X][Y]->getColor() == Color::White) {
+			if (X >= 0 && Y <= _BOARD_WIDTH) {
+				moves.push_back(Coordinate(X, Y));
+			}
 		}
-		tmp = Coordinate(tmp.getX(), tmp.getY() - 1);
-		X = tmp.getX();
+		//x + 1, y + 1
+		X = tmp.getX() + 1;
+		Y = tmp.getY() + 1;
+		if (!board[X][Y] || board[X][Y]->getColor() == Color::White) {
+			if (X <= _BOARD_HEIGHT && Y <= _BOARD_WIDTH) {
+				moves.push_back(Coordinate(X, Y));
+			}
+		}
+		//x + 1
+		X = tmp.getX() + 1;
 		Y = tmp.getY();
-		if (Y >= 0) {
-			moves.push_back(tmp);
+		if (!board[X][Y] || board[X][Y]->getColor() == Color::White) {
+			if (X <= _BOARD_HEIGHT) {
+				moves.push_back(Coordinate(X, Y));
+			}
+		}
+		//x - 1
+		X = tmp.getX() - 1;
+		Y = tmp.getY();
+		if (!board[X][Y] || board[X][Y]->getColor() == Color::White) {
+			if (X >= 0) {
+				moves.push_back(Coordinate(X, Y));
+			}
+		}
+		//y + 1
+		X = tmp.getX();
+		Y = tmp.getY() + 1;
+		if (!board[X][Y] || board[X][Y]->getColor() == Color::White) {
+			if (Y <= _BOARD_WIDTH) {
+				moves.push_back(Coordinate(X, Y));
+			}
+		}
+		//y - 1
+		X = tmp.getX();
+		Y = tmp.getY() - 1;
+		if (!board[X][Y] || board[X][Y]->getColor() == Color::White) {
+			if (Y >= 0) {
+				moves.push_back(Coordinate(X, Y));
+			}
 		}
 	}
 	else {
-		Coordinate tmp(this->getPosition().getX() - 1, this->getPosition().getY() + 1);
-		int X = tmp.getX();
-		int Y = tmp.getY();
-		if (X >= 0 && X <= _BOARD_HEIGHT) {
-			for (int i = 0; i < 3; i++, Y--) {
-				if (Y >= 0 && Y <= _BOARD_WIDTH) {
-					moves.push_back(tmp);
-				}
+		//x - 1, y + 1
+		int X = tmp.getX() - 1;
+		int Y = tmp.getY() + 1;
+		if (!board[X][Y] || board[X][Y]->getColor() == Color::Black) {
+			if (X >= 0 && Y <= _BOARD_WIDTH) {
+				moves.push_back(Coordinate(X, Y));				
 			}
 		}
-		tmp = Coordinate(tmp.getX() + 1, tmp.getY() + 1);
-		X = tmp.getX();
-		Y = tmp.getY();
-		if (X >= 0 && X <= _BOARD_HEIGHT) {
-			for (int i = 0; i < 3; i++, Y--) {
-				if (Y >= 0 && Y <= _BOARD_WIDTH) {
-					moves.push_back(tmp);
-				}
+		//x + 1, y + 1
+		X = tmp.getX() + 1;
+		Y = tmp.getY() + 1;
+		if (!board[X][Y] || board[X][Y]->getColor() == Color::Black) {
+			if (X <= _BOARD_HEIGHT && Y >= 0) {
+				moves.push_back(Coordinate(X, Y));
 			}
 		}
-		tmp = Coordinate(tmp.getX(), tmp.getY() + 1);
-		X = tmp.getX();
-		Y = tmp.getY();
-		if (Y <= _BOARD_HEIGHT) {
-			moves.push_back(tmp);
+		//x - 1, y - 1
+		X = tmp.getX() - 1;
+		Y = tmp.getY() - 1;
+		if (!board[X][Y] || board[X][Y]->getColor() == Color::Black) {
+			if (X >= 0 && Y >= 0) {
+				moves.push_back(Coordinate(X, Y));
+			}
 		}
-		tmp = Coordinate(tmp.getX(), tmp.getY() - 1);
-		X = tmp.getX();
+		//x + 1, y - 1
+		X = tmp.getX() + 1;
+		Y = tmp.getY() - 1;
+		if (!board[X][Y] || board[X][Y]->getColor() == Color::Black) {
+			if (X <= _BOARD_HEIGHT && Y >= 0) {
+				moves.push_back(Coordinate(X, Y));
+			}
+		}
+		//x + 1
+		X = tmp.getX() + 1;
 		Y = tmp.getY();
-		if (Y >= 0) {
-			moves.push_back(tmp);
+		if (!board[X][Y] || board[X][Y]->getColor() == Color::Black) {
+			if (X <= _BOARD_HEIGHT) {
+				moves.push_back(Coordinate(X, Y));
+			}
+		}
+		//x - 1
+		X = tmp.getX() - 1;
+		Y = tmp.getY();
+		if (!board[X][Y] || board[X][Y]->getColor() == Color::Black) {
+			if (X >= 0) {
+				moves.push_back(Coordinate(X, Y));
+			}
+		}
+		//y + 1
+		X = tmp.getX();
+		Y = tmp.getY() + 1;
+		if (!board[X][Y] || board[X][Y]->getColor() == Color::Black) {
+			if (Y <= _BOARD_WIDTH) {
+				moves.push_back(Coordinate(X, Y));
+			}
+		}
+		//y - 1
+		X = tmp.getX();
+		Y = tmp.getY() - 1;
+		if (!board[X][Y] || board[X][Y]->getColor() == Color::Black) {
+			if (Y >= 0) {
+				moves.push_back(Coordinate(X, Y));
+			}
 		}
 	}
 	return moves;
@@ -209,13 +274,13 @@ Piece* King::clone() {
 	return new King(*this);
 }
 void King::performCastling() {
-	if (this->getColor() == Color::White && this->getPosition().getX() == 4 && this->getPosition().getY() == 1) {
+	if (this->getColor() == Color::White && this->getPosition().getX() == 3 && this->getPosition().getY() == 0) {
 		this->castling = true;
-		this->move(Coordinate(2, 1));
+		this->move(Coordinate(1, 0));
 	}
-	else if (this->getColor() == Color::Black && this->getPosition().getX() == 4 && this->getPosition().getY() == 8) {
+	else if (this->getColor() == Color::Black && this->getPosition().getX() == 3 && this->getPosition().getY() == 7) {
 		this->castling = true;
-		this->move(Coordinate(2, 8));
+		this->move(Coordinate(1, 7));
 	}
 }
 
@@ -267,63 +332,131 @@ Piece* Queen::move(const Coordinate& c) {
 
 	return this;
 }
-std::vector<Coordinate> Queen::getPossibleMoves() const {
+std::vector<Coordinate> Queen::getPossibleMoves(std::vector<std::vector<Piece*>> board) const {
 	std::vector<Coordinate> moves;
-
+	Coordinate tmp(this->getPosition().getX(), this->getPosition().getY());
 	//x - 1
-	Coordinate tmp(this->getPosition().getX() - 1, this->getPosition().getY());
-	while (tmp.getX() >= 0) {
-		tmp += Coordinate(-1, 0);
-		moves.push_back(tmp);
+	int X = tmp.getX() - 1;
+	int Y = tmp.getY();
+	while (X >= 0) {
+		if (!board[X][Y]) {
+			moves.push_back(Coordinate(X, Y));
+			X--;
+		}
+		else if (this->getColor() !=  board[X][Y]->getColor()) { 
+			moves.push_back(Coordinate(X, Y));
+			break; 
+		}
+		else { break; }
 	}
 
 	//x + 1
-	tmp = Coordinate(this->getPosition().getX() + 1, this->getPosition().getY());
-	while (tmp.getX() <= _BOARD_HEIGHT) {
-		tmp += Coordinate(1, 0);
-		moves.push_back(tmp);
+	X = tmp.getX() + 1;
+	Y = tmp.getY();
+	while (X <= _BOARD_HEIGHT) {
+		if (!board[X][Y]) {
+			moves.push_back(Coordinate(X, Y));
+			X++;
+		}
+		else if (this->getColor() != board[X][Y]->getColor()) {
+			moves.push_back(Coordinate(X, Y));
+			break;
+		}
+		else { break; }
 	}
 	
 	//y - 1
-	tmp = Coordinate(this->getPosition().getX(), this->getPosition().getY() - 1);
-	while (tmp.getY() >= 0) {
-		tmp += Coordinate(0, -1);
-		moves.push_back(tmp);
+	X = tmp.getX();
+	Y = tmp.getY() - 1;
+	while (Y >= 0) {
+		if (!board[X][Y]) {
+			moves.push_back(Coordinate(X, Y));
+			Y--;
+		}
+		else if (this->getColor() != board[X][Y]->getColor()) {
+			moves.push_back(Coordinate(X, Y));
+			break;
+		}
+		else { break; }
 	}
 
 	//y + 1
-	tmp = Coordinate(this->getPosition().getX(), this->getPosition().getY() - 1);
-	while (tmp.getY() <= _BOARD_WIDTH) {
-		tmp += Coordinate(0, 1);
-		moves.push_back(tmp);
+	X = tmp.getX();
+	Y = tmp.getY() + 1;
+	while (Y <= _BOARD_WIDTH) {
+		if (!board[X][Y]) {
+			moves.push_back(Coordinate(X, Y));
+			Y++;
+		}
+		else if (this->getColor() != board[X][Y]->getColor()) {
+			moves.push_back(Coordinate(X, Y));
+			break;
+		}
+		else { break; }
 	}
 
 	//x + 1, y + 1
-	tmp = Coordinate(this->getPosition().getX() + 1, this->getPosition().getY() + 1);
-	while (tmp.getX() <= _BOARD_HEIGHT && tmp.getY() <= _BOARD_WIDTH) {
-		tmp += Coordinate(1, 1);
-		moves.push_back(tmp);
+	X = tmp.getX() + 1;
+	Y = tmp.getY() + 1;
+	while (X <= _BOARD_HEIGHT && Y <= _BOARD_WIDTH) {
+		if (!board[X][Y]) {
+			moves.push_back(Coordinate(X, Y));
+			X++;
+			Y++;
+		}
+		else if (this->getColor() != board[X][Y]->getColor()) {
+			moves.push_back(Coordinate(X, Y));
+			break;
+		}
+		else { break; }
 	}
 
 	//x - 1, y - 1
-	tmp = Coordinate(this->getPosition().getX() - 1, this->getPosition().getY() - 1);
-	while (tmp.getX() >= 0 && tmp.getY() >= 0) {
-		tmp += Coordinate(-1, -1);
-		moves.push_back(tmp);
+	X = tmp.getX() - 1;
+	Y = tmp.getY() - 1;
+	while (X >= 0 && Y >= 0) {
+		if (!board[X][Y]) {
+			moves.push_back(Coordinate(X, Y));
+			X--;
+			Y--;
+		}
+		else if (this->getColor() != board[X][Y]->getColor()) {
+			moves.push_back(Coordinate(X, Y));
+			break;
+		}
+		else { break; }
 	}
 
 	//x - 1, y + 1
-	tmp = Coordinate(this->getPosition().getX() - 1, this->getPosition().getY() + 1);
-	while (tmp.getX() >= 0 && tmp.getY() <= _BOARD_WIDTH) {
-		tmp += Coordinate(-1, 1);
-		moves.push_back(tmp);
+	X = tmp.getX() - 1;
+	Y = tmp.getY() + 1;	
+	while (X >= 0 && Y <= _BOARD_WIDTH) {
+		if (!board[X][Y]) {
+			moves.push_back(Coordinate(X, Y));
+			X--;
+			Y++;
+		}
+		else if (this->getColor() != board[X][Y]->getColor()) {
+			moves.push_back(Coordinate(X, Y));
+			break;
+		}
+		else { break; }
 	}
 
 	//x + 1, y - 1
-	tmp = Coordinate(this->getPosition().getX() + 1, this->getPosition().getY() - 1);
-	while (tmp.getX() <= _BOARD_HEIGHT && tmp.getY() >= 0) {
-		tmp += Coordinate(1, -1);
-		moves.push_back(tmp);
+	X = tmp.getX() + 1;
+	Y = tmp.getY() - 1;	
+	while (X <= _BOARD_HEIGHT && Y >= 0) {
+		if (!board[X][Y]) {
+			moves.push_back(Coordinate(X, Y));
+			X++;
+			Y--;
+		}
+		else if (this->getColor() != board[X][Y]->getColor()) {
+			moves.push_back(Coordinate(X, Y));
+			break;
+		}
+		else { break; }
 	}
 
 	return moves;
@@ -379,34 +512,72 @@ Piece* Bishop::move(const Coordinate& c) {
 
 	return this;
 }
-std::vector<Coordinate> Bishop::getPossibleMoves() const {
+std::vector<Coordinate> Bishop::getPossibleMoves(std::vector<std::vector<Piece*>> board) const {
 	std::vector<Coordinate> moves;
+	Coordinate tmp(this->getPosition().getX(), this->getPosition().getY());
+
 	//x + 1, y + 1
-	Coordinate tmp(this->getPosition().getX() + 1, this->getPosition().getY() + 1);
-	while (tmp.getX() <= _BOARD_HEIGHT && tmp.getY() <= _BOARD_WIDTH) {
-		tmp += Coordinate(1, 1);
-		moves.push_back(tmp);
+	int X = tmp.getX() + 1;
+	int Y = tmp.getY() + 1;
+	while (X <= _BOARD_HEIGHT && Y <= _BOARD_WIDTH) {
+		if (!board[X][Y]) {
+			moves.push_back(Coordinate(X, Y));
+			X++;
+			Y++;
+		}
+		else if (this->getColor() != board[X][Y]->getColor()) {
+			moves.push_back(Coordinate(X, Y));
+			break;
+		}
+		else { break; }
 	}
 
 	//x - 1, y - 1
-	tmp = Coordinate(this->getPosition().getX() - 1, this->getPosition().getY() - 1);
-	while (tmp.getX() >= 0 && tmp.getY() >= 0) {
-		tmp += Coordinate(-1, -1);
-		moves.push_back(tmp);
+	X = tmp.getX() - 1;
+	Y = tmp.getY() - 1;
+	while (X >= 0 && Y >= 0) {
+		if (!board[X][Y]) {
+			moves.push_back(Coordinate(X, Y));
+			X--;
+			Y--;
+		}
+		else if (this->getColor() != board[X][Y]->getColor()) {
+			moves.push_back(Coordinate(X, Y));
+			break;
+		}
+		else { break; }
 	}
 
 	//x - 1, y + 1
-	tmp = Coordinate(this->getPosition().getX() - 1, this->getPosition().getY() + 1);
-	while (tmp.getX() >= 0 && tmp.getY() <= _BOARD_WIDTH) {
-		tmp += Coordinate(-1, 1);
-		moves.push_back(tmp);
+	X = tmp.getX() - 1;
+	Y = tmp.getY() + 1;
+	while (X >= 0 && Y <= _BOARD_WIDTH) {
+		if (!board[X][Y]) {
+			moves.push_back(Coordinate(X, Y));
+			X--;
+			Y++;
+		}
+		else if (this->getColor() != board[X][Y]->getColor()) {
+			moves.push_back(Coordinate(X, Y));
+			break;
+		}
+		else { break; }
 	}
 
 	//x + 1, y - 1
-	tmp = Coordinate(this->getPosition().getX() + 1, this->getPosition().getY() - 1);
-	while (tmp.getX() <= _BOARD_HEIGHT && tmp.getY() >= 0) {
-		tmp += Coordinate(1, -1);
-		moves.push_back(tmp);
+	X = tmp.getX() + 1;
+	Y = tmp.getY() - 1;
+	while (X <= _BOARD_HEIGHT && Y >= 0) {
+		if (!board[X][Y]) {
+			moves.push_back(Coordinate(X, Y));
+			X++;
+			Y--;
+		}
+		else if (this->getColor() != board[X][Y]->getColor()) {
+			moves.push_back(Coordinate(X, Y));
+			break;
+		}
+		else { break; }
 	}
 
 	return moves;
@@ -461,35 +632,68 @@ Piece* Rook::move(const Coordinate& c) {
 
 	return this;
 }
-std::vector<Coordinate> Rook::getPossibleMoves() const {
+std::vector<Coordinate> Rook::getPossibleMoves(std::vector<std::vector<Piece*>> board) const {
 	std::vector<Coordinate> moves;
+	Coordinate tmp(this->getPosition().getX(), this->getPosition().getY());
 
 	//x - 1
-	Coordinate tmp(this->getPosition().getX() - 1, this->getPosition().getY());
-	while (tmp.getX() >= 0) {
-		tmp += Coordinate(-1, 0);
-		moves.push_back(tmp);
+	int X = tmp.getX() - 1;
+	int Y = tmp.getY();
+	while (X >= 0) {
+		if (!board[X][Y]) {
+			moves.push_back(Coordinate(X, Y));
+			X--;
+		}
+		else if (this->getColor() != board[X][Y]->getColor()) {
+			moves.push_back(Coordinate(X, Y));
+			break;
+		}
+		else { break; }
 	}
 
 	//x + 1
-	tmp = Coordinate(this->getPosition().getX() + 1, this->getPosition().getY());
-	while (tmp.getX() <= _BOARD_HEIGHT) {
-		tmp += Coordinate(1, 0);
-		moves.push_back(tmp);
+	X = tmp.getX() + 1;
+	Y = tmp.getY();
+	while (X <= _BOARD_HEIGHT) {
+		if (!board[X][Y]) {
+			moves.push_back(Coordinate(X, Y));
+			X++;
+		}
+		else if (this->getColor() != board[X][Y]->getColor()) {
+			moves.push_back(Coordinate(X, Y));
+			break;
+		}
+		else { break; }
 	}
 
 	//y - 1
-	tmp = Coordinate(this->getPosition().getX(), this->getPosition().getY() - 1);
-	while (tmp.getY() >= 0) {
-		tmp += Coordinate(0, -1);
-		moves.push_back(tmp);
+	X = tmp.getX();
+	Y = tmp.getY() - 1;	
+	while (Y >= 0) {
+		if (!board[X][Y]) {
+			moves.push_back(Coordinate(X, Y));
+			Y--;
+		}
+		else if (this->getColor() != board[X][Y]->getColor()) {
+			moves.push_back(Coordinate(X, Y));
+			break;
+		}
+		else { break; }
 	}
 
 	//y + 1
-	tmp = Coordinate(this->getPosition().getX(), this->getPosition().getY() - 1);
-	while (tmp.getY() <= _BOARD_WIDTH) {
-		tmp += Coordinate(0, 1);
-		moves.push_back(tmp);
+	X = tmp.getX();
+	Y = tmp.getY() + 1;
+	while (Y <= _BOARD_WIDTH) {
+		if (!board[X][Y]) {
+			moves.push_back(Coordinate(X, Y));
+			Y++;
+		}
+		else if (this->getColor() != board[X][Y]->getColor()) {
+			moves.push_back(Coordinate(X, Y));
+			break;
+		}
+		else { break; }
 	}
 
 	return moves;
@@ -499,10 +703,10 @@ Piece* Rook::clone() {
 }
 void Rook::performCastling() {
 	if (this->getColor() == Color::White) {
-		this->move(Coordinate(1, 3));
+		this->move(Coordinate(2, 0));
 	}
 	else {
-		this->move(Coordinate(8, 3));
+		this->move(Coordinate(2, 7));
 	}
 }
 
@@ -552,55 +756,81 @@ Piece* Knight::move(const Coordinate& c) {
 
 	return this;
 }
-std::vector<Coordinate> Knight::getPossibleMoves() const {
+std::vector<Coordinate> Knight::getPossibleMoves(std::vector<std::vector<Piece*>> board) const {
 	std::vector<Coordinate> moves;
+	Coordinate tmp(this->getPosition().getX(), this->getPosition().getY());
 
 	//x + 1, y - 2
-	Coordinate tmp(this->getPosition().getX() + 1, this->getPosition().getY() - 2);
-	if (tmp.getX() <= _BOARD_HEIGHT && tmp.getY() >= 0) {
-		moves.push_back(tmp);
+	int X = tmp.getX() + 1;
+	int Y = tmp.getY() - 2;
+	if (X <= _BOARD_HEIGHT && Y >= 0) {
+		if (!board[X][Y] || this->getColor() != board[X][Y]->getColor()) {
+			moves.push_back(Coordinate(X, Y));
+		}
 	}
 
 	//x + 1, y + 2
-	tmp = Coordinate(this->getPosition().getX() + 1, this->getPosition().getY() + 2);
-	if (tmp.getX() <= _BOARD_HEIGHT && tmp.getY() <= _BOARD_WIDTH) {
-		moves.push_back(tmp);
+	X = tmp.getX() + 1;
+	Y = tmp.getY() + 2;
+	if (X <= _BOARD_HEIGHT && Y <= _BOARD_WIDTH) {
+		if (!board[X][Y] || this->getColor() != board[X][Y]->getColor()) {
+			moves.push_back(Coordinate(X, Y));
+		}
 	}
 
 	//x - 1, y + 2
-	tmp = Coordinate(this->getPosition().getX() - 1, this->getPosition().getY() + 2);
-	if (tmp.getX() >= 0 && tmp.getY() <= _BOARD_WIDTH) {
-		moves.push_back(tmp);
+	X = tmp.getX() - 1;
+	Y = tmp.getY() + 2;
+
+	if (X >= 0 && Y <= _BOARD_WIDTH) {
+		if (!board[X][Y] || this->getColor() != board[X][Y]->getColor()) {
+			moves.push_back(Coordinate(X, Y));
+		}
 	}
 
 	//x - 1, y - 2
-	tmp = Coordinate(this->getPosition().getX() - 1, this->getPosition().getY() - 2);
-	if (tmp.getX() >= 0 && tmp.getY() >= 0) {
-		moves.push_back(tmp);
+	X = tmp.getX() - 1;
+	Y = tmp.getY() - 2;
+	if (X >= 0 && Y >= 0) {
+		if (!board[X][Y] || this->getColor() != board[X][Y]->getColor()) {
+			moves.push_back(Coordinate(X, Y));
+		}
 	}
 
 	//x + 2, y + 1
-	tmp = Coordinate(this->getPosition().getX() + 2, this->getPosition().getY() + 1);
-	if (tmp.getX() <= _BOARD_HEIGHT && tmp.getY() <= _BOARD_WIDTH) {
-		moves.push_back(tmp);
+	X = tmp.getX() + 2;
+	Y = tmp.getY() + 1;
+
+	if (X <= _BOARD_HEIGHT && Y <= _BOARD_WIDTH) {
+		if (!board[X][Y] || this->getColor() != board[X][Y]->getColor()) {
+			moves.push_back(Coordinate(X, Y));
+		}
 	}
 
 	//x - 2, y + 1
-	tmp = Coordinate(this->getPosition().getX() - 2, this->getPosition().getY() + 1);
-	if (tmp.getX() >= 0 && tmp.getY() <= _BOARD_WIDTH) {
-		moves.push_back(tmp);
+	X = tmp.getX() - 2;
+	Y = tmp.getY() + 1;
+	if (X >= 0 && Y <= _BOARD_WIDTH) {
+		if (!board[X][Y] || this->getColor() != board[X][Y]->getColor()) {
+			moves.push_back(Coordinate(X, Y));
+		}
 	}
-
 	//x + 2, y - 1
-	tmp = Coordinate(this->getPosition().getX() + 2, this->getPosition().getY() - 1);
-	if (tmp.getX() <= _BOARD_HEIGHT && tmp.getY() >= 0) {
-		moves.push_back(tmp);
+	X = tmp.getX() + 2;
+	Y = tmp.getY() - 1;
+	if (X <= _BOARD_HEIGHT && Y >= 0) {
+		if (!board[X][Y] || this->getColor() != board[X][Y]->getColor()) {
+			moves.push_back(Coordinate(X, Y));
+		}
 	}
-
 	//x - 2, y - 1
-	tmp = Coordinate(this->getPosition().getX() - 2, this->getPosition().getY() - 1);
-	if (tmp.getX() >= 0 && tmp.getY() >= 0) {
-		moves.push_back(tmp);
+	X = tmp.getX() - 2;
+	Y = tmp.getY() - 1;
+
+	if (X >= 0 && Y >= 0) {
+		if (!board[X][Y] || this->getColor() != board[X][Y]->getColor()) {
+			moves.push_back(Coordinate(X, Y));
+		}
 	}
 
 	return moves;
@@ -663,8 +893,8 @@ Piece* Pawn::getPromotion() const {
 bool Pawn::getFirstMove() {
 	return this->firstMove;
 }
-void Pawn::setFirstMoveFalse() {
-	firstMove = false;
+void Pawn::setFirstMove() {
+	firstMove = !firstMove;
 }
 
 Piece* Pawn::move(const Coordinate& c) {
@@ -672,49 +902,39 @@ Piece* Pawn::move(const Coordinate& c) {
 
 	return this;
 }
-std::vector<Coordinate> Pawn::getPossibleMoves() const {
+std::vector<Coordinate> Pawn::getPossibleMoves(std::vector<std::vector<Piece*>> board) const {
 	std::vector<Coordinate> moves;
+	Coordinate tmp(this->getPosition().getX(), this->getPosition().getY());
 
 	if (this->getColor() == Color::White) {
 		if (this->firstMove) {
-			Coordinate tmp(this->getPosition().getX(), this->getPosition().getY() + 1);
-			moves.push_back(tmp);
-			tmp = Coordinate(this->getPosition().getX(), this->getPosition().getY() + 2);
-			moves.push_back(tmp);
+			moves.push_back(Coordinate(tmp.getX(), tmp.getY() + 1));
+			moves.push_back(Coordinate(tmp.getX(), tmp.getY() + 2));
 
-			tmp = Coordinate(this->getPosition().getX() - 1, this->getPosition().getY() + 1);
+			/*tmp = Coordinate(this->getPosition().getX() - 1, this->getPosition().getY() + 1);
 			moves.push_back(tmp);
 			tmp = Coordinate(this->getPosition().getX() + 1, this->getPosition().getY() + 1);
-			moves.push_back(tmp);
+			moves.push_back(tmp);*/
 		}
 		else {
-			Coordinate tmp(this->getPosition().getX(), this->getPosition().getY() + 1);
-			moves.push_back(tmp);
-			tmp = Coordinate(this->getPosition().getX() - 1, this->getPosition().getY() + 1);
-			moves.push_back(tmp);
-			tmp = Coordinate(this->getPosition().getX() + 1, this->getPosition().getY() + 1);
-			moves.push_back(tmp);
+			if (tmp.getY() <= _BOARD_WIDTH) {
+				if (!board[tmp.getX()][tmp.getY() + 1]) {
+					moves.push_back(Coordinate(tmp.getX(), tmp.getY() + 1));
+				}
+			}
 		}
 	}
 	else if (this->getColor() == Color::Black) {
 		if (this->firstMove) {
-			Coordinate tmp(this->getPosition().getX(), this->getPosition().getY() - 1);
-			moves.push_back(tmp);
-			tmp = Coordinate(this->getPosition().getX(), this->getPosition().getY() - 2);
-			moves.push_back(tmp);
-
-			tmp = Coordinate(this->getPosition().getX() - 1, this->getPosition().getY() - 1);
-			moves.push_back(tmp);
-			tmp = Coordinate(this->getPosition().getX() + 1, this->getPosition().getY() - 1);
-			moves.push_back(tmp);
+			moves.push_back(Coordinate(tmp.getX(), tmp.getY() - 1));
+			moves.push_back(Coordinate(tmp.getX(), tmp.getY() - 2));
 		}
 		else {
-			Coordinate tmp(this->getPosition().getX(), this->getPosition().getY() - 1);
-			moves.push_back(tmp);
-			tmp = Coordinate(this->getPosition().getX() - 1, this->getPosition().getY() - 1);
-			moves.push_back(tmp);
-			tmp = Coordinate(this->getPosition().getX() + 1, this->getPosition().getY() - 1);
-			moves.push_back(tmp);
+			if (tmp.getY() >= 0) {
+				if (!board[tmp.getX()][tmp.getY() - 1]) {
+					moves.push_back(Coordinate(tmp.getX(), tmp.getY() - 1));
+				}
+			}
 		}
 	}
 
@@ -730,7 +950,7 @@ Piece* Pawn::getPromotion() {
 void promote(Piece* newPiece, PieceType& type) {
 	if (newPiece->getType() == PieceType::Pawn) {
 		if (newPiece->getColor() == Color::White) {
-			if (newPiece->getPosition().getY() == 8) {
+			if (newPiece->getPosition().getY() == 7) {
 				if (type == PieceType::Queen) {
 					Coordinate positionTmp = newPiece->getPosition();
 					Color colorTmp = newPiece->getColor();
@@ -758,7 +978,7 @@ void promote(Piece* newPiece, PieceType& type) {
 			}
 		}
 		else {
-			if (newPiece->getPosition().getY() == 1) {
+			if (newPiece->getPosition().getY() == 0) {
 				if (type == PieceType::Queen) {
 					Coordinate positionTmp = newPiece->getPosition();
 					Color colorTmp = newPiece->getColor();

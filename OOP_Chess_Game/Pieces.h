@@ -80,7 +80,7 @@ public:
 	SDL_Texture* getTexture();
 
 	virtual Piece* move(const Coordinate& c) = 0;
-	virtual std::vector<Coordinate> getPossibleMoves() const = 0;
+	virtual std::vector<Coordinate> getPossibleMoves(std::vector<std::vector<Piece*>>) const = 0;
 	virtual Piece* clone() = 0;
 	void loadImage(SDL_Renderer* renderer);
 	void destroyImage();
@@ -100,7 +100,7 @@ public:
 	void setCastling();
 	bool getCastling() const;
 	Piece* move(const Coordinate& c);
-	std::vector<Coordinate> getPossibleMoves() const;
+	std::vector<Coordinate> getPossibleMoves(std::vector<std::vector<Piece*>>) const;
 	Piece* clone();
 	void performCastling();
 
@@ -116,7 +116,7 @@ public:
 	virtual ~Queen();
 
 	Piece* move(const Coordinate& c);
-	std::vector<Coordinate> getPossibleMoves() const;
+	std::vector<Coordinate> getPossibleMoves(std::vector<std::vector<Piece*>>) const;
 	Piece* clone();
 
 	Queen& operator = (const Queen& piece);
@@ -131,7 +131,7 @@ public:
 	virtual ~Bishop();
 
 	Piece* move(const Coordinate& c);
-	std::vector<Coordinate> getPossibleMoves() const;
+	std::vector<Coordinate> getPossibleMoves(std::vector<std::vector<Piece*>>) const;
 	Piece* clone();
 
 	Bishop& operator = (const Bishop& piece);
@@ -147,7 +147,7 @@ public:
 	virtual ~Rook();
 
 	Piece* move(const Coordinate& c);
-	std::vector<Coordinate> getPossibleMoves() const;
+	std::vector<Coordinate> getPossibleMoves(std::vector<std::vector<Piece*>>) const;
 	Piece* clone();
 	void performCastling();
 
@@ -163,7 +163,7 @@ public:
 	virtual ~Knight();
 
 	Piece* move(const Coordinate& c);
-	std::vector<Coordinate> getPossibleMoves() const;
+	std::vector<Coordinate> getPossibleMoves(std::vector<std::vector<Piece*>>) const;
 	Piece* clone();
 
 	Knight& operator = (const Knight& piece);
@@ -181,9 +181,9 @@ public:
 
 	Piece* getPromotion() const;
 	bool getFirstMove();
-	void setFirstMoveFalse();
+	void setFirstMove();
 	Piece* move(const Coordinate& c);
-	std::vector<Coordinate> getPossibleMoves() const;
+	std::vector<Coordinate> getPossibleMoves(std::vector<std::vector<Piece*>>) const;
 	Piece* clone();
 	Piece* getPromotion();
 	friend void promote(Piece* newPiece, PieceType& type);
@@ -191,4 +191,5 @@ public:
 
 	Pawn& operator = (const Pawn& piece);
 };
+
 
