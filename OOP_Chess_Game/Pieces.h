@@ -79,8 +79,8 @@ public:
 	PieceType getType() const;
 	SDL_Texture* getTexture();
 
-	virtual Piece* move(const Coordinate& c) = 0;
-	virtual std::vector<Coordinate> getPossibleMoves() const = 0;
+	virtual Piece* move(const Coordinate& c, std::vector<std::vector<Piece*>>) = 0;
+	virtual std::vector<Coordinate> getPossibleMoves(std::vector<std::vector<Piece*>>) const = 0;
 	virtual Piece* clone() = 0;
 	void loadImage(SDL_Renderer* renderer);
 	void destroyImage();
@@ -99,8 +99,8 @@ public:
 
 	void setCastling();
 	bool getCastling() const;
-	Piece* move(const Coordinate& c);
-	std::vector<Coordinate> getPossibleMoves() const;
+	Piece* move(const Coordinate& c, std::vector<std::vector<Piece*>>);
+	std::vector<Coordinate> getPossibleMoves(std::vector<std::vector<Piece*>>) const;
 	Piece* clone();
 	void performCastling();
 
@@ -115,8 +115,8 @@ public:
 	Queen(const Coordinate& position, Color color, const std::string& pathImage);
 	virtual ~Queen();
 
-	Piece* move(const Coordinate& c);
-	std::vector<Coordinate> getPossibleMoves() const;
+	Piece* move(const Coordinate& c, std::vector<std::vector<Piece*>>);
+	std::vector<Coordinate> getPossibleMoves(std::vector<std::vector<Piece*>>) const;
 	Piece* clone();
 
 	Queen& operator = (const Queen& piece);
@@ -130,8 +130,8 @@ public:
 	Bishop(const Coordinate& position, Color color, const std::string& pathImage);
 	virtual ~Bishop();
 
-	Piece* move(const Coordinate& c);
-	std::vector<Coordinate> getPossibleMoves() const;
+	Piece* move(const Coordinate& c, std::vector<std::vector<Piece*>>);
+	std::vector<Coordinate> getPossibleMoves(std::vector<std::vector<Piece*>>) const;
 	Piece* clone();
 
 	Bishop& operator = (const Bishop& piece);
@@ -146,8 +146,8 @@ public:
 	Rook(const Coordinate& position, Color color, const std::string& pathImage);
 	virtual ~Rook();
 
-	Piece* move(const Coordinate& c);
-	std::vector<Coordinate> getPossibleMoves() const;
+	Piece* move(const Coordinate& c, std::vector<std::vector<Piece*>>);
+	std::vector<Coordinate> getPossibleMoves(std::vector<std::vector<Piece*>>) const;
 	Piece* clone();
 	void performCastling();
 
@@ -162,8 +162,8 @@ public:
 	Knight(const Coordinate& position, Color color, const std::string& pathImage);
 	virtual ~Knight();
 
-	Piece* move(const Coordinate& c);
-	std::vector<Coordinate> getPossibleMoves() const;
+	Piece* move(const Coordinate& c, std::vector<std::vector<Piece*>>);
+	std::vector<Coordinate> getPossibleMoves(std::vector<std::vector<Piece*>>) const;
 	Piece* clone();
 
 	Knight& operator = (const Knight& piece);
@@ -181,9 +181,9 @@ public:
 
 	Piece* getPromotion() const;
 	bool getFirstMove();
-	void setFirstMoveFalse();
-	Piece* move(const Coordinate& c);
-	std::vector<Coordinate> getPossibleMoves() const;
+	void setFirstMove();
+	Piece* move(const Coordinate& c, std::vector<std::vector<Piece*>>);
+	std::vector<Coordinate> getPossibleMoves(std::vector<std::vector<Piece*>>) const;
 	Piece* clone();
 	Piece* getPromotion();
 	friend void promote(Piece* newPiece, PieceType& type);
@@ -191,4 +191,5 @@ public:
 
 	Pawn& operator = (const Pawn& piece);
 };
+
 

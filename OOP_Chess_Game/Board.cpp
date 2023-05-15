@@ -39,8 +39,8 @@ Board::~Board() {
     delete _instance;
 }
 void Board::updateBoard() {
-    for (auto vpPieces : piecesOnBoard) {
-        for (auto pPiece : vpPieces) pPiece = nullptr;
+    for (auto& vpPieces : piecesOnBoard) {
+        for (auto& pPiece : vpPieces) pPiece = nullptr;
     }
     for (auto piece : piecesList) {
         Coordinate c = piece->getPosition();
@@ -55,7 +55,6 @@ void Board::resetPiecesList() {
         delete piecesList[i];
         piecesList[i] = nullptr;
     }
-    piecesList.clear();
 
     piecesList.push_back(new King(Coordinate(3, 0), Color::White, pathToString(Path::kingWhite)));
     piecesList.push_back(new Queen(Coordinate(4, 0), Color::White, pathToString(Path::queenWhite)));

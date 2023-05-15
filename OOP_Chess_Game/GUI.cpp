@@ -218,9 +218,9 @@ void GamePlayGUI::render() {
 	this->btnPromoteKnight->renderImage();
 	//possible moves
 	if (this->chosenPiece != nullptr) 
-	for (int i = 0; i < this->chosenPiece->getPossibleMoves().size(); i++) {
-		int x = this->chosenPiece->getPossibleMoves()[i].getX() * 70;
-		int y = this->chosenPiece->getPossibleMoves()[i].getY() * 70;
+	for (int i = 0; i < this->chosenPiece->getPossibleMoves(Board::piecesOnBoard).size(); i++) {
+		int x = this->chosenPiece->getPossibleMoves(Board::piecesOnBoard)[i].getX() * 70;
+		int y = this->chosenPiece->getPossibleMoves(Board::piecesOnBoard)[i].getY() * 70;
 		this->possibleMove->setRectangle({ x,y,70,70 });
 		this->possibleMove->renderImage();
 	}
