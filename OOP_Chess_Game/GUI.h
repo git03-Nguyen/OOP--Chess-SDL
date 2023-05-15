@@ -122,6 +122,7 @@ public:
 	void initPromotionButtons();	 //call when needed
 	void clearPromotionButtons();    //must call after use
 	//
+	SDL_Rect getRectOfBoard();
 	SDL_Rect getRectOfBtnSetting();
 	SDL_Rect getRectOfBtnUndo();
 	SDL_Rect getRectOfBtnRedo();
@@ -133,6 +134,7 @@ public:
 	SDL_Rect getRectOfBtnPromoteKnight();
 	//
 	void destroy();
+	//
 };
 
 // TODO: use full parameter constructor

@@ -7,7 +7,6 @@ class Board {
 private:
 	static Board* _instance;
 	SDL_Rect rect;
-	static void setStartBoard();
 public:
 	static std::vector<Piece*> piecesList;
 	static std::vector<std::vector<Piece*>> piecesOnBoard;
@@ -19,11 +18,7 @@ public:
 	static const int YBOXES = 8;
 
 	static Board* getInstance();
-
-	void setRectangle();
-	SDL_Rect getRectangle();
-	bool movePiece(Piece* piece, Coordinate& newPos); // move a piece to new position
-	static void updateBoard(Piece* piece); // update table after a move
-	static Piece* getPieceAt(const Coordinate& c); // call when want to get Piece at specific coordinate
-	static void resetPieces(); // call when reinit board
+	static void updateBoard();
+	static Piece* getPieceAt(const Coordinate& c);
+	static void resetPiecesList();
 };

@@ -119,6 +119,10 @@ void GUI::clear() { //clear
 //SDL_Rect VolumeOptionGUI::getRectOfBtnBackToMenu() {
 //	return SDL_Rect();
 //}
+
+// ------------------------------------------------------------------------------------------------------
+// GamePlayGUI
+
 GamePlayGUI::GamePlayGUI() { //LOAD ALL THE ESSENTIALS
 	SDL_RenderClear(Window::renderer);
 	this->active = true;
@@ -210,7 +214,6 @@ void GamePlayGUI::render() {
 	this->btnPromoteBishop->renderImage();
 	this->btnPromoteRook->renderImage();
 	this->btnPromoteKnight->renderImage();
-	std::cout << "done\n";
 	//possible moves
 	if (this->chosenPiece != nullptr) 
 	for (int i = 0; i < this->chosenPiece->getPossibleMoves().size(); i++) {
@@ -219,12 +222,10 @@ void GamePlayGUI::render() {
 		this->possibleMove->setRectangle({ x,y,70,70 });
 		this->possibleMove->renderImage();
 	}
-	std::cout << "done\n";
 	//pieces
 	for (int i = 0; i < this->piece.size(); i++) {
 		this->piece[i]->renderImage();
 	}
-	std::cout << "done\n";
 }
 void GamePlayGUI::initPromotionButtons() {
 	this->btnPromoteQueen->setRectangle({ 570,300,70,70 });
@@ -244,6 +245,10 @@ TypeGUI GamePlayGUI::getTypeGUI() const {
 }
 SDL_Rect GamePlayGUI::getRectOfBtnUndo() {
 	return this->btnUndo->getRectangle();
+}
+
+SDL_Rect GamePlayGUI::getRectOfBoard(){
+	return this->board->getRectangle();
 }
 
 SDL_Rect GamePlayGUI::getRectOfBtnSetting() {

@@ -28,7 +28,7 @@ GameManager::GameManager(const char* title, int xPos, int yPos, int width, int h
 	mainGui = new GamePlayGUI();
 
 	opponent = Opponent::HUMAN; // default
-	turn = 0; // start game, player1: 0; palyer2: 1
+	turn = 0; // start game, player1: 0 -> white; palyer2: 1->black
 	result = MatchResult::PLAYING; // The game is currently taking place
 	isRunning = true;
 
@@ -86,7 +86,14 @@ void GameManager::handelEvents() {
 	//}
 
 	while (SDL_PollEvent(&e)) {
-	
+		switch (e.type) {
+		case SDL_QUIT:
+			isRunning = false; break;
+		case SDL_MOUSEBUTTONDOWN:
+			Coordinate c = getClickedBox(e);
+			std::cout << c.getX() << " " << c.getY() << std::endl;
+			handleClickedPiece(e);
+		}
 	}
 
 	/*while (SDL_PollEvent(&e)) {
@@ -278,7 +285,9 @@ void GameManager::handelEvents() {
 Coordinate GameManager::getClickedBox(const SDL_Event& e) const {
 	int x = e.motion.x;
 	int y = e.motion.y;
-	SDL_Rect boardRect = board->getRectangle();
+	GamePlayGUI* gplay = dynamic_cast<GamePlayGUI*>(mainGui);
+	if (!gplay) return Coordinate(-1, -1);
+	SDL_Rect boardRect = gplay->getRectOfBoard();
 
 	if (x < boardRect.x || y < boardRect.y || x > boardRect.x + boardRect.w || y > boardRect.y + boardRect.h) return Coordinate(-1, -1);
 
@@ -301,9 +310,9 @@ MatchResult GameManager::checkMatchStatus() const {
 	return MatchResult::PLAYING;
 }
 
-// TODO: (current default, white -> turn even, black turn odd;) make it flexible; add music;
+// TODO: (current default, white -> first: turn even, black: second -> turn odd;) make it flexible; add music;
 void GameManager::handleClickedPiece(const SDL_Event& e) {
-	/*Coordinate c = getClickedBox(e);
+	Coordinate c = getClickedBox(e);
 	if (c.getX() < 0 && c.getY() < 0) return;
 
 	Piece* piece = Board::getPieceAt(c);
@@ -311,50 +320,52 @@ void GameManager::handleClickedPiece(const SDL_Event& e) {
 
 	if (piece->getColor() == Color::White && turn % 2 == 1 || piece->getColor() == Color::Black && turn % 2 == 0) return;
 
-	for (int i = 0; i < 32; i++) board->pieces[i]->setChosen(false);
+	for (int i = 0; i < 32; i++) Board::piecesList[i]->setChosen(false);
 
-	piece->setChosen(true);*/
+	piece->setChosen(true);
+	std::cout << "here" << std::endl;
+	if (piece->getType() == PieceType::Pawn) std::cout << "right" << std::endl;
 }
 
 //TODO: add music
 void GameManager::handleClickedHightlightBox(const SDL_Event& e) {
-	//std::vector<Coordinate> possibleMoves;
-	//Coordinate c = getClickedBox(e);
-	//if (c.getX() < 0 && c.getY() < 0) return;
+	std::vector<Coordinate> possibleMoves;
+	Coordinate c = getClickedBox(e);
+	if (c.getX() < 0 && c.getY() < 0) return;
 
-	//Piece* chosenPiece = nullptr;
-	//for (int i = 0; i < 32; i++) {
-	//	if (board->pieces[i]->getChosen()) {
-	//		history->setInitalState(chosenPiece);
-	//		break;
-	//	}
-	//}
+	Piece* chosenPiece = nullptr;
+	for (int i = 0; i < 32; i++) {
+		if (Board::piecesList[i]->getChosen()) {
+			history->setInitalState(chosenPiece);
+			break;
+		}
+	}
 
-	//if (!chosenPiece) return;
+	if (!chosenPiece) return;
+	possibleMoves = chosenPiece->getPossibleMoves();
 
-	//possibleMoves = chosenPiece->getPossibleMoves();
+	for (auto move : possibleMoves) {
+		if (c == move) {
+			Piece* capturedPiece = nullptr;
+			capturedPiece = chosenPiece->move(c);
+			history->setCapturedPiece(capturedPiece);
+			capturedPiece->setDead(true);
+			chosenPiece->setChosen(false);
+			break;
+		}
+	}
 
-	//for (auto move : possibleMoves) {
-	//	if (c == move) {
-	//		Piece* capturedPiece = nullptr;
-	//		capturedPiece = chosenPiece->move(c);
-	//		history->setCapturedPiece(capturedPiece);
-	//		capturedPiece->setDead(true);
-	//		chosenPiece->setChosen(false);
-	//		break;
-	//	}
-	//}
+	history->setFinalState(chosenPiece);
+	history->updateData(turn);
+	turn++;
 
-	//history->updateData(turn);
-	//turn++;
-
-	//// check promotion
+	// TODO - check promotion
 	//if (checkPromotion(chosenPiece)) {
 	//	delete gui;
 	//	gui = new PromotionNoticeGUI(chosenPiece->getId());
 	//}
 
-	//chosenPiece = nullptr;
+	chosenPiece = nullptr;
 }
 
 /*
