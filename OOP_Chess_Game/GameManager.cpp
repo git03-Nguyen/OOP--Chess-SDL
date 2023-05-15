@@ -346,12 +346,12 @@ void GameManager::handleClickedHightlightBox(const SDL_Event& e) {
 	if (!chosenPiece) return;
 	possibleMoves = chosenPiece->getPossibleMoves(Board::piecesOnBoard);
 
-	for (auto move : possibleMoves) {
+	for (auto& move : possibleMoves) {
 		if (c == move) {
 			Piece* capturedPiece = nullptr;
-			capturedPiece = chosenPiece->move(c);
-			//history->setCapturedPiece(capturedPiece);
-			//capturedPiece->setDead(true);
+			capturedPiece = chosenPiece->move(c, Board::piecesOnBoard);
+			history->setCapturedPiece(capturedPiece);
+			capturedPiece->setDead(true);
 			chosenPiece->setChosen(false);
 			break;
 		}
