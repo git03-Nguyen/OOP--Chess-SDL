@@ -225,7 +225,6 @@ void GamePlayGUI::render() {
 		this->piece[i]->renderImage();
 	}
 	std::cout << "done\n";
-	SDL_RenderPresent(Window::renderer);
 }
 void GamePlayGUI::initPromotionButtons() {
 	this->btnPromoteQueen->setRectangle({ 570,300,70,70 });

@@ -64,8 +64,7 @@ void GameManager::gameLoop(int fps) {
 
 void GameManager::render() {
 	SDL_RenderClear(Window::renderer);
-	// TODO: DON'T PASS PARAMETER
-	mainGui->render(Window::renderer);
+	mainGui->render();
 	SDL_RenderPresent(Window::renderer);
 }
 
@@ -85,6 +84,10 @@ void GameManager::handelEvents() {
 	//	}
 
 	//}
+
+	while (SDL_PollEvent(&e)) {
+	
+	}
 
 	/*while (SDL_PollEvent(&e)) {
 	//	switch (e.type) {

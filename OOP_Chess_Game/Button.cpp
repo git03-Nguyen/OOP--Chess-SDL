@@ -150,7 +150,6 @@ void Image::setRectangle(SDL_Rect rect) {
 void Image::renderImage() {
 	if (!texture || !(&rect) || !Window::renderer) std::cout << "ERROR\n";
 	SDL_RenderCopy(Window::renderer, this->texture, nullptr, &this->rect);
-	SDL_RenderPresent(Window::renderer);
 }
 void Image::destroy() {
 	//SDL_FreeSurface(this->img);

@@ -6,7 +6,7 @@ int main(int argc, char* argv[]) {
 	int errorCode = 0;
 
 	try {
-		gameManager = new GameManager("Chess", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 800, 600);
+		gameManager = new GameManager("Chess", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 1000, 600);
 		gameManager->gameLoop(60);
 	}
 	catch (std::exception e) {
