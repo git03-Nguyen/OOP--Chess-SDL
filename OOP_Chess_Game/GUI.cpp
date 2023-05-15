@@ -4,13 +4,13 @@
 
 GUI::GUI() {
 	this->active = true;
-	this->background = Image({ 0,0,1000,600 }, "..\\Assets\\chess\\back.jpg");
+	this->background = new Image({ 0,0,1000,600 }, "..\\Assets\\chess\\back.jpg");
 }
 GUI::~GUI() {
 }
 
 void GUI::renderBackground() {
-	this->background.renderImage();
+	this->background->renderImage();
 }
 bool GUI::isActive() {
 	return this->active;
@@ -122,22 +122,22 @@ void GUI::clear() { //clear
 GamePlayGUI::GamePlayGUI() { //LOAD ALL THE ESSENTIALS
 	SDL_RenderClear(Window::renderer);
 	this->active = true;
-	this->background = Image({ 0,0,1000,600 }, "..\\Assets\\chess\\back.jpg");
+	this->background = new Image({ 0,0,1000,600 }, "..\\Assets\\chess\\back.jpg");
 	this->chosenPiece = nullptr;
 	//load board image
-	this->board = Image({ 0,0,560,560 }, "..\\Assets\\chess\\ChessBoard.png");
+	this->board = new Image({ 0,0,560,560 }, "..\\Assets\\chess\\ChessBoard.png");
 	//load possible move image
-	Image possibleMove = Image({ 0,0,0,0 }, "..\\Assets\\PossibleMove.png");
+	this->possibleMove = new Image({ 0,0,0,0 }, "..\\Assets\\PossibleMove.png");
 	//buttons
-	this->btnSetting = Image({ 800,20,100,100 }, "..\\Assets\\chess\\settings.png");
-	this->btnUndo = Image({ 800,140,100,100 }, "..\\Assets\\chess\\undo.png");
-	this->btnRedo = Image({ 800,260,100,100 }, "..\\Assets\\chess\\redo.png");
-	this->btnQuit = Image({ 800,380,100,100 }, "..\\Assets\\chess\\quit.png");
+	this->btnSetting = new Image({ 800,20,100,100 }, "..\\Assets\\chess\\settings.png");
+	this->btnUndo = new Image({ 800,140,100,100 }, "..\\Assets\\chess\\undo.png");
+	this->btnRedo = new Image({ 800,260,100,100 }, "..\\Assets\\chess\\redo.png");
+	this->btnQuit = new Image({ 800,380,100,100 }, "..\\Assets\\chess\\quit.png");
 	//promotion buttons
-	this->btnPromoteQueen = Image({ 0,0,0,0 }, "..\\Assets\\chess\\ProQueen.png");
-	this->btnPromoteBishop = Image({ 0,0,0,0 }, "..\\Assets\\chess\\ProBishop.png");
-	this->btnPromoteRook = Image({ 0,0,0,0 }, "..\\Assets\\chess\\ProRook.png");
-	this->btnPromoteKnight = Image({ 0,0,0,0 }, "..\\Assets\\chess\\ProKnight.png");
+	this->btnPromoteQueen = new Image({ 0,0,0,0 }, "..\\Assets\\chess\\ProQueen.png");
+	this->btnPromoteBishop = new Image({ 0,0,0,0 }, "..\\Assets\\chess\\ProBishop.png");
+	this->btnPromoteRook = new Image({ 0,0,0,0 }, "..\\Assets\\chess\\ProRook.png");
+	this->btnPromoteKnight =new Image({ 0,0,0,0 }, "..\\Assets\\chess\\ProKnight.png");
 	//LOAD PIECES IMAGEs
 	for (int i = 0; i < Board::piecesList.size(); i++) {
 		//get name
@@ -164,7 +164,7 @@ GamePlayGUI::GamePlayGUI() { //LOAD ALL THE ESSENTIALS
 		}
 		int x = Board::piecesList[i]->getPosition().getX() * 70;
 		int y = Board::piecesList[i]->getPosition().getY() * 70;
-		Image temp = Image({ x,y,70,70 }, tempstring);
+		Image* temp = new Image({ x,y,70,70 }, tempstring);
 		this->piece.push_back(temp);
 	}
 }
@@ -185,106 +185,137 @@ void GamePlayGUI::set() {
 	//set coor of pieces
 	for (int i = 0; i < Board::piecesList.size(); i++) {
 		if (Board::piecesList[i]->getDead()) {
-			this->piece[i].setRectangle({ 0,0,0,0 });
+			this->piece[i]->setRectangle({ 0,0,0,0 });
 		}
 		else {
 			int x = Board::piecesList[i]->getPosition().getX() * 70;
 			int y = Board::piecesList[i]->getPosition().getY() * 70;
-			this->piece[i].setRectangle({ x,y,70,70 });
+			this->piece[i]->setRectangle({ x,y,70,70 });
 		}
 	}
 }
 
 void GamePlayGUI::render() {
 	//background
-	this->background.renderImage();
+	this->background->renderImage();
 	//board
-	this->board.renderImage();
+	this->board->renderImage();
 	//BUTTONS
-	this->btnUndo.renderImage();
-	this->btnRedo.renderImage();
-	this->btnSetting.renderImage();
-	this->btnQuit.renderImage();
+	this->btnUndo->renderImage();
+	this->btnRedo->renderImage();
+	this->btnSetting->renderImage();
+	this->btnQuit->renderImage();
 	//
-	this->btnPromoteQueen.renderImage();
-	this->btnPromoteBishop.renderImage();
-	this->btnPromoteRook.renderImage();
-	this->btnPromoteKnight.renderImage();
+	this->btnPromoteQueen->renderImage();
+	this->btnPromoteBishop->renderImage();
+	this->btnPromoteRook->renderImage();
+	this->btnPromoteKnight->renderImage();
 	std::cout << "done\n";
 	//possible moves
 	if (this->chosenPiece != nullptr) 
 	for (int i = 0; i < this->chosenPiece->getPossibleMoves().size(); i++) {
 		int x = this->chosenPiece->getPossibleMoves()[i].getX() * 70;
 		int y = this->chosenPiece->getPossibleMoves()[i].getY() * 70;
-		this->possibleMove.setRectangle({ x,y,70,70 });
-		this->possibleMove.renderImage();
+		this->possibleMove->setRectangle({ x,y,70,70 });
+		this->possibleMove->renderImage();
 	}
 	std::cout << "done\n";
 	//pieces
 	for (int i = 0; i < this->piece.size(); i++) {
-		this->piece[i].renderImage();
+		this->piece[i]->renderImage();
 	}
 	std::cout << "done\n";
 	SDL_RenderPresent(Window::renderer);
 }
 void GamePlayGUI::initPromotionButtons() {
-	this->btnPromoteQueen.setRectangle({ 570,300,70,70 });
-	this->btnPromoteBishop.setRectangle({ 570,380,70,70 });
-	this->btnPromoteRook.setRectangle({ 650,300,70,70 });
-	this->btnPromoteKnight.setRectangle({ 650,380,70,70 });
+	this->btnPromoteQueen->setRectangle({ 570,300,70,70 });
+	this->btnPromoteBishop->setRectangle({ 570,380,70,70 });
+	this->btnPromoteRook->setRectangle({ 650,300,70,70 });
+	this->btnPromoteKnight->setRectangle({ 650,380,70,70 });
 }	 //call when needed
 void GamePlayGUI::clearPromotionButtons() {
-	this->btnPromoteQueen.setRectangle({ 0,0,0,0 });
-	this->btnPromoteBishop.setRectangle({ 0,0,0,0 });
-	this->btnPromoteRook.setRectangle({ 0,0,0,0 });
-	this->btnPromoteKnight.setRectangle({ 0,0,0,0 });
+	this->btnPromoteQueen->setRectangle({ 0,0,0,0 });
+	this->btnPromoteBishop->setRectangle({ 0,0,0,0 });
+	this->btnPromoteRook->setRectangle({ 0,0,0,0 });
+	this->btnPromoteKnight->setRectangle({ 0,0,0,0 });
 }   //must call after use
 //get rect
 TypeGUI GamePlayGUI::getTypeGUI() const {
 	return TypeGUI::GAME_PLAY;
 }
 SDL_Rect GamePlayGUI::getRectOfBtnUndo() {
-	return this->btnUndo.getRectangle();
+	return this->btnUndo->getRectangle();
 }
 
 SDL_Rect GamePlayGUI::getRectOfBtnSetting() {
-	return this->btnSetting.getRectangle();
+	return this->btnSetting->getRectangle();
 }
 SDL_Rect GamePlayGUI::getRectOfBtnRedo() {
-	return this->btnRedo.getRectangle();
+	return this->btnRedo->getRectangle();
 }
 SDL_Rect GamePlayGUI::getRectOfBtnQuit() {
-	return this->btnQuit.getRectangle();
+	return this->btnQuit->getRectangle();
 }
 SDL_Rect GamePlayGUI::getRectOfBtnPromoteQueen() {
-	return this->btnPromoteQueen.getRectangle();
+	return this->btnPromoteQueen->getRectangle();
 }
 SDL_Rect GamePlayGUI::getRectOfBtnPromoteRook() {
-	return this->btnPromoteRook.getRectangle();
+	return this->btnPromoteRook->getRectangle();
 }
 SDL_Rect GamePlayGUI::getRectOfBtnPromoteBishop() {
-	return this->btnPromoteBishop.getRectangle();
+	return this->btnPromoteBishop->getRectangle();
 }
 SDL_Rect GamePlayGUI::getRectOfBtnPromoteKnight() {
-	return this->btnPromoteKnight.getRectangle();
+	return this->btnPromoteKnight->getRectangle();
 }
 void GamePlayGUI::destroy() {
 	for (int i = 0; i < this->piece.size(); i++) {
-		this->piece[i].destroy();
+		this->piece[i]->destroy();
+		delete this->piece[i];
+		this->piece[i] = nullptr;
 	}
 	this->piece.clear();
 	//
-	this->btnPromoteQueen.destroy();
-	this->btnPromoteRook.destroy();
-	this->btnPromoteBishop.destroy();
-	this->btnPromoteKnight.destroy();
-	this->btnQuit.destroy();
-	this->btnUndo.destroy();
-	this->btnRedo.destroy();
-	this->btnSetting.destroy();
-	this->possibleMove.destroy();
+	this->btnPromoteQueen->destroy();
+	delete this->btnPromoteQueen;
+	this->btnPromoteQueen = nullptr;
 	//
-	this->board.destroy();
+	this->btnPromoteRook->destroy();
+	delete this->btnPromoteRook;
+	this->btnPromoteRook = nullptr;
+	//
+	this->btnPromoteBishop->destroy();
+	delete this->btnPromoteBishop;
+	this->btnPromoteBishop= nullptr;
+	//
+	this->btnPromoteKnight->destroy();
+	delete this->btnPromoteKnight;
+	this->btnPromoteKnight = nullptr;
+	//
+	this->btnQuit->destroy();
+	delete this->btnQuit;
+	this->btnQuit = nullptr;
+	//
+	this->btnUndo->destroy();
+	delete this->btnUndo;
+	this->btnUndo = nullptr;
+	//
+	this->btnRedo->destroy();
+	delete this->btnRedo;
+	this->btnRedo = nullptr;
+	//
+	this->btnSetting->destroy();
+	delete this->btnSetting;
+	this->btnSetting = nullptr;
+	//
+	this->possibleMove->destroy();
+	delete this->possibleMove;
+	this->possibleMove = nullptr;
+	//
+	this->board->destroy();
+	delete this->board;
+	this->board = nullptr;
+	//
 }
 //MatchResultGUI::MatchResultGUI() {
 //}
