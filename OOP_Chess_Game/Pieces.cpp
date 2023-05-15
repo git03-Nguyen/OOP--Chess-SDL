@@ -889,64 +889,88 @@ Piece* Pawn::move(const Coordinate& c, std::vector<std::vector<Piece*>> board) {
 std::vector<Coordinate> Pawn::getPossibleMoves(std::vector<std::vector<Piece*>> board) const {
 	std::vector<Coordinate> moves;
 	Coordinate tmp(this->getPosition().getX(), this->getPosition().getY());
+	int X = tmp.getX();
+	int Y = tmp.getY();
 
 	if (this->getColor() == Color::White) {
+		if (Y == _BOARD_WIDTH) {
+			return moves;
+		}
 		if (this->firstMove) {
-			moves.push_back(Coordinate(tmp.getX(), tmp.getY() + 1));
-			moves.push_back(Coordinate(tmp.getX(), tmp.getY() + 2));
+			moves.push_back(Coordinate(X, Y + 1));
+			moves.push_back(Coordinate(X, Y + 2));
 
-			if (tmp.getX() < _BOARD_HEIGHT && tmp.getX() > 0 && tmp.getY() < _BOARD_WIDTH) {
-				if (board[tmp.getX() + 1][tmp.getY() + 1] != nullptr && board[tmp.getX() + 1][tmp.getY() + 1]->getColor() == Color::Black) {
-					moves.push_back(Coordinate(tmp.getX() + 1, tmp.getY() + 1));
+			if (Y < _BOARD_WIDTH) {
+				if (X < _BOARD_HEIGHT) {
+					if (board[X + 1][Y + 1] != nullptr && board[X + 1][Y + 1]->getColor() == Color::Black) {
+						moves.push_back(Coordinate(X + 1, Y + 1));
+					}
 				}
-				if (board[tmp.getX() - 1][tmp.getY() + 1] != nullptr && board[tmp.getX() - 1][tmp.getY() + 1]->getColor() == Color::Black) {
-					moves.push_back(Coordinate(tmp.getX() - 1, tmp.getY() + 1));
-				}					
+				if (X > 0) {
+					if (board[X - 1][Y + 1] != nullptr && board[X - 1][Y + 1]->getColor() == Color::Black) {
+						moves.push_back(Coordinate(X - 1, Y + 1));
+					}
+				}			
 			}
 		}
 		else {
-			if (tmp.getY() <= _BOARD_WIDTH) {
-				if (!board[tmp.getX()][tmp.getY() + 1]) {
-					moves.push_back(Coordinate(tmp.getX(), tmp.getY() + 1));
+			if (Y < _BOARD_WIDTH) {
+				if (!board[X][Y + 1]) {
+					moves.push_back(Coordinate(X, Y + 1));
 				}
 			}
-			if (tmp.getX() < _BOARD_HEIGHT && tmp.getX() > 0 && tmp.getY() < _BOARD_WIDTH) {
-				if (board[tmp.getX() + 1][tmp.getY() + 1] != nullptr && board[tmp.getX() + 1][tmp.getY() + 1]->getColor() == Color::Black) {
-					moves.push_back(Coordinate(tmp.getX() + 1, tmp.getY() + 1));
+			if (Y <= _BOARD_WIDTH) {
+				if (X < _BOARD_HEIGHT) {
+					if (board[X + 1][Y + 1] != nullptr && board[X + 1][Y + 1]->getColor() == Color::Black) {
+						moves.push_back(Coordinate(X + 1, Y + 1));
+					}
 				}
-				if (board[tmp.getX() - 1][tmp.getY() + 1] != nullptr && board[tmp.getX() - 1][tmp.getY() + 1]->getColor() == Color::Black) {
-					moves.push_back(Coordinate(tmp.getX() - 1, tmp.getY() + 1));
+				if (X > 0) {
+					if (board[X - 1][Y + 1] != nullptr && board[X - 1][Y + 1]->getColor() == Color::Black) {
+						moves.push_back(Coordinate(X - 1, Y + 1));
+					}
 				}
 			}
 		}
 	}
 	else if (this->getColor() == Color::Black) {
+		if (Y == 0) {
+			return moves;
+		}
 		if (this->firstMove) {
-			moves.push_back(Coordinate(tmp.getX(), tmp.getY() - 1));	
-			moves.push_back(Coordinate(tmp.getX(), tmp.getY() - 2));
+			moves.push_back(Coordinate(X, Y - 1));	
+			moves.push_back(Coordinate(X, Y - 2));
 
-			if (tmp.getX() > 0 && tmp.getX() < _BOARD_HEIGHT && tmp.getY() > 0) {
-				if (board[tmp.getX() + 1][tmp.getY() - 1] != nullptr && board[tmp.getX() + 1][tmp.getY() - 1]->getColor() == Color::White) {
-					moves.push_back(Coordinate(tmp.getX() + 1, tmp.getY() - 1));
+			if (Y > 0) {
+				if (X < _BOARD_HEIGHT) {
+					if (board[X + 1][Y - 1] != nullptr && board[X + 1][Y - 1]->getColor() == Color::White) {
+						moves.push_back(Coordinate(X + 1, Y - 1));
+					}
 				}
-				if (board[tmp.getX() - 1][tmp.getY() - 1] != nullptr && board[tmp.getX() - 1][tmp.getY() - 1]->getColor() == Color::White) {
-					moves.push_back(Coordinate(tmp.getX() - 1, tmp.getY() - 1));
+				if (X > 0) {
+					if (board[X - 1][Y - 1] != nullptr && board[X - 1][Y - 1]->getColor() == Color::White) {
+						moves.push_back(Coordinate(X - 1, Y - 1));
+					}
 				}
 			}
 		}
 		else {
-			if (tmp.getY() >= 0) {
-				if (!board[tmp.getX()][tmp.getY() - 1]) {
-					moves.push_back(Coordinate(tmp.getX(), tmp.getY() - 1));
+			if (Y > 0) {
+				if (!board[X][Y - 1]) {
+					moves.push_back(Coordinate(X, Y - 1));
 				}
 			}
 
-			if (tmp.getX() < _BOARD_HEIGHT && tmp.getX() > 0 && tmp.getY() > 0) {
-				if (board[tmp.getX() + 1][tmp.getY() - 1] != nullptr && board[tmp.getX() + 1][tmp.getY() - 1]->getColor() == Color::White) {
-					moves.push_back(Coordinate(tmp.getX() + 1, tmp.getY() - 1));
+			if (Y > 0) {
+				if (X < _BOARD_HEIGHT) {
+					if (board[X + 1][Y - 1] != nullptr && board[X + 1][Y - 1]->getColor() == Color::White) {
+						moves.push_back(Coordinate(X + 1, Y - 1));
+					}
 				}
-				if (board[tmp.getX() - 1][tmp.getY() - 1] != nullptr && board[tmp.getX() - 1][tmp.getY() - 1]->getColor() == Color::White) {
-					moves.push_back(Coordinate(tmp.getX() - 1, tmp.getY() - 1));
+				if (X > 0) {
+					if (board[X - 1][Y - 1] != nullptr && board[X - 1][Y - 1]->getColor() == Color::White) {
+						moves.push_back(Coordinate(X - 1, Y - 1));
+					}
 				}
 			}
 		}
