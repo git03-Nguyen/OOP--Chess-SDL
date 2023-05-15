@@ -67,7 +67,7 @@ public:
 	Piece(const Coordinate& position, Color color, const std::string& imagePath);
 	virtual ~Piece();
 
-	void setPosition(Coordinate position);
+	void setPosition(Coordinate postion);
 	void setColor(Color color);
 	void setDead(bool dead);
 	void setChosen(bool chosen);
@@ -181,15 +181,14 @@ public:
 
 	Piece* getPromotion() const;
 	bool getFirstMove();
-	void setFirstMove();
+	void setFirstMove(bool firstMove);
 	Piece* move(const Coordinate& c, std::vector<std::vector<Piece*>>);
 	std::vector<Coordinate> getPossibleMoves(std::vector<std::vector<Piece*>>) const;
 	Piece* clone();
 	Piece* getPromotion();
 	friend void promote(Piece* newPiece, PieceType& type);
-	void enPassant(Pawn& enemy);
+	void enPassant(std::vector<std::vector<Piece*>>);
 
 	Pawn& operator = (const Pawn& piece);
 };
-
 
