@@ -829,7 +829,12 @@ Knight& Knight::operator=(const Knight& piece) {
 //---------------------------------------------------------------------------
 Pawn::Pawn() {
 	promotion = nullptr;
-	firstMove = true;
+	if (this->getColor() == Color::White) {	
+		firstMove = true;
+	}
+	else {
+		firstMove = false;
+	}
 }
 Pawn::Pawn(const Pawn& pawn) : Piece(pawn) {
 	if (this->color == Color::White) {
@@ -854,7 +859,12 @@ Pawn::Pawn(const Coordinate& position, Color color, const std::string& pathImage
 	this->dead = false;
 	this->chosen = false;
 	promotion = nullptr;
-	firstMove = true;
+	if (this->getColor() == Color::White) {	
+		firstMove = true;
+	}
+	else {
+		firstMove = false;
+	}
 }
 Pawn::~Pawn() {
 	delete promotion;
@@ -906,15 +916,9 @@ std::vector<Coordinate> Pawn::getPossibleMoves(std::vector<std::vector<Piece*>> 
 		}
 	}
 	else if (this->getColor() == Color::Black) {
-		if (this->firstMove) {
-			moves.push_back(Coordinate(tmp.getX(), tmp.getY() - 1));
-			moves.push_back(Coordinate(tmp.getX(), tmp.getY() - 2));
-		}
-		else {
-			if (tmp.getY() >= 0) {
-				if (!board[tmp.getX()][tmp.getY() - 1]) {
-					moves.push_back(Coordinate(tmp.getX(), tmp.getY() - 1));
-				}
+		if (tmp.getY() >= 0) {
+			if (!board[tmp.getX()][tmp.getY() - 1]) {
+				moves.push_back(Coordinate(tmp.getX(), tmp.getY() - 1));
 			}
 		}
 	}
