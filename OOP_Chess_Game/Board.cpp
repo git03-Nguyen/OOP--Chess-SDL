@@ -63,28 +63,46 @@ void Board::resetPiecesList() {
     }
 
     piecesList.push_back(new King(Coordinate(3, 0), Color::White, pathToString(Path::kingWhite)));
+    piecesList[0]->setID(0);
     piecesList.push_back(new Queen(Coordinate(4, 0), Color::White, pathToString(Path::queenWhite)));
+    piecesList[1]->setID(1);
     piecesList.push_back(new Bishop(Coordinate(2, 0), Color::White, pathToString(Path::bishopWhite)));
+    piecesList[2]->setID(2);
     piecesList.push_back(new Bishop(Coordinate(5, 0), Color::White, pathToString(Path::bishopWhite)));
+    piecesList[3]->setID(3);
     piecesList.push_back(new Knight(Coordinate(1, 0), Color::White, pathToString(Path::knightWhite)));
+    piecesList[4]->setID(4);
     piecesList.push_back(new Knight(Coordinate(6, 0), Color::White, pathToString(Path::knightWhite)));
+    piecesList[5]->setID(5);
     piecesList.push_back(new Rook(Coordinate(0, 0), Color::White, pathToString(Path::rookWhite)));
+    piecesList[6]->setID(6);
     piecesList.push_back(new Rook(Coordinate(7, 0), Color::White, pathToString(Path::rookWhite)));
+    piecesList[7]->setID(7);
 
     for (int i = 0; i < 8; i++) {
         piecesList.push_back(new Pawn(Coordinate(i, 1), Color::White, pathToString(Path::pawnWhite)));
+        piecesList[i + 8]->setID(i + 8);
     }
 
     piecesList.push_back(new King(Coordinate(3, 7), Color::Black, pathToString(Path::kingBlack)));
+    piecesList[16]->setID(16);
     piecesList.push_back(new Queen(Coordinate(4, 7), Color::Black, pathToString(Path::queenBlack)));
+    piecesList[17]->setID(17);
     piecesList.push_back(new Bishop(Coordinate(2, 7), Color::Black, pathToString(Path::bishopBlack)));
+    piecesList[18]->setID(18);
     piecesList.push_back(new Bishop(Coordinate(5, 7), Color::Black, pathToString(Path::bishopBlack)));
+    piecesList[19]->setID(19);
     piecesList.push_back(new Knight(Coordinate(1, 7), Color::Black, pathToString(Path::knightBlack)));
+    piecesList[16]->setID(20);
     piecesList.push_back(new Knight(Coordinate(6, 7), Color::Black, pathToString(Path::knightBlack)));
+    piecesList[16]->setID(21);
     piecesList.push_back(new Rook(Coordinate(0, 7), Color::Black, pathToString(Path::rookBlack)));
+    piecesList[16]->setID(22);
     piecesList.push_back(new Rook(Coordinate(7, 7), Color::Black, pathToString(Path::rookBlack)));
+    piecesList[16]->setID(23);
 
     for (int i = 0; i < 8; i++) {
         piecesList.push_back(new Pawn(Coordinate(i, 6), Color::Black, pathToString(Path::pawnBlack)));
+        piecesList[i + 24]->setID(i + 24);
     }
 }

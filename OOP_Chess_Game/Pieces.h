@@ -61,6 +61,7 @@ protected:
 	std::string imagePath;
 	SDL_Texture* texture;
 	PieceType type;
+	int id;
 public:
 	std::vector<int> tableMove;
 	Piece();
@@ -72,10 +73,12 @@ public:
 	void setColor(Color color);
 	void setDead(bool dead);
 	void setChosen(bool chosen);
+	void setID(int id);
 	Coordinate getPosition() const;
 	Color getColor() const;
 	bool getDead() const;
 	bool getChosen() const;
+	int getID();
 	PieceType getType() const;
 	SDL_Texture* getTexture();
 
