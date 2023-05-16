@@ -90,10 +90,9 @@ void GameManager::handelEvents() {
 		case SDL_QUIT:
 			isRunning = false; break;
 		case SDL_MOUSEBUTTONDOWN:
-			Coordinate c = getClickedBox(e);
-			std::cout << c.getX() << " " << c.getY() << std::endl;
 			handleClickedPiece(e);
 			handleClickedHightlightBox(e);
+			
 		}
 	}
 
