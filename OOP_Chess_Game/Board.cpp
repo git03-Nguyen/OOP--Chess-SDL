@@ -32,8 +32,10 @@ Board::~Board() {
     }
     piecesOnBoard.clear();
     for (int i = 0; i < piecesList.size(); i++) {
-        delete piecesList[i];
-        piecesList[i] = nullptr;
+        if (piecesList[i]) {
+            delete piecesList[i];
+            piecesList[i] = nullptr;
+        }   
     }
     piecesList.clear();
     delete _instance;
@@ -53,8 +55,11 @@ Piece* Board::getPieceAt(const Coordinate& c) {
 }
 void Board::resetPiecesList() {
     for (int i = 0; i < piecesList.size(); i++) {
-        delete piecesList[i];
-        piecesList[i] = nullptr;
+        if (piecesList[i]) {
+            delete piecesList[i];
+            piecesList[i] = nullptr;
+        }
+  
     }
 
     piecesList.push_back(new King(Coordinate(3, 0), Color::White, pathToString(Path::kingWhite)));

@@ -8,6 +8,7 @@ Piece::Piece() {
 	imagePath = "";
 	texture = nullptr;
 	type = {};
+	tableMove = {};
 }
 Piece::Piece(const Piece& pieces) {
 	this->position = pieces.position;
@@ -17,7 +18,6 @@ Piece::Piece(const Piece& pieces) {
 	this->imagePath = pieces.imagePath;
 	this->texture = pieces.texture;
 	this->type = pieces.type;
-	this->tableMove = pieces.tableMove;
 }
 Piece::Piece(const Coordinate& position, Color color, const std::string& imagePath) {
 	this->position = position;
@@ -488,20 +488,6 @@ std::vector<Coordinate> Bishop::getPossibleMoves(std::vector<std::vector<Piece*>
 		}
 		else { break; }
 	}
-	int X = tmp.getX() + 1;
-	int Y = tmp.getY() + 1;
-	while (X <= _BOARD_HEIGHT && Y <= _BOARD_WIDTH) {
-		if (!board[X][Y]) {
-			moves.push_back(Coordinate(X, Y));
-			X++;
-			Y++;
-		}
-		else if (this->getColor() != board[X][Y]->getColor()) {
-			moves.push_back(Coordinate(X, Y));
-			break;
-		}
-		else { break; }
-	}
 
 	//x - 1, y - 1
 	X = tmp.getX() - 1;
@@ -843,12 +829,7 @@ Knight& Knight::operator=(const Knight& piece) {
 //---------------------------------------------------------------------------
 Pawn::Pawn() {
 	promotion = nullptr;
-	if (this->getColor() == Color::White) {	
-		firstMove = true;
-	}
-	else {
-		firstMove = false;
-	}
+	firstMove = true;
 }
 Pawn::Pawn(const Pawn& pawn) : Piece(pawn) {
 	if (this->color == Color::White) {
@@ -873,12 +854,7 @@ Pawn::Pawn(const Coordinate& position, Color color, const std::string& pathImage
 	this->dead = false;
 	this->chosen = false;
 	promotion = nullptr;
-	if (this->getColor() == Color::White) {	
-		firstMove = true;
-	}
-	else {
-		firstMove = false;
-	}
+	firstMove = true;
 }
 Pawn::~Pawn() {
 	delete promotion;
@@ -890,54 +866,244 @@ Piece* Pawn::getPromotion() const {
 bool Pawn::getFirstMove() {
 	return this->firstMove;
 }
-void Pawn::setFirstMove() {
-	firstMove = !firstMove;
+void Pawn::setFirstMove(bool firstMove) {
+	this->firstMove = firstMove;
+}
+bool Piece::canEnPassant(std::vector<std::vector<Piece*>> board) {
+	if (!this) {
+		return false;
+	}
+	if (this->getType() != PieceType::Pawn) {
+		return false;
+	}
+	Coordinate tmp = this->getPosition();
+	int X = tmp.getX();
+	int Y = tmp.getY();
+
+	if (this->getColor() == Color::White && Y == 3 && this->tableMove[this->tableMove.size() - 1] == 1) {
+		if (X > 0) {
+			if (board[X - 1][Y] != nullptr && board[X - 1][Y]->getColor() == Color::Black && !board[X][Y - 1]) {
+				return true;
+			}
+		}
+		if (X < _BOARD_HEIGHT) {
+			if (board[X + 1][Y] != nullptr && board[X + 1][Y]->getColor() == Color::Black && !board[X][Y - 1]) {
+				return true;
+			}
+		}
+	}
+	if (this->getColor() == Color::Black && Y == 4 && this->tableMove[this->tableMove.size() - 1] == 1) {
+		if (X > 0) {
+			if (board[X - 1][Y] != nullptr && board[X - 1][Y]->getColor() == Color::White && !board[X][Y - 1]) {
+				return true;
+			}
+		}
+		if (X < _BOARD_HEIGHT) {
+			if (board[X + 1][Y] != nullptr && board[X + 1][Y]->getColor() == Color::White && !board[X][Y - 1]) {
+				return true;
+			}
+		}
+	}
+	return false;
 }
 
 Piece* Pawn::move(const Coordinate& c, std::vector<std::vector<Piece*>> board) {
-	if (!board[c.getX()][c.getY()]) {
-		this->setPosition(c);
-	}
-	else {
-		if (this->getColor() != board[c.getX()][c.getY()]->getColor()) {
+	if (this->getFirstMove()) {
+		if (!board[c.getX()][c.getY()]) {
 			this->setPosition(c);
+			tableMove.push_back(1);
+			this->setFirstMove(false);
+
+			return nullptr;
+		}
+		if (board[c.getX()][c.getY()] != nullptr && this->getColor() != board[c.getX()][c.getY()]->getColor()) {
 			board[c.getX()][c.getY()]->setDead(true);
+			this->setPosition(c);
+			tableMove.push_back(1);
+			this->setFirstMove(false);
+
+			return board[c.getX()][c.getY()];
 		}
 	}
+	Coordinate tmp = this->getPosition();
+	if (this->getColor() == Color::White) {
+		if (tmp.getX() > 0 && tmp.getY() == 4 && tmp.getX() - 1 == c.getX() && c.getY() == 5) {
+			if (board[tmp.getX() - 1][tmp.getY()] != nullptr && board[tmp.getX() - 1][tmp.getY()]->getColor() == Color::Black
+				&& board[tmp.getX() - 1][tmp.getY()]->canEnPassant(board)) {
+				this->tableMove.push_back(this->tableMove[this->tableMove.size() - 1] + 1);
+				board[tmp.getX() - 1][tmp.getY()]->setDead(true);
+				this->setPosition(c);
 
-	return this;
+				return board[tmp.getX() - 1][tmp.getY()];
+			}
+		}
+		if (tmp.getX() < _BOARD_HEIGHT && tmp.getY() == 4 && tmp.getX() + 1 == c.getX() && c.getY() == 5) {
+			if (board[tmp.getX() + 1][tmp.getY()] != nullptr && board[tmp.getX() + 1][tmp.getY()]->getColor() == Color::Black 
+				&& board[tmp.getX() + 1][tmp.getY()]->canEnPassant(board)) {
+				this->tableMove.push_back(this->tableMove[this->tableMove.size() - 1] + 1);
+				board[tmp.getX() + 1][tmp.getY()]->setDead(true);
+				this->setPosition(c);
+
+				return board[tmp.getX() + 1][tmp.getY()];
+			}
+		}
+	}
+	if (this->getColor() == Color::Black) {
+		if (tmp.getX() > 0 && tmp.getY() == 3 && tmp.getX() - 1 == c.getX() && c.getY() == 2) {
+			if (board[tmp.getX() - 1][tmp.getY()] != nullptr && board[tmp.getX() - 1][tmp.getY()]->getColor() == Color::White 
+				&& board[tmp.getX() - 1][tmp.getY()]->canEnPassant(board)) {
+				this->tableMove.push_back(this->tableMove[this->tableMove.size() - 1] + 1);
+				board[tmp.getX() - 1][tmp.getY()]->setDead(true);
+				this->setPosition(c);
+
+				return board[tmp.getX() - 1][tmp.getY()];
+			}
+		}
+		if (tmp.getX() < _BOARD_HEIGHT && tmp.getY() == 3 && tmp.getX() + 1 == c.getX() && c.getY() == 2) {
+			if (board[tmp.getX() + 1][tmp.getY()] != nullptr && board[tmp.getX() + 1][tmp.getY()]->getColor() == Color::White 
+				&& board[tmp.getX() + 1][tmp.getY()]->canEnPassant(board)) {
+				this->tableMove.push_back(this->tableMove[this->tableMove.size() - 1] + 1);
+				board[tmp.getX() + 1][tmp.getY()]->setDead(true);
+				this->setPosition(c);
+
+				return board[tmp.getX() + 1][tmp.getY()];
+			}
+		}
+	}
+	if (!board[c.getX()][c.getY()]) {
+		this->setPosition(c);
+		tableMove.push_back(tableMove[tableMove.size() - 1] + 1);
+
+		return nullptr;
+	}
+	if (this->getColor() != board[c.getX()][c.getY()]->getColor()) {
+		board[c.getX()][c.getY()]->setDead(true);
+		this->tableMove.push_back(this->tableMove[this->tableMove.size() - 1] + 1);
+		this->setPosition(c);
+
+		return board[c.getX()][c.getY()];
+	}
+	return nullptr;
 }
 std::vector<Coordinate> Pawn::getPossibleMoves(std::vector<std::vector<Piece*>> board) const {
 	std::vector<Coordinate> moves;
 	Coordinate tmp(this->getPosition().getX(), this->getPosition().getY());
+	int X = tmp.getX();
+	int Y = tmp.getY();
 
 	if (this->getColor() == Color::White) {
+		if (Y == _BOARD_WIDTH) {
+			return moves;
+		}
 		if (this->firstMove) {
-			moves.push_back(Coordinate(tmp.getX(), tmp.getY() + 1));
-			moves.push_back(Coordinate(tmp.getX(), tmp.getY() + 2));
+			if (!board[X][Y + 1]) {
+				moves.push_back(Coordinate(X, Y + 1));
+			}
+			if (!board[X][Y + 2] && !board[X][Y + 1]) {
+				moves.push_back(Coordinate(X, Y + 2));
+			}
 
-			/*tmp = Coordinate(this->getPosition().getX() - 1, this->getPosition().getY() + 1);
-			moves.push_back(tmp);
-			tmp = Coordinate(this->getPosition().getX() + 1, this->getPosition().getY() + 1);
-			moves.push_back(tmp);*/
+			if (Y < _BOARD_WIDTH) {
+				if (X < _BOARD_HEIGHT) {
+					if (board[X + 1][Y + 1] != nullptr && board[X + 1][Y + 1]->getColor() == Color::Black) {
+						moves.push_back(Coordinate(X + 1, Y + 1));
+					}
+				}
+				if (X > 0) {
+					if (board[X - 1][Y + 1] != nullptr && board[X - 1][Y + 1]->getColor() == Color::Black) {
+						moves.push_back(Coordinate(X - 1, Y + 1));
+					}
+				}			
+			}
 		}
 		else {
-			if (tmp.getY() <= _BOARD_WIDTH) {
-				if (!board[tmp.getX()][tmp.getY() + 1]) {
-					moves.push_back(Coordinate(tmp.getX(), tmp.getY() + 1));
+			if (Y < _BOARD_WIDTH) {
+				if (!board[X][Y + 1]) {
+					moves.push_back(Coordinate(X, Y + 1));
+				}
+			}
+			if (Y < _BOARD_WIDTH) {
+				if (X < _BOARD_HEIGHT) {
+					if (board[X + 1][Y + 1] != nullptr && board[X + 1][Y + 1]->getColor() == Color::Black) {
+						moves.push_back(Coordinate(X + 1, Y + 1));
+					}
+				}
+				if (X > 0) {
+					if (board[X - 1][Y + 1] != nullptr && board[X - 1][Y + 1]->getColor() == Color::Black) {
+						moves.push_back(Coordinate(X - 1, Y + 1));
+					}
+				}
+			}
+			//en-passant
+			if (Y == 4) {
+				if (X > 0) {
+					if (board[X - 1][Y] != nullptr && board[X - 1][Y]->getColor() == Color::Black && board[X - 1][Y]->canEnPassant(board)) {
+						moves.push_back(Coordinate(X - 1, Y + 1));
+					}
+				}
+				if (X < _BOARD_HEIGHT) {
+					if (board[X + 1][Y] != nullptr && board[X + 1][Y]->getColor() == Color::Black && board[X + 1][Y]->canEnPassant(board)) {
+						moves.push_back(Coordinate(X + 1, Y + 1));
+					}
 				}
 			}
 		}
 	}
 	else if (this->getColor() == Color::Black) {
+		if (Y == 0) {
+			return moves;
+		}
 		if (this->firstMove) {
-			moves.push_back(Coordinate(tmp.getX(), tmp.getY() - 1));	
-			moves.push_back(Coordinate(tmp.getX(), tmp.getY() - 2));
+			if (!board[X][Y - 1]) {
+				moves.push_back(Coordinate(X, Y - 1));
+			}
+			if (!board[X][Y - 2] && !board[X][Y - 1]) {
+				moves.push_back(Coordinate(X, Y - 2));
+			}
+
+			if (Y > 0) {
+				if (X < _BOARD_HEIGHT) {
+					if (board[X + 1][Y - 1] != nullptr && board[X + 1][Y - 1]->getColor() == Color::White) {
+						moves.push_back(Coordinate(X + 1, Y - 1));
+					}
+				}
+				if (X > 0) {
+					if (board[X - 1][Y - 1] != nullptr && board[X - 1][Y - 1]->getColor() == Color::White) {
+						moves.push_back(Coordinate(X - 1, Y - 1));
+					}
+				}
+			}
 		}
 		else {
-			if (tmp.getY() >= 0) {
-				if (!board[tmp.getX()][tmp.getY() - 1]) {
-					moves.push_back(Coordinate(tmp.getX(), tmp.getY() - 1));
+			if (Y > 0) {
+				if (!board[X][Y - 1]) {
+					moves.push_back(Coordinate(X, Y - 1));
+				}
+			}
+
+			if (Y > 0) {
+				if (X < _BOARD_HEIGHT) {
+					if (board[X + 1][Y - 1] != nullptr && board[X + 1][Y - 1]->getColor() == Color::White) {
+						moves.push_back(Coordinate(X + 1, Y - 1));
+					}
+				}
+				if (X > 0) {
+					if (board[X - 1][Y - 1] != nullptr && board[X - 1][Y - 1]->getColor() == Color::White) {
+						moves.push_back(Coordinate(X - 1, Y - 1));
+					}
+				}
+			}
+			//en-passant
+			if (Y == 3) {
+				if (X > 0) {
+					if (board[X - 1][Y] != nullptr && board[X - 1][Y]->getColor() == Color::White && board[X - 1][Y]->canEnPassant(board)) {
+						moves.push_back(Coordinate(X - 1, Y - 1));
+					}
+				}
+				if (X < _BOARD_HEIGHT) {
+					if (board[X + 1][Y] != nullptr && board[X + 1][Y]->getColor() == Color::White && board[X + 1][Y]->canEnPassant(board)) {
+						moves.push_back(Coordinate(X + 1, Y - 1));
+					}
 				}
 			}
 		}
@@ -1013,28 +1179,6 @@ void promote(Piece* newPiece, PieceType& type) {
 	}
 	
 }
-void Pawn::enPassant(Pawn& enemy) {
-	if (enemy.getFirstMove()) {
-		if (this->getPosition().getY() == enemy.getPosition().getY() && this->getPosition().getX() == enemy.getPosition().getX() + 1) {
-			enemy.setDead(true);
-			if (this->getColor() == Color::White) {
-				this->setPosition(Coordinate(this->getPosition().getX() - 1, this->getPosition().getY() + 1));
-			}
-			else {
-				this->setPosition(Coordinate(this->getPosition().getX() + 1, this->getPosition().getY() - 1));
-			}
-		}
-		else if (this->getPosition().getY() == enemy.getPosition().getY() && this->getPosition().getX() == enemy.getPosition().getX() - 1) {
-			enemy.setDead(true);
-			if (this->getColor() == Color::White) {
-				this->setPosition(Coordinate(this->getPosition().getX() + 1, this->getPosition().getY() + 1));
-			}
-			else {
-				this->setPosition(Coordinate(this->getPosition().getX() - 1, this->getPosition().getY() - 1));
-			}
-		}
-	}
-}
 Pawn& Pawn::operator=(const Pawn& piece) {
 	if (this == &piece) return *this;
 
@@ -1051,3 +1195,4 @@ Pawn& Pawn::operator=(const Pawn& piece) {
 
 	return *this;
 }
+

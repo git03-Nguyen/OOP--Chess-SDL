@@ -67,11 +67,10 @@ public:
 	Piece(const Coordinate& position, Color color, const std::string& imagePath);
 	virtual ~Piece();
 
-	void setPosition(Coordinate position);
+	void setPosition(Coordinate postion);
 	void setColor(Color color);
 	void setDead(bool dead);
 	void setChosen(bool chosen);
-
 	Coordinate getPosition() const;
 	Color getColor() const;
 	bool getDead() const;
@@ -79,6 +78,7 @@ public:
 	PieceType getType() const;
 	SDL_Texture* getTexture();
 
+	bool canEnPassant(std::vector<std::vector<Piece*>>);
 	virtual Piece* move(const Coordinate& c, std::vector<std::vector<Piece*>>) = 0;
 	virtual std::vector<Coordinate> getPossibleMoves(std::vector<std::vector<Piece*>>) const = 0;
 	virtual Piece* clone() = 0;
@@ -140,6 +140,7 @@ public:
 
 class Rook : public Piece {
 private:
+	bool castling;
 public:
 	Rook();
 	Rook(const Rook& rook);
@@ -181,15 +182,13 @@ public:
 
 	Piece* getPromotion() const;
 	bool getFirstMove();
-	void setFirstMove();
+	void setFirstMove(bool firstMove);
 	Piece* move(const Coordinate& c, std::vector<std::vector<Piece*>>);
 	std::vector<Coordinate> getPossibleMoves(std::vector<std::vector<Piece*>>) const;
 	Piece* clone();
 	Piece* getPromotion();
 	friend void promote(Piece* newPiece, PieceType& type);
-	void enPassant(Pawn& enemy);
 
 	Pawn& operator = (const Pawn& piece);
 };
-
 
