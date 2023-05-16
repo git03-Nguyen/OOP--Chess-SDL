@@ -70,13 +70,13 @@ SDL_Texture* Piece::getTexture() {
 	return this->texture;
 }
 void Piece::loadImage(SDL_Renderer* renderer) {
-	SDL_Surface* img = IMG_Load(this->imagePath.c_str());
-	if (!img) {
-		throw std::string("Can't load ") + imagePath;
-	}
-	SDL_Texture* gTexture = SDL_CreateTextureFromSurface(renderer, img);
-	this->texture = gTexture;
-	SDL_FreeSurface(img);
+SDL_Surface* img = IMG_Load(this->imagePath.c_str());
+if (!img) {
+	throw std::string("Can't load ") + imagePath;
+}
+SDL_Texture* gTexture = SDL_CreateTextureFromSurface(renderer, img);
+this->texture = gTexture;
+SDL_FreeSurface(img);
 }
 
 Piece& Piece::operator=(const Piece& piece) {
@@ -93,7 +93,7 @@ Piece& Piece::operator=(const Piece& piece) {
 
 //--------------------------------------------------------------------------------------------------
 King::King() {
-	castling = false;
+	ableCastling = true;
 }
 King::King(const King& king) : Piece(king) {
 	if (this->color == Color::White) {
@@ -103,7 +103,7 @@ King::King(const King& king) : Piece(king) {
 		this->imagePath = pathToString(Path::kingBlack);
 	}
 	this->type = PieceType::King;
-	this->castling = king.castling;
+	this->ableCastling = king.ableCastling;
 }
 King::King(const Coordinate& position, Color color, const std::string& pathImage) : Piece(position, color, pathImage) {
 	if (this->color == Color::White) {
@@ -115,35 +115,57 @@ King::King(const Coordinate& position, Color color, const std::string& pathImage
 	this->type = PieceType::King;
 	this->dead = false;
 	this->chosen = false;
-	this->castling = false;
+	this->ableCastling = true;
 }
 King::~King() {
-	
-}
 
-void King::setCastling() {
-	this->castling = !this->castling;
-}
-bool King::getCastling() const {
-	return this->castling;
 }
 Piece* King::move(const Coordinate& c, std::vector<std::vector<Piece*>> board) {
+	if (ableCastling) {
+		std::vector<Coordinate> moves = getCastlingMove(board);
+		if (moves.size() != 0) {
+			for (auto& pos : moves) {
+				if (pos == c) {
+					if (this->position.getX() > c.getX()) {
+						board[0][c.getY()]->move(Coordinate(2, c.getY()), board);
+					}
+					else if (this->position.getX() < c.getX()) {
+						board[7][c.getY()]->move(Coordinate(4, c.getY()), board);
+					}
+					this->setPosition(c);
+					ableCastling = false;
+
+					return nullptr;
+				}
+			}
+		}
+		ableCastling = false;
+	}
 	if (!board[c.getX()][c.getY()]) {
 		this->setPosition(c);
+
+		return nullptr;
 	}
-	else {
-		if (this->getColor() != board[c.getX()][c.getY()]->getColor()) {
-			this->setPosition(c);
-			board[c.getX()][c.getY()]->setDead(true);
+
+	if (this->getColor() != board[c.getX()][c.getY()]->getColor()) {
+		this->setPosition(c);
+		board[c.getX()][c.getY()]->setDead(true);
+
+		return board[c.getX()][c.getY()];
+	}
+	return nullptr;
+}
+std::vector<std::vector<Coordinate>> King::getPossibleMoves(std::vector<std::vector<Piece*>> board) {
+	std::vector<Coordinate> moves;
+	std::vector<std::vector<Coordinate>> result;
+	result.resize(2);
+	Coordinate tmp(this->getPosition().getX(), this->getPosition().getY());
+	if (ableCastling && this->getChosen()) {
+		std::vector<Coordinate> tmpMoves = this->getCastlingMove(board);
+		for (auto& i : tmpMoves) {
+			moves.push_back(i);
 		}
 	}
-
-	return this;
-}
-std::vector<Coordinate> King::getPossibleMoves(std::vector<std::vector<Piece*>> board) const {
-	std::vector<Coordinate> moves;
-	Coordinate tmp(this->getPosition().getX(), this->getPosition().getY());
-
 	//x - 1, y - 1
 	int X = tmp.getX() - 1;
 	int Y = tmp.getY() - 1;
@@ -208,21 +230,98 @@ std::vector<Coordinate> King::getPossibleMoves(std::vector<std::vector<Piece*>> 
 			moves.push_back(Coordinate(X, Y));
 		}
 	}
-	
-	return moves;
+	if (this->getChosen()) {
+		for (int i = 0; i < moves.size(); i++) {
+			if (checkMate(moves[i], board)) {
+				moves.erase(moves.begin() + i);
+			}
+		}
+	}
+
+	for (auto& e : moves) {
+		if (!board[e.getX()][e.getY()]) {
+			result[0].push_back(e);
+		}
+		else result[1].push_back(e);
+	}
+
+	return result;
 }
 Piece* King::clone() {
 	return new King(*this);
 }
-void King::performCastling() {
-	if (this->getColor() == Color::White && this->getPosition().getX() == 3 && this->getPosition().getY() == 0) {
-		this->castling = true;
-		this->setPosition(Coordinate(1, 0));
+std::vector<Coordinate> King::getCastlingMove(std::vector<std::vector<Piece*>> board) {
+	/*
+	Rule 1. You cannot castle if you have moved your king(or the rook)!
+	Rule 2. You are not allowed to castle out of check!
+	Rule 3. You are not allowed to castle through check!
+	Rule 4. No pieces can be between the king and the rook
+	*/
+	std::vector<Coordinate> moves;
+	std::vector<Rook*> rooks;
+	for (int i = 0; i <= 7; i += 7) {
+		Rook* temp = dynamic_cast<Rook*>(board[i][this->position.getY()]);
+		if (temp) rooks.push_back(temp);
 	}
-	else if (this->getColor() == Color::Black && this->getPosition().getX() == 3 && this->getPosition().getY() == 7) {
-		this->castling = true;
-		this->setPosition(Coordinate(1, 7));
+	// Violate Rule 1
+	if (!ableCastling || rooks.size() == 0) {
+		ableCastling = false; 
+		return moves;
 	}
+	// Violate Rule 2
+	if (checkMate(this->position, board)) return moves;
+
+	for (int i = 0; i < 2; i++) {
+		// Violate rule 1
+		if (!rooks[i]->getFirstMove()) continue;
+
+		bool flag = false;
+		int coeff = pow(-1, i + 1);
+		int tempY = this->position.getY(), tempX = this->position.getX();
+		while (true) {
+			tempX = tempX + coeff;
+			if (tempX <= 0 || tempX >= 7) break;
+
+			if (board[tempX][tempY]) {
+				flag = true;
+				break;
+			}
+		}
+		// Violate rule 4
+		if (flag) continue;
+
+		// Violate rule 3
+		if (checkMate(Coordinate(this->position.getX() + coeff * 2, this->position.getY()), board)) continue;
+
+		moves.push_back(Coordinate(this->position.getX() + coeff * 2, this->position.getY()));
+	}
+
+	return moves;
+}
+bool King::checkMate(const Coordinate& positionOfKing, std::vector<std::vector<Piece*>> board) {
+	std::vector<Coordinate> possibleMoves;
+
+	for (auto& row : board) {
+		for (Piece* piece : row) {
+			if (!piece) {
+				continue;
+			}
+			
+			if (this->getColor() != piece->getColor()) {
+				std::vector<std::vector<Coordinate>> temp = piece->getPossibleMoves(board);
+				possibleMoves.reserve(temp[0].size() + temp[1].size());
+				std::copy(temp[0].begin(), temp[0].end(), std::back_inserter(possibleMoves));
+				std::copy(temp[1].begin(), temp[1].end(), std::back_inserter(possibleMoves));
+
+			}
+		}
+	}
+	for (auto& c : possibleMoves) {
+		if (c.getX() == positionOfKing.getX() && c.getY() == positionOfKing.getY()) {
+			return true;
+		}
+	}
+	return false;
 }
 
 King& King::operator=(const King& piece) {
@@ -235,7 +334,7 @@ King& King::operator=(const King& piece) {
 	this->imagePath = piece.imagePath;
 	this->texture = piece.texture;
 	this->type = piece.type;
-	this->castling = piece.castling;
+	this->ableCastling = piece.ableCastling;
 
 	return *this;
 }
@@ -271,18 +370,22 @@ Queen::~Queen() {
 Piece* Queen::move(const Coordinate& c, std::vector<std::vector<Piece*>> board) {
 	if (!board[c.getX()][c.getY()]) {
 		this->setPosition(c);
-	}
-	else {
-		if (this->getColor() != board[c.getX()][c.getY()]->getColor()) {
-			this->setPosition(c);
-			board[c.getX()][c.getY()]->setDead(true);
-		}
-	}
 
-	return this;
+		return nullptr;
+	}
+	
+	if (this->getColor() != board[c.getX()][c.getY()]->getColor()) {
+		this->setPosition(c);
+		board[c.getX()][c.getY()]->setDead(true);
+
+		return board[c.getX()][c.getY()];
+	}
+	return nullptr;
 }
-std::vector<Coordinate> Queen::getPossibleMoves(std::vector<std::vector<Piece*>> board) const {
+std::vector<std::vector<Coordinate>> Queen::getPossibleMoves(std::vector<std::vector<Piece*>> board) {
 	std::vector<Coordinate> moves;
+	std::vector<std::vector<Coordinate>> result;
+	result.resize(2);
 	Coordinate tmp(this->getPosition().getX(), this->getPosition().getY());
 	//x - 1
 	int X = tmp.getX() - 1;
@@ -408,7 +511,12 @@ std::vector<Coordinate> Queen::getPossibleMoves(std::vector<std::vector<Piece*>>
 		else { break; }
 	}
 
-	return moves;
+	for (auto& e : moves) {
+		if (!board[e.getX()][e.getY()]) result[0].push_back(e);
+		else result[1].push_back(e);
+	}
+
+	return result;
 }
 Piece* Queen::clone() {
 	return new Queen(*this);
@@ -459,18 +567,22 @@ Bishop::~Bishop() {
 Piece* Bishop::move(const Coordinate& c, std::vector<std::vector<Piece*>> board) {
 	if (!board[c.getX()][c.getY()]) {
 		this->setPosition(c);
+
+		return nullptr;
 	}
-	else {
-		if (this->getColor() != board[c.getX()][c.getY()]->getColor()) {
-			this->setPosition(c);
-			board[c.getX()][c.getY()]->setDead(true);
-		}
+	if (this->getColor() != board[c.getX()][c.getY()]->getColor()) {
+		this->setPosition(c);
+		board[c.getX()][c.getY()]->setDead(true);
+
+		return board[c.getX()][c.getY()];
 	}
 
-	return this;
+	return nullptr;
 }
-std::vector<Coordinate> Bishop::getPossibleMoves(std::vector<std::vector<Piece*>> board) const {
+std::vector<std::vector<Coordinate>> Bishop::getPossibleMoves(std::vector<std::vector<Piece*>> board) {
 	std::vector<Coordinate> moves;
+	std::vector<std::vector<Coordinate>> result;
+	result.resize(2);
 	Coordinate tmp(this->getPosition().getX(), this->getPosition().getY());
 
 	//x + 1, y + 1
@@ -537,7 +649,12 @@ std::vector<Coordinate> Bishop::getPossibleMoves(std::vector<std::vector<Piece*>
 		else { break; }
 	}
 
-	return moves;
+	for (auto& e : moves) {
+		if (!board[e.getX()][e.getY()]) result[0].push_back(e);
+		else result[1].push_back(e);
+	}
+
+	return result;
 }
 Piece* Bishop::clone() {
 	return new Bishop(*this);
@@ -558,7 +675,7 @@ Bishop& Bishop::operator=(const Bishop& piece) {
 }
 //----------------------------------------------------------------------------------
 Rook::Rook() {
-
+	firstMove = true;
 }
 Rook::Rook(const Rook& rook) : Piece(rook) {
 	if (this->color == Color::White) {
@@ -568,6 +685,7 @@ Rook::Rook(const Rook& rook) : Piece(rook) {
 		this->imagePath = pathToString(Path::rookBlack);
 	}
 	this->type = PieceType::Rook;
+	this->firstMove = rook.firstMove;
 }
 Rook::Rook(const Coordinate& position, Color color, const std::string& pathImage) : Piece(position, color, pathImage) {
 	if (this->color == Color::White) {
@@ -579,26 +697,36 @@ Rook::Rook(const Coordinate& position, Color color, const std::string& pathImage
 	this->dead = false;
 	this->chosen = false;
 	this->type = PieceType::Rook;
+	this->firstMove = true;
 }
 Rook::~Rook() {
 
 }
 
+bool Rook::getFirstMove() {
+	return firstMove;
+}
 Piece* Rook::move(const Coordinate& c, std::vector<std::vector<Piece*>> board) {
+	if (firstMove) {
+		firstMove = false;
+	}
 	if (!board[c.getX()][c.getY()]) {
 		this->setPosition(c);
-	}
-	else {
-		if (this->getColor() != board[c.getX()][c.getY()]->getColor()) {
-			this->setPosition(c);
-			board[c.getX()][c.getY()]->setDead(true);
-		}
-	}
 
-	return this;
+		return nullptr;
+	}
+	if (this->getColor() != board[c.getX()][c.getY()]->getColor()) {
+		this->setPosition(c);
+		board[c.getX()][c.getY()]->setDead(true);
+
+		return board[c.getX()][c.getY()];
+	}
+	return nullptr;
 }
-std::vector<Coordinate> Rook::getPossibleMoves(std::vector<std::vector<Piece*>> board) const {
+std::vector<std::vector<Coordinate>> Rook::getPossibleMoves(std::vector<std::vector<Piece*>> board) {
 	std::vector<Coordinate> moves;
+	std::vector<std::vector<Coordinate>> result;
+	result.resize(2);
 	Coordinate tmp(this->getPosition().getX(), this->getPosition().getY());
 
 	//x - 1
@@ -661,18 +789,15 @@ std::vector<Coordinate> Rook::getPossibleMoves(std::vector<std::vector<Piece*>> 
 		else { break; }
 	}
 
-	return moves;
+	for (auto& e : moves) {
+		if (!board[e.getX()][e.getY()]) result[0].push_back(e);
+		else result[1].push_back(e);
+	}
+
+	return result;
 }
 Piece* Rook::clone() {
 	return new Rook(*this);
-}
-void Rook::performCastling() {
-	if (this->getColor() == Color::White) {
-		this->setPosition(Coordinate(2, 0));
-	}
-	else {
-		this->setPosition(Coordinate(2, 7));
-	}
 }
 
 Rook& Rook::operator=(const Rook& piece) {
@@ -719,18 +844,21 @@ Knight::~Knight() {
 Piece* Knight::move(const Coordinate& c, std::vector<std::vector<Piece*>> board) {
 	if (!board[c.getX()][c.getY()]) {
 		this->setPosition(c);
-	}
-	else {
-		if (this->getColor() != board[c.getX()][c.getY()]->getColor()) {
-			this->setPosition(c);
-			board[c.getX()][c.getY()]->setDead(true);
-		}
-	}
 
-	return this;
+		return nullptr;
+	}
+	if (this->getColor() != board[c.getX()][c.getY()]->getColor()) {
+		this->setPosition(c);
+		board[c.getX()][c.getY()]->setDead(true);
+
+		return board[c.getX()][c.getY()];
+	}
+	return nullptr;
 }
-std::vector<Coordinate> Knight::getPossibleMoves(std::vector<std::vector<Piece*>> board) const {
+std::vector<std::vector<Coordinate>> Knight::getPossibleMoves(std::vector<std::vector<Piece*>> board) {
 	std::vector<Coordinate> moves;
+	std::vector<std::vector<Coordinate>> result;
+	result.resize(2);
 	Coordinate tmp(this->getPosition().getX(), this->getPosition().getY());
 
 	//x + 1, y - 2
@@ -806,7 +934,12 @@ std::vector<Coordinate> Knight::getPossibleMoves(std::vector<std::vector<Piece*>
 		}
 	}
 
-	return moves;
+	for (auto& e : moves) {
+		if (!board[e.getX()][e.getY()]) result[0].push_back(e);
+		else result[1].push_back(e);
+	}
+
+	return result;
 }
 Piece* Knight::clone() {
 	return new Knight(*this);
@@ -985,15 +1118,17 @@ Piece* Pawn::move(const Coordinate& c, std::vector<std::vector<Piece*>> board) {
 	}
 	return nullptr;
 }
-std::vector<Coordinate> Pawn::getPossibleMoves(std::vector<std::vector<Piece*>> board) const {
+std::vector<std::vector<Coordinate>> Pawn::getPossibleMoves(std::vector<std::vector<Piece*>> board) {
 	std::vector<Coordinate> moves;
+	std::vector<std::vector<Coordinate>> result;
+	result.resize(2);
 	Coordinate tmp(this->getPosition().getX(), this->getPosition().getY());
 	int X = tmp.getX();
 	int Y = tmp.getY();
 
 	if (this->getColor() == Color::White) {
 		if (Y == _BOARD_WIDTH) {
-			return moves;
+			return result;
 		}
 		if (this->firstMove) {
 			if (!board[X][Y + 1]) {
@@ -1051,7 +1186,7 @@ std::vector<Coordinate> Pawn::getPossibleMoves(std::vector<std::vector<Piece*>> 
 	}
 	else if (this->getColor() == Color::Black) {
 		if (Y == 0) {
-			return moves;
+			return result;
 		}
 		if (this->firstMove) {
 			if (!board[X][Y - 1]) {
@@ -1109,7 +1244,13 @@ std::vector<Coordinate> Pawn::getPossibleMoves(std::vector<std::vector<Piece*>> 
 		}
 	}
 
-	return moves;
+
+	for (auto& e : moves) {
+		if (!board[e.getX()][e.getY()]) result[0].push_back(e);
+		else result[1].push_back(e);
+	}
+
+	return result;
 }
 
 Piece* Pawn::clone() {

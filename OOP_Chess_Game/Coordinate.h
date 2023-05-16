@@ -1,5 +1,5 @@
-#pragma once
 // only for board
+#pragma once
 class Coordinate{
 private:
 	int x;

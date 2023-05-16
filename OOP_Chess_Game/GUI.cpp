@@ -218,13 +218,24 @@ void GamePlayGUI::render() {
 	this->btnPromoteRook->renderImage();
 	this->btnPromoteKnight->renderImage();
 	//possible moves
-	if (this->chosenPiece != nullptr) 
-	for (int i = 0; i < this->chosenPiece->getPossibleMoves(Board::piecesOnBoard).size(); i++) {
-		int x = this->chosenPiece->getPossibleMoves(Board::piecesOnBoard)[i].getX() * 70;
-		int y = this->chosenPiece->getPossibleMoves(Board::piecesOnBoard)[i].getY() * 70;
-		this->possibleMove->setRectangle({ x,y,70,70 });
-		this->possibleMove->renderImage();
+	
+	if (this->chosenPiece != nullptr) {
+		std::vector<Coordinate> possibleMoves;
+		std::vector<std::vector<Coordinate>> temp;
+		temp = this->chosenPiece->getPossibleMoves(Board::piecesOnBoard);
+		temp = chosenPiece->getPossibleMoves(Board::piecesOnBoard);
+		possibleMoves.reserve(temp[0].size() + temp[1].size());
+		std::copy(temp[0].begin(), temp[0].end(), std::back_inserter(possibleMoves));
+		std::copy(temp[1].begin(), temp[1].end(), std::back_inserter(possibleMoves));
+		
+		for (int i = 0; i < possibleMoves.size(); i++) {
+			int x = possibleMoves[i].getX() * 70;
+			int y = possibleMoves[i].getY() * 70;
+			this->possibleMove->setRectangle({ x,y,70,70 });
+			this->possibleMove->renderImage();
+		}
 	}
+	
 	//pieces
 	for (int i = 0; i < this->piece.size(); i++) {
 		this->piece[i]->renderImage();

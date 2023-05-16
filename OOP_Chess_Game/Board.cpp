@@ -32,7 +32,7 @@ Board::~Board() {
     }
     piecesOnBoard.clear();
     for (int i = 0; i < piecesList.size(); i++) {
-        if (piecesList[i]) {
+        if (!piecesList[i]) {
             delete piecesList[i];
             piecesList[i] = nullptr;
         }   
@@ -55,7 +55,7 @@ Piece* Board::getPieceAt(const Coordinate& c) {
 }
 void Board::resetPiecesList() {
     for (int i = 0; i < piecesList.size(); i++) {
-        if (piecesList[i]) {
+        if (!piecesList[i]) {
             delete piecesList[i];
             piecesList[i] = nullptr;
         }

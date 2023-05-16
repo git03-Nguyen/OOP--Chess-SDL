@@ -342,9 +342,14 @@ void GameManager::handleClickedHightlightBox(const SDL_Event& e) {
 			break;
 		}
 	}
+	std::vector<std::vector<Coordinate>> temp;
 
 	if (!chosenPiece) return;
-	possibleMoves = chosenPiece->getPossibleMoves(Board::piecesOnBoard);
+	temp = chosenPiece->getPossibleMoves(Board::piecesOnBoard);
+	possibleMoves.reserve(temp[0].size() + temp[1].size());
+	std::copy(temp[0].begin(), temp[0].end(), std::back_inserter(possibleMoves));
+	std::copy(temp[1].begin(), temp[1].end(), std::back_inserter(possibleMoves));
+
 
 	for (auto& move : possibleMoves) {
 		if (c == move) {
