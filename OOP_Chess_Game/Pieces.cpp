@@ -18,6 +18,7 @@ Piece::Piece(const Piece& pieces) {
 	this->imagePath = pieces.imagePath;
 	this->texture = pieces.texture;
 	this->type = pieces.type;
+	this->id = pieces.id;
 }
 Piece::Piece(const Coordinate& position, Color color, const std::string& imagePath) {
 	this->position = position;
@@ -50,6 +51,9 @@ void Piece::setDead(bool dead) {
 void Piece::setChosen(bool chosen) {
 	this->chosen = chosen;
 }
+void Piece::setID(int id) {
+	this->id = id;
+}
 
 Coordinate Piece::getPosition() const {
 	return this->position;
@@ -66,17 +70,20 @@ bool Piece::getChosen() const {
 PieceType Piece::getType() const {
 	return this->type;
 }
+int Piece::getID() {
+	return this->id;
+}
 SDL_Texture* Piece::getTexture() {
 	return this->texture;
 }
 void Piece::loadImage(SDL_Renderer* renderer) {
-SDL_Surface* img = IMG_Load(this->imagePath.c_str());
-if (!img) {
-	throw std::string("Can't load ") + imagePath;
-}
-SDL_Texture* gTexture = SDL_CreateTextureFromSurface(renderer, img);
-this->texture = gTexture;
-SDL_FreeSurface(img);
+	SDL_Surface* img = IMG_Load(this->imagePath.c_str());
+	if (!img) {
+		throw std::string("Can't load ") + imagePath;
+	}
+	SDL_Texture* gTexture = SDL_CreateTextureFromSurface(renderer, img);
+	this->texture = gTexture;
+	SDL_FreeSurface(img);
 }
 
 Piece& Piece::operator=(const Piece& piece) {
@@ -1041,6 +1048,13 @@ bool Piece::canEnPassant(std::vector<std::vector<Piece*>> board) {
 }
 
 Piece* Pawn::move(const Coordinate& c, std::vector<std::vector<Piece*>> board) {
+	if (this->promotion) {
+		Piece* piece = this->promotion->move(c, board);
+		this->position = this->promotion->getPosition();
+
+		return piece;
+	}
+
 	if (this->getFirstMove()) {
 		if (!board[c.getX()][c.getY()]) {
 			this->setPosition(c);
@@ -1119,6 +1133,10 @@ Piece* Pawn::move(const Coordinate& c, std::vector<std::vector<Piece*>> board) {
 	return nullptr;
 }
 std::vector<std::vector<Coordinate>> Pawn::getPossibleMoves(std::vector<std::vector<Piece*>> board) {
+	if (this->promotion) {
+		return this->promotion->getPossibleMoves(board);
+	}
+
 	std::vector<Coordinate> moves;
 	std::vector<std::vector<Coordinate>> result;
 	result.resize(2);
