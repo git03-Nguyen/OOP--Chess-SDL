@@ -221,10 +221,16 @@ std::vector<std::vector<Coordinate>> King::getPossibleMoves(std::vector<std::vec
 	// case: checkmate
 	if (this->getChosen()) {
 		for (int i = 0; i < moves.size(); i++) {
+			Coordinate move = moves[i];
+			Piece* temp = board[move.getX()][move.getY()];
+			board[move.getX()][move.getY()] = this;
+			board[this->position.getX()][this->position.getY()] = nullptr;
 			if (checkmate(moves[i], board)) {
 				moves.erase(moves.begin() + i);
 				i--;
 			}
+			board[move.getX()][move.getY()] = temp;
+			board[this->position.getX()][this->position.getY()] = this;
 		}
 	}
 
