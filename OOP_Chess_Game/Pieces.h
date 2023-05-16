@@ -2,6 +2,7 @@
 #include <iostream>
 #include <vector>
 #include <string>
+#include <math.h>
 #include <SDL.h>
 #include <SDL_image.h>
 
@@ -71,7 +72,6 @@ public:
 	void setColor(Color color);
 	void setDead(bool dead);
 	void setChosen(bool chosen);
-
 	Coordinate getPosition() const;
 	Color getColor() const;
 	bool getDead() const;
@@ -79,8 +79,9 @@ public:
 	PieceType getType() const;
 	SDL_Texture* getTexture();
 
+	bool canEnPassant(std::vector<std::vector<Piece*>>);
 	virtual Piece* move(const Coordinate& c, std::vector<std::vector<Piece*>>) = 0;
-	virtual std::vector<Coordinate> getPossibleMoves(std::vector<std::vector<Piece*>>) const = 0;
+	virtual std::vector<std::vector<Coordinate>> getPossibleMoves(std::vector<std::vector<Piece*>>) = 0;
 	virtual Piece* clone() = 0;
 	void loadImage(SDL_Renderer* renderer);
 	void destroyImage();
@@ -90,19 +91,19 @@ public:
 
 class King : public Piece {
 private:
-	bool castling;
+	bool ableCastling;
 public:
 	King();
 	King(const King& king);
 	King(const Coordinate& position, Color color, const std::string& pathImage);
 	virtual ~King();
 
-	void setCastling();
-	bool getCastling() const;
 	Piece* move(const Coordinate& c, std::vector<std::vector<Piece*>>);
-	std::vector<Coordinate> getPossibleMoves(std::vector<std::vector<Piece*>>) const;
+	std::vector<std::vector<Coordinate>> getPossibleMoves(std::vector<std::vector<Piece*>>);
 	Piece* clone();
-	void performCastling();
+
+	std::vector<Coordinate> getCastlingMove(std::vector<std::vector<Piece*>> board);
+	bool checkMate(const Coordinate& positionOfKing, std::vector<std::vector<Piece*>> board);
 
 	King& operator = (const King& piece);
 };
@@ -116,7 +117,7 @@ public:
 	virtual ~Queen();
 
 	Piece* move(const Coordinate& c, std::vector<std::vector<Piece*>>);
-	std::vector<Coordinate> getPossibleMoves(std::vector<std::vector<Piece*>>) const;
+	std::vector<std::vector<Coordinate>> getPossibleMoves(std::vector<std::vector<Piece*>>);
 	Piece* clone();
 
 	Queen& operator = (const Queen& piece);
@@ -131,7 +132,7 @@ public:
 	virtual ~Bishop();
 
 	Piece* move(const Coordinate& c, std::vector<std::vector<Piece*>>);
-	std::vector<Coordinate> getPossibleMoves(std::vector<std::vector<Piece*>>) const;
+	std::vector<std::vector<Coordinate>> getPossibleMoves(std::vector<std::vector<Piece*>>);
 	Piece* clone();
 
 	Bishop& operator = (const Bishop& piece);
@@ -140,16 +141,18 @@ public:
 
 class Rook : public Piece {
 private:
+	bool firstMove;
 public:
 	Rook();
 	Rook(const Rook& rook);
 	Rook(const Coordinate& position, Color color, const std::string& pathImage);
 	virtual ~Rook();
 
+	bool getFirstMove();
+
 	Piece* move(const Coordinate& c, std::vector<std::vector<Piece*>>);
-	std::vector<Coordinate> getPossibleMoves(std::vector<std::vector<Piece*>>) const;
+	std::vector<std::vector<Coordinate>> getPossibleMoves(std::vector<std::vector<Piece*>>);
 	Piece* clone();
-	void performCastling();
 
 	Rook& operator = (const Rook& piece);
 };
@@ -163,7 +166,7 @@ public:
 	virtual ~Knight();
 
 	Piece* move(const Coordinate& c, std::vector<std::vector<Piece*>>);
-	std::vector<Coordinate> getPossibleMoves(std::vector<std::vector<Piece*>>) const;
+	std::vector<std::vector<Coordinate>> getPossibleMoves(std::vector<std::vector<Piece*>>);
 	Piece* clone();
 
 	Knight& operator = (const Knight& piece);
@@ -183,11 +186,10 @@ public:
 	bool getFirstMove();
 	void setFirstMove(bool firstMove);
 	Piece* move(const Coordinate& c, std::vector<std::vector<Piece*>>);
-	std::vector<Coordinate> getPossibleMoves(std::vector<std::vector<Piece*>>) const;
+	std::vector<std::vector<Coordinate>> getPossibleMoves(std::vector<std::vector<Piece*>>);
 	Piece* clone();
 	Piece* getPromotion();
 	friend void promote(Piece* newPiece, PieceType& type);
-	void enPassant(Pawn& enemy);
 
 	Pawn& operator = (const Pawn& piece);
 };
