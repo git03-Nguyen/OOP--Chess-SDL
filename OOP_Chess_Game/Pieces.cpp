@@ -5,37 +5,24 @@ Piece::Piece() {
 	color = {};
 	dead = false;
 	chosen = false; 
-	imagePath = "";
-	texture = nullptr;
 	type = {};
 	tableMove = {};
+	id = -1;
 }
-Piece::Piece(const Piece& pieces) {
-	this->position = pieces.position;
-	this->color = pieces.color;
-	this->dead = pieces.dead;
-	this->chosen = pieces.chosen;
-	this->imagePath = pieces.imagePath;
-	this->texture = pieces.texture;
-	this->type = pieces.type;
-	this->id = pieces.id;
+Piece::Piece(const Piece& piece) {
+	this->position = piece.position;
+	this->color = piece.color;
+	this->dead = piece.dead;
+	this->chosen = piece.chosen;
+	this->type = piece.type;
+	this->id = piece.id;
+	this->tableMove = piece.tableMove;
 }
-Piece::Piece(const Coordinate& position, Color color, const std::string& imagePath) {
+Piece::Piece(const Coordinate& position, Color color) {
 	this->position = position;
 	this->color = color;
-	this->imagePath = imagePath;
-
-	SDL_Surface* img = IMG_Load(this->imagePath.c_str());
-	if (!img) {
-		throw std::string("Can't load ") + imagePath;
-	}
-	SDL_Texture* gTexture = SDL_CreateTextureFromSurface(Window::renderer, img);
-	this->texture = gTexture;
-	SDL_FreeSurface(img);
 }
 Piece::~Piece() {
-	SDL_DestroyTexture(texture);
-	texture = nullptr;
 	tableMove.clear();
 }
 
@@ -73,52 +60,16 @@ PieceType Piece::getType() const {
 int Piece::getID() {
 	return this->id;
 }
-SDL_Texture* Piece::getTexture() {
-	return this->texture;
-}
-void Piece::loadImage(SDL_Renderer* renderer) {
-	SDL_Surface* img = IMG_Load(this->imagePath.c_str());
-	if (!img) {
-		throw std::string("Can't load ") + imagePath;
-	}
-	SDL_Texture* gTexture = SDL_CreateTextureFromSurface(renderer, img);
-	this->texture = gTexture;
-	SDL_FreeSurface(img);
-}
-
-Piece& Piece::operator=(const Piece& piece) {
-	if (this == &piece) return *this;
-	this->position = piece.position;
-	this->color = piece.color;
-	this->dead = piece.dead;
-	this->chosen = piece.chosen;
-	this->imagePath = piece.imagePath;
-	this->texture = piece.texture;
-	this->type = piece.type;
-	return *this;
-}
 
 //--------------------------------------------------------------------------------------------------
 King::King() {
 	ableCastling = true;
 }
 King::King(const King& king) : Piece(king) {
-	if (this->color == Color::White) {
-		this->imagePath = pathToString(Path::kingWhite);
-	}
-	else {
-		this->imagePath = pathToString(Path::kingBlack);
-	}
 	this->type = PieceType::King;
 	this->ableCastling = king.ableCastling;
 }
-King::King(const Coordinate& position, Color color, const std::string& pathImage) : Piece(position, color, pathImage) {
-	if (this->color == Color::White) {
-		this->imagePath = pathToString(Path::kingWhite);
-	}
-	else {
-		this->imagePath = pathToString(Path::kingBlack);
-	}
+King::King(const Coordinate& position, Color color) : Piece(position, color) {
 	this->type = PieceType::King;
 	this->dead = false;
 	this->chosen = false;
@@ -254,7 +205,7 @@ std::vector<std::vector<Coordinate>> King::getPossibleMoves(std::vector<std::vec
 
 	return result;
 }
-Piece* King::clone() {
+Piece* King::clone() const{
 	return new King(*this);
 }
 std::vector<Coordinate> King::getCastlingMove(std::vector<std::vector<Piece*>> board) {
@@ -331,41 +282,29 @@ bool King::checkMate(const Coordinate& positionOfKing, std::vector<std::vector<P
 	return false;
 }
 
-King& King::operator=(const King& piece) {
-	if (this == &piece) return *this;
-
-	this->position = piece.position;
-	this->color = piece.color;
-	this->dead = piece.dead;
-	this->chosen = piece.chosen;
-	this->imagePath = piece.imagePath;
-	this->texture = piece.texture;
-	this->type = piece.type;
-	this->ableCastling = piece.ableCastling;
-
-	return *this;
-}
+//King& King::operator=(const Piece* piece) {
+//	if (this == piece) return *this;
+//	King* temp = dynamic_cast<King*>(piece);
+//	this->position = temp->position;
+//	this->color = temp->color;
+//	this->dead = temp->dead;
+//	this->chosen = temp->chosen;
+//	this->imagePath = temp->imagePath;
+//	this->texture = nullptr;
+//	this->type = temp.type;
+//	this->ableCastling = temp.ableCastling;
+//	this->id = piece.id;
+//	return *this;
+//}
 
 //--------------------------------------------------------------------------------------------------
 Queen::Queen() {
 
 }
 Queen::Queen(const Queen& queen) : Piece(queen) {
-	if (this->color == Color::White) {
-		this->imagePath = pathToString(Path::queenWhite);
-	}
-	else {
-		this->imagePath = pathToString(Path::queenBlack);
-	}
 	this->type = PieceType::Queen;
 }
-Queen::Queen(const Coordinate& position, Color color, const std::string& pathImage) : Piece(position, color, pathImage) {
-	if (this->color == Color::White) {
-		this->imagePath = pathToString(Path::queenWhite);
-	}
-	else {
-		this->imagePath = pathToString(Path::queenBlack);
-	}
+Queen::Queen(const Coordinate& position, Color color) : Piece(position, color) {
 	this->dead = false;
 	this->chosen = false;
 	this->type = PieceType::Queen;
@@ -525,44 +464,33 @@ std::vector<std::vector<Coordinate>> Queen::getPossibleMoves(std::vector<std::ve
 
 	return result;
 }
-Piece* Queen::clone() {
+Piece* Queen::clone() const{
 	return new Queen(*this);
 }
 
-Queen& Queen::operator=(const Queen& piece) {
-	if (this == &piece) return *this;
-
-	this->position = piece.position;
-	this->color = piece.color;
-	this->dead = piece.dead;
-	this->chosen = piece.chosen;
-	this->imagePath = piece.imagePath;
-	this->texture = piece.texture;
-	this->type = piece.type;
-
-	return *this;
-}
+//Queen& Queen::operator=(const Queen& piece) {
+//	if (this == &piece) return *this;
+//
+//	this->position = piece.position;
+//	this->color = piece.color;
+//	this->dead = piece.dead;
+//	this->chosen = piece.chosen;
+//	this->imagePath = piece.imagePath;
+//	this->texture = nullptr;
+//	this->type = piece.type;
+//	this->id = piece.id;
+//
+//	return *this;
+//}
 
 //--------------------------------------------------------------------------------
 Bishop::Bishop() {
 
 }
 Bishop::Bishop(const Bishop& bishop) : Piece(bishop) {
-	if (this->color == Color::White) {
-		this->imagePath = pathToString(Path::bishopWhite);
-	}
-	else {
-		this->imagePath = pathToString(Path::bishopBlack);
-	}
 	this->type = PieceType::Bishop;
 }
-Bishop::Bishop(const Coordinate& position, Color color, const std::string& pathImage) : Piece(position, color, pathImage) {
-	if (this->color == Color::White) {
-		this->imagePath = pathToString(Path::bishopWhite);
-	}
-	else {
-		this->imagePath = pathToString(Path::bishopBlack);
-	}
+Bishop::Bishop(const Coordinate& position, Color color) : Piece(position, color) {
 	this->dead = false;
 	this->chosen = false;
 	this->type = PieceType::Bishop;
@@ -663,44 +591,33 @@ std::vector<std::vector<Coordinate>> Bishop::getPossibleMoves(std::vector<std::v
 
 	return result;
 }
-Piece* Bishop::clone() {
+Piece* Bishop::clone() const{
 	return new Bishop(*this);
 }
 
-Bishop& Bishop::operator=(const Bishop& piece) {
-	if (this == &piece) return *this;
-
-	this->position = piece.position;
-	this->color = piece.color;
-	this->dead = piece.dead;
-	this->chosen = piece.chosen;
-	this->imagePath = piece.imagePath;
-	this->texture = piece.texture;
-	this->type = piece.type;
-
-	return *this;
-}
+//Bishop& Bishop::operator=(const Bishop& piece) {
+//	if (this == &piece) return *this;
+//
+//	this->position = piece.position;
+//	this->color = piece.color;
+//	this->dead = piece.dead;
+//	this->chosen = piece.chosen;
+//	this->imagePath = piece.imagePath;
+//	this->texture = nullptr;
+//	this->type = piece.type;
+//	this->id = piece.id;
+//
+//	return *this;
+//}
 //----------------------------------------------------------------------------------
 Rook::Rook() {
 	firstMove = true;
 }
 Rook::Rook(const Rook& rook) : Piece(rook) {
-	if (this->color == Color::White) {
-		this->imagePath = pathToString(Path::rookWhite);
-	}
-	else {
-		this->imagePath = pathToString(Path::rookBlack);
-	}
 	this->type = PieceType::Rook;
 	this->firstMove = rook.firstMove;
 }
-Rook::Rook(const Coordinate& position, Color color, const std::string& pathImage) : Piece(position, color, pathImage) {
-	if (this->color == Color::White) {
-		this->imagePath = pathToString(Path::rookWhite);
-	}
-	else {
-		this->imagePath = pathToString(Path::rookBlack);
-	}
+Rook::Rook(const Coordinate& position, Color color) : Piece(position, color) {
 	this->dead = false;
 	this->chosen = false;
 	this->type = PieceType::Rook;
@@ -709,7 +626,9 @@ Rook::Rook(const Coordinate& position, Color color, const std::string& pathImage
 Rook::~Rook() {
 
 }
-
+void Rook::setFirstMove(bool firstMove) {
+	this->firstMove = firstMove;
+}
 bool Rook::getFirstMove() {
 	return firstMove;
 }
@@ -803,43 +722,33 @@ std::vector<std::vector<Coordinate>> Rook::getPossibleMoves(std::vector<std::vec
 
 	return result;
 }
-Piece* Rook::clone() {
+Piece* Rook::clone() const{
 	return new Rook(*this);
 }
 
-Rook& Rook::operator=(const Rook& piece) {
-	if (this == &piece) return *this;
-
-	this->position = piece.position;
-	this->color = piece.color;
-	this->dead = piece.dead;
-	this->chosen = piece.chosen;
-	this->imagePath = piece.imagePath;
-	this->texture = piece.texture;
-	this->type = piece.type;
-
-	return *this;
-}
+//Rook& Rook::operator=(const Rook& piece) {
+//	if (this == &piece) return *this;
+//
+//	this->position = piece.position;
+//	this->color = piece.color;
+//	this->dead = piece.dead;
+//	this->chosen = piece.chosen;
+//	this->imagePath = piece.imagePath;
+//	this->texture = nullptr;
+//	this->type = piece.type;
+//	this->firstMove = piece.firstMove;
+//	this->id = piece.id;
+//
+//	return *this;
+//}
 //------------------------------------------------------------------------------
 Knight::Knight() {
 
 }
 Knight::Knight(const Knight& knight) : Piece(knight) {
-	if (this->color == Color::White) {
-		this->imagePath = pathToString(Path::knightWhite);
-	}
-	else {
-		this->imagePath = pathToString(Path::knightBlack);
-	}	
 	this->type = PieceType::Knight;
 }
-Knight::Knight(const Coordinate& position, Color color, const std::string& pathImage) : Piece(position, color, pathImage) {
-	if (this->color == Color::White) {
-		this->imagePath = pathToString(Path::knightWhite);
-	}
-	else {
-		this->imagePath = pathToString(Path::knightBlack);
-	}
+Knight::Knight(const Coordinate& position, Color color) : Piece(position, color) {
 	this->dead = false;
 	this->chosen = false;
 	this->type = PieceType::Knight;
@@ -948,23 +857,24 @@ std::vector<std::vector<Coordinate>> Knight::getPossibleMoves(std::vector<std::v
 
 	return result;
 }
-Piece* Knight::clone() {
+Piece* Knight::clone() const{
 	return new Knight(*this);
 }
 
-Knight& Knight::operator=(const Knight& piece) {
-	if (this == &piece) return *this;
-
-	this->position = piece.position;
-	this->color = piece.color;
-	this->dead = piece.dead;
-	this->chosen = piece.chosen;
-	this->imagePath = piece.imagePath;
-	this->texture = piece.texture;
-	this->type = piece.type;
-
-	return *this;
-}
+//Knight& Knight::operator=(const Knight& piece) {
+//	if (this == &piece) return *this;
+//
+//	this->position = piece.position;
+//	this->color = piece.color;
+//	this->dead = piece.dead;
+//	this->chosen = piece.chosen;
+//	this->imagePath = piece.imagePath;
+//	this->texture = nullptr;
+//	this->type = piece.type;
+//	this->id = piece.id;
+//
+//	return *this;
+//}
 
 //---------------------------------------------------------------------------
 Pawn::Pawn() {
@@ -972,24 +882,14 @@ Pawn::Pawn() {
 	firstMove = true;
 }
 Pawn::Pawn(const Pawn& pawn) : Piece(pawn) {
-	if (this->color == Color::White) {
-		this->imagePath = pathToString(Path::pawnWhite);
-	}
-	else {
-		this->imagePath = pathToString(Path::pawnBlack);
-	}
 	this->type = PieceType::Pawn;
-	this->promotion = pawn.promotion;
-	delete this->promotion;
+	// TODO - Check again
+	if (pawn.promotion) this->promotion = pawn.promotion->clone();
+	else this->promotion = nullptr;
+
 	this->firstMove = pawn.firstMove;
 }
-Pawn::Pawn(const Coordinate& position, Color color, const std::string& pathImage) : Piece(position, color, pathImage) {
-	if (this->color == Color::White) {
-		this->imagePath = pathToString(Path::pawnWhite);
-	}
-	else {
-		this->imagePath = pathToString(Path::pawnBlack);
-	}
+Pawn::Pawn(const Coordinate& position, Color color) : Piece(position, color) {
 	this->type = PieceType::Pawn;
 	this->dead = false;
 	this->chosen = false;
@@ -1003,11 +903,11 @@ Pawn::~Pawn() {
 Piece* Pawn::getPromotion() const {
 	return this->promotion;
 }
-bool Pawn::getFirstMove() {
-	return this->firstMove;
-}
 void Pawn::setFirstMove(bool firstMove) {
 	this->firstMove = firstMove;
+}
+bool Pawn::getFirstMove() {
+	return this->firstMove;
 }
 bool Piece::canEnPassant(std::vector<std::vector<Piece*>> board) {
 	if (!this) {
@@ -1271,7 +1171,7 @@ std::vector<std::vector<Coordinate>> Pawn::getPossibleMoves(std::vector<std::vec
 	return result;
 }
 
-Piece* Pawn::clone() {
+Piece* Pawn::clone() const{
 	return new Pawn(*this);
 }
 Piece* Pawn::getPromotion() {
@@ -1285,25 +1185,25 @@ void promote(Piece* newPiece, PieceType& type) {
 					Coordinate positionTmp = newPiece->getPosition();
 					Color colorTmp = newPiece->getColor();
 					delete newPiece;
-					newPiece = new Queen(positionTmp, colorTmp, pathToString(Path::queenWhite));
+					newPiece = new Queen(positionTmp, colorTmp);
 				}
 				else if (type == PieceType::Rook) {
 					Coordinate positionTmp = newPiece->getPosition();
 					Color colorTmp = newPiece->getColor();
 					delete newPiece;
-					newPiece = new Rook(positionTmp, colorTmp, pathToString(Path::rookWhite));
+					newPiece = new Rook(positionTmp, colorTmp);
 				}
 				else if (type == PieceType::Knight) {
 					Coordinate positionTmp = newPiece->getPosition();
 					Color colorTmp = newPiece->getColor();
 					delete newPiece;
-					newPiece = new Knight(positionTmp, colorTmp, pathToString(Path::knightWhite));
+					newPiece = new Knight(positionTmp, colorTmp);
 				}
 				else if (type == PieceType::Bishop) {
 					Coordinate positionTmp = newPiece->getPosition();
 					Color colorTmp = newPiece->getColor();
 					delete newPiece;
-					newPiece = new Bishop(positionTmp, colorTmp, pathToString(Path::bishopWhite));
+					newPiece = new Bishop(positionTmp, colorTmp);
 				}
 			}
 		}
@@ -1313,45 +1213,28 @@ void promote(Piece* newPiece, PieceType& type) {
 					Coordinate positionTmp = newPiece->getPosition();
 					Color colorTmp = newPiece->getColor();
 					delete newPiece;
-					newPiece = new Queen(positionTmp, colorTmp, pathToString(Path::queenBlack));
+					newPiece = new Queen(positionTmp, colorTmp);
 				}
 				else if (type == PieceType::Rook) {
 					Coordinate positionTmp = newPiece->getPosition();
 					Color colorTmp = newPiece->getColor();
 					delete newPiece;
-					newPiece = new Rook(positionTmp, colorTmp, pathToString(Path::rookBlack));
+					newPiece = new Rook(positionTmp, colorTmp);
 				}
 				else if (type == PieceType::Knight) {
 					Coordinate positionTmp = newPiece->getPosition();
 					Color colorTmp = newPiece->getColor();
 					delete newPiece;
-					newPiece = new Knight(positionTmp, colorTmp, pathToString(Path::knightBlack));
+					newPiece = new Knight(positionTmp, colorTmp);
 				}
 				else if (type == PieceType::Bishop) {
 					Coordinate positionTmp = newPiece->getPosition();
 					Color colorTmp = newPiece->getColor();
 					delete newPiece;
-					newPiece = new Bishop(positionTmp, colorTmp, pathToString(Path::bishopBlack));
+					newPiece = new Bishop(positionTmp, colorTmp);
 				}
 			}
 		}
 	}
 	
 }
-Pawn& Pawn::operator=(const Pawn& piece) {
-	if (this == &piece) return *this;
-
-	this->position = piece.position;
-	this->color = piece.color;
-	this->dead = piece.dead;
-	this->chosen = piece.chosen;
-	this->imagePath = piece.imagePath;
-	this->texture = piece.texture;
-	this->type = piece.type;
-	this->firstMove = piece.firstMove;
-	delete this->promotion;
-	this->promotion = piece.promotion;
-
-	return *this;
-}
-

@@ -33,24 +33,6 @@ enum class Path {
 	pawnWhite,
 	pawnBlack,
 };
-inline std::string pathToString(Path p) {
-	switch (p) {
-	case Path::queenWhite:	return "..\\Assets\\Pieces\\QueenWhite.png";
-	case Path::queenBlack:	return "..\\Assets\\Pieces\\QueenBlack.png";
-	case Path::kingWhite:	return "..\\Assets\\Pieces\\KingWhite.png";
-	case Path::kingBlack:	return "..\\Assets\\Pieces\\KingBlack.png";
-	case Path::rookWhite:	return "..\\Assets\\Pieces\\RookWhite.png";
-	case Path::rookBlack:	return "..\\Assets\\Pieces\\RookBlack.png";
-	case Path::knightWhite:	return "..\\Assets\\Pieces\\KnightWhite.png";
-	case Path::knightBlack:	return "..\\Assets\\Pieces\\KnightBlack.png";
-	case Path::bishopWhite:	return "..\\Assets\\Pieces\\BishopWhite.png";
-	case Path::bishopBlack:	return "..\\Assets\\Pieces\\BishopBlack.png";
-	case Path::pawnWhite:	return "..\\Assets\\Pieces\\PawnWhite.png";
-	case Path::pawnBlack:	return "..\\Assets\\Pieces\\PawnBlack.png";
-	default: 
-		throw "Unimplemented item!";
-	}
-}
 
 class Piece {
 protected:
@@ -58,15 +40,13 @@ protected:
 	Color color;
 	bool dead;
 	bool chosen;
-	std::string imagePath;
-	SDL_Texture* texture;
 	PieceType type;
 	int id;
 public:
 	std::vector<int> tableMove;
 	Piece();
-	Piece(const Piece& pieces);
-	Piece(const Coordinate& position, Color color, const std::string& imagePath);
+	Piece(const Piece& piece);
+	Piece(const Coordinate& position, Color color);
 	virtual ~Piece();
 
 	void setPosition(Coordinate postion);
@@ -80,16 +60,11 @@ public:
 	bool getChosen() const;
 	int getID();
 	PieceType getType() const;
-	SDL_Texture* getTexture();
 
 	bool canEnPassant(std::vector<std::vector<Piece*>>);
 	virtual Piece* move(const Coordinate& c, std::vector<std::vector<Piece*>>) = 0;
 	virtual std::vector<std::vector<Coordinate>> getPossibleMoves(std::vector<std::vector<Piece*>>) = 0;
-	virtual Piece* clone() = 0;
-	void loadImage(SDL_Renderer* renderer);
-	void destroyImage();
-
-	virtual Piece& operator = (const Piece& piece);
+	virtual Piece* clone() const = 0 ;
 };
 
 class King : public Piece {
@@ -98,17 +73,15 @@ private:
 public:
 	King();
 	King(const King& king);
-	King(const Coordinate& position, Color color, const std::string& pathImage);
+	King(const Coordinate& position, Color color);
 	virtual ~King();
 
 	Piece* move(const Coordinate& c, std::vector<std::vector<Piece*>>);
 	std::vector<std::vector<Coordinate>> getPossibleMoves(std::vector<std::vector<Piece*>>);
-	Piece* clone();
+	Piece* clone() const;
 
 	std::vector<Coordinate> getCastlingMove(std::vector<std::vector<Piece*>> board);
 	bool checkMate(const Coordinate& positionOfKing, std::vector<std::vector<Piece*>> board);
-
-	King& operator = (const King& piece);
 };
 
 class Queen : public Piece {
@@ -116,14 +89,12 @@ private:
 public:
 	Queen();
 	Queen(const Queen& queen);
-	Queen(const Coordinate& position, Color color, const std::string& pathImage);
+	Queen(const Coordinate& position, Color color);
 	virtual ~Queen();
 
 	Piece* move(const Coordinate& c, std::vector<std::vector<Piece*>>);
 	std::vector<std::vector<Coordinate>> getPossibleMoves(std::vector<std::vector<Piece*>>);
-	Piece* clone();
-
-	Queen& operator = (const Queen& piece);
+	Piece* clone() const;
 };
 
 class Bishop : public Piece {
@@ -131,14 +102,12 @@ private:
 public:
 	Bishop();
 	Bishop(const Bishop& queen);
-	Bishop(const Coordinate& position, Color color, const std::string& pathImage);
+	Bishop(const Coordinate& position, Color color);
 	virtual ~Bishop();
 
 	Piece* move(const Coordinate& c, std::vector<std::vector<Piece*>>);
 	std::vector<std::vector<Coordinate>> getPossibleMoves(std::vector<std::vector<Piece*>>);
-	Piece* clone();
-
-	Bishop& operator = (const Bishop& piece);
+	Piece* clone() const;
 };
 
 
@@ -148,16 +117,16 @@ private:
 public:
 	Rook();
 	Rook(const Rook& rook);
-	Rook(const Coordinate& position, Color color, const std::string& pathImage);
+	Rook(const Coordinate& position, Color color);
 	virtual ~Rook();
 
+	void setFirstMove(bool firstMove);
 	bool getFirstMove();
+
 
 	Piece* move(const Coordinate& c, std::vector<std::vector<Piece*>>);
 	std::vector<std::vector<Coordinate>> getPossibleMoves(std::vector<std::vector<Piece*>>);
-	Piece* clone();
-
-	Rook& operator = (const Rook& piece);
+	Piece* clone() const;
 };
 
 class Knight : public Piece {
@@ -165,14 +134,12 @@ private:
 public:
 	Knight();
 	Knight(const Knight& knight);
-	Knight(const Coordinate& position, Color color, const std::string& pathImage);
+	Knight(const Coordinate& position, Color color);
 	virtual ~Knight();
 
 	Piece* move(const Coordinate& c, std::vector<std::vector<Piece*>>);
 	std::vector<std::vector<Coordinate>> getPossibleMoves(std::vector<std::vector<Piece*>>);
-	Piece* clone();
-
-	Knight& operator = (const Knight& piece);
+	Piece* clone() const;
 };
 
 class Pawn: public Piece {
@@ -182,7 +149,7 @@ private:
 public:
 	Pawn();
 	Pawn(const Pawn& pawn);
-	Pawn(const Coordinate& position, Color color, const std::string& pathImage);
+	Pawn(const Coordinate& position, Color color);
 	virtual ~Pawn();
 
 	Piece* getPromotion() const;
@@ -190,10 +157,8 @@ public:
 	void setFirstMove(bool firstMove);
 	Piece* move(const Coordinate& c, std::vector<std::vector<Piece*>>);
 	std::vector<std::vector<Coordinate>> getPossibleMoves(std::vector<std::vector<Piece*>>);
-	Piece* clone();
+	Piece* clone() const;
 	Piece* getPromotion();
 	friend void promote(Piece* newPiece, PieceType& type);
-
-	Pawn& operator = (const Pawn& piece);
 };
 
