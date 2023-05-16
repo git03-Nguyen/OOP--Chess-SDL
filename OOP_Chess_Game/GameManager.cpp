@@ -90,9 +90,10 @@ void GameManager::handelEvents() {
 		case SDL_QUIT:
 			isRunning = false; break;
 		case SDL_MOUSEBUTTONDOWN:
+			Coordinate c = getClickedBox(e);
+			std::cout << c.getX() << " " << c.getY() << std::endl;
 			handleClickedPiece(e);
 			handleClickedHightlightBox(e);
-			
 		}
 	}
 
@@ -341,14 +342,9 @@ void GameManager::handleClickedHightlightBox(const SDL_Event& e) {
 			break;
 		}
 	}
-	std::vector<std::vector<Coordinate>> temp;
 
 	if (!chosenPiece) return;
-	temp = chosenPiece->getPossibleMoves(Board::piecesOnBoard);
-	possibleMoves.reserve(temp[0].size() + temp[1].size());
-	std::copy(temp[0].begin(), temp[0].end(), std::back_inserter(possibleMoves));
-	std::copy(temp[1].begin(), temp[1].end(), std::back_inserter(possibleMoves));
-
+	possibleMoves = chosenPiece->getPossibleMoves(Board::piecesOnBoard);
 
 	for (auto& move : possibleMoves) {
 		if (c == move) {
@@ -428,5 +424,4 @@ void GameManager::redo() {
 	*(Board::pieces[temp[1]->getId()]) = *temp[1];
 	if (temp[2]) *(Board::pieces[temp[2]->getId()]) = *temp[2];*/
 }
-
 
