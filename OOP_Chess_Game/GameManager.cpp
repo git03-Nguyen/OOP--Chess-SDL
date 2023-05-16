@@ -85,6 +85,9 @@ void GameManager::handelEvents() {
 
 	//}
 
+	//check winner
+	checkWinner();
+
 	while (SDL_PollEvent(&e)) {
 		switch (e.type) {
 		case SDL_QUIT:
@@ -482,6 +485,45 @@ void GameManager::redo() {
 	turn++;
 	for (auto& e : Board::piecesList) e->setChosen(false);
 	Board::updateBoard();
+}
+
+void GameManager::checkWinner(){
+	if (turn % 2 == 0) {
+		// this is turn of white pieces	
+		King* king = (King*)(Board::piecesList[0]);
+		bool kingChosen = king->getChosen();
+		king->setChosen(true);
+		if (king->checkmate(king->getPosition(), Board::piecesOnBoard)) {
+			int cnt = 0;
+			for (int i = 0; i < 16; i++) {
+				bool pieceChosen = Board::piecesList[i]->getChosen();
+				Board::piecesList[i]->setChosen(true);
+				std::vector<std::vector<Coordinate>> temp = Board::piecesList[i]->getPossibleMoves(Board::piecesOnBoard);
+				cnt += temp[0].size() + temp[1].size();
+				Board::piecesList[i]->setChosen(pieceChosen);
+			}
+			if (cnt == 0) std::cout << "Black winner!!!" << std::endl;
+		}
+		king->setChosen(kingChosen);
+	}
+	else {
+		// this is turn of black pieces	
+		King* king = (King*)(Board::piecesList[16]);
+		bool kingChosen = king->getChosen();
+		king->setChosen(true);
+		if (king->checkmate(king->getPosition(), Board::piecesOnBoard)) {
+			int cnt = 0;
+			for (int i = 16; i < 32; i++) {
+				bool pieceChosen = Board::piecesList[i]->getChosen();
+				Board::piecesList[i]->setChosen(true);
+				std::vector<std::vector<Coordinate>> temp = Board::piecesList[i]->getPossibleMoves(Board::piecesOnBoard);
+				cnt += temp[0].size() + temp[1].size();
+				Board::piecesList[i]->setChosen(pieceChosen);
+			}
+			if (cnt == 0) std::cout << "White winner!!!" << std::endl;
+		}
+		king->setChosen(kingChosen);
+	}
 }
 
 

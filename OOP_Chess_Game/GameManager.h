@@ -66,6 +66,8 @@ public:
 	void undo();
 
 	void redo();
+
+	void checkWinner();
 };
 
 

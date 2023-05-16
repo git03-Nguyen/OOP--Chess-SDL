@@ -61,6 +61,35 @@ int Piece::getID() {
 	return this->id;
 }
 
+void Piece::getMovesWhenCheckmated(std::vector<Coordinate>& moves, std::vector<std::vector<Piece*>> board) {
+	if (this->getChosen()) {
+		King* king = nullptr;
+		for (auto& v : board) {
+			bool flag = false;
+			for (auto& u : v) {
+				if (u && u->getColor() == this->color && u->getType() == PieceType::King) {
+					king = (King*)u;
+					flag = true;
+				}
+			}
+			if (flag) break;
+		}
+		for (int i = 0; i < moves.size(); i++) {
+			Piece* temp = nullptr;
+			Coordinate move = moves[i];
+			temp = board[moves[i].getX()][moves[i].getY()];
+			board[this->position.getX()][this->position.getY()] = nullptr;
+			board[moves[i].getX()][moves[i].getY()] = this;
+			if (king && king->checkmate(king->getPosition(), board)) {
+				moves.erase(moves.begin() + i);
+				i--;
+			}
+			board[move.getX()][move.getY()] = temp;
+			board[this->position.getX()][this->position.getY()] = this;
+		}
+	}
+}
+
 //--------------------------------------------------------------------------------------------------
 King::King() {
 	ableCastling = true;
@@ -188,10 +217,13 @@ std::vector<std::vector<Coordinate>> King::getPossibleMoves(std::vector<std::vec
 			moves.push_back(Coordinate(X, Y));
 		}
 	}
+
+	// case: checkmate
 	if (this->getChosen()) {
 		for (int i = 0; i < moves.size(); i++) {
-			if (checkMate(moves[i], board)) {
+			if (checkmate(moves[i], board)) {
 				moves.erase(moves.begin() + i);
+				i--;
 			}
 		}
 	}
@@ -227,7 +259,7 @@ std::vector<Coordinate> King::getCastlingMove(std::vector<std::vector<Piece*>> b
 		return moves;
 	}
 	// Violate Rule 2
-	if (checkMate(this->position, board)) return moves;
+	if (checkmate(this->position, board)) return moves;
 
 	for (int i = 0; i < 2; i++) {
 		// Violate rule 1
@@ -249,14 +281,14 @@ std::vector<Coordinate> King::getCastlingMove(std::vector<std::vector<Piece*>> b
 		if (flag) continue;
 
 		// Violate rule 3
-		if (checkMate(Coordinate(this->position.getX() + coeff * 2, this->position.getY()), board)) continue;
+		if (checkmate(Coordinate(this->position.getX() + coeff * 2, this->position.getY()), board)) continue;
 
 		moves.push_back(Coordinate(this->position.getX() + coeff * 2, this->position.getY()));
 	}
 
 	return moves;
 }
-bool King::checkMate(const Coordinate& positionOfKing, std::vector<std::vector<Piece*>> board) {
+bool King::checkmate(const Coordinate& positionOfKing, std::vector<std::vector<Piece*>> board) {
 	std::vector<Coordinate> possibleMoves;
 
 	for (auto& row : board) {
@@ -457,6 +489,9 @@ std::vector<std::vector<Coordinate>> Queen::getPossibleMoves(std::vector<std::ve
 		else { break; }
 	}
 
+	// case: checkmate
+	this->getMovesWhenCheckmated(moves, board);
+
 	for (auto& e : moves) {
 		if (!board[e.getX()][e.getY()]) result[0].push_back(e);
 		else result[1].push_back(e);
@@ -583,6 +618,9 @@ std::vector<std::vector<Coordinate>> Bishop::getPossibleMoves(std::vector<std::v
 		}
 		else { break; }
 	}
+
+	// case: checkmate
+	this->getMovesWhenCheckmated(moves, board);
 
 	for (auto& e : moves) {
 		if (!board[e.getX()][e.getY()]) result[0].push_back(e);
@@ -714,6 +752,9 @@ std::vector<std::vector<Coordinate>> Rook::getPossibleMoves(std::vector<std::vec
 		}
 		else { break; }
 	}
+
+	// case: checkmate
+	this->getMovesWhenCheckmated(moves, board);
 
 	for (auto& e : moves) {
 		if (!board[e.getX()][e.getY()]) result[0].push_back(e);
@@ -849,6 +890,9 @@ std::vector<std::vector<Coordinate>> Knight::getPossibleMoves(std::vector<std::v
 			moves.push_back(Coordinate(X, Y));
 		}
 	}
+
+	// case: checkmate
+	this->getMovesWhenCheckmated(moves, board);
 
 	for (auto& e : moves) {
 		if (!board[e.getX()][e.getY()]) result[0].push_back(e);
@@ -1162,6 +1206,8 @@ std::vector<std::vector<Coordinate>> Pawn::getPossibleMoves(std::vector<std::vec
 		}
 	}
 
+	// case: checkmate
+	this->getMovesWhenCheckmated(moves, board);
 
 	for (auto& e : moves) {
 		if (!board[e.getX()][e.getY()]) result[0].push_back(e);

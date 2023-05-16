@@ -42,6 +42,8 @@ protected:
 	bool chosen;
 	PieceType type;
 	int id;
+
+	void getMovesWhenCheckmated(std::vector<Coordinate>& moves, std::vector<std::vector<Piece*>> board);
 public:
 	std::vector<int> tableMove;
 	Piece();
@@ -81,7 +83,7 @@ public:
 	Piece* clone() const;
 
 	std::vector<Coordinate> getCastlingMove(std::vector<std::vector<Piece*>> board);
-	bool checkMate(const Coordinate& positionOfKing, std::vector<std::vector<Piece*>> board);
+	bool checkmate(const Coordinate& positionOfKing, std::vector<std::vector<Piece*>> board);
 };
 
 class Queen : public Piece {
