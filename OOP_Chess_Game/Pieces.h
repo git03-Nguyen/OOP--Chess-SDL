@@ -62,8 +62,10 @@ protected:
 	SDL_Texture* texture;
 	PieceType type;
 	int id;
+
+	void updatePawnState(std::vector<std::vector<Piece*>> board);
 public:
-	std::vector<int> tableMove;
+	//std::vector<std::pair<int, Coordinate>> tableMove;
 	Piece();
 	Piece(const Piece& pieces);
 	Piece(const Coordinate& position, Color color, const std::string& imagePath);
@@ -82,12 +84,10 @@ public:
 	PieceType getType() const;
 	SDL_Texture* getTexture();
 
-	bool canEnPassant(std::vector<std::vector<Piece*>>);
 	virtual Piece* move(const Coordinate& c, std::vector<std::vector<Piece*>>) = 0;
 	virtual std::vector<std::vector<Coordinate>> getPossibleMoves(std::vector<std::vector<Piece*>>) = 0;
 	virtual Piece* clone() = 0;
 	void loadImage(SDL_Renderer* renderer);
-	void destroyImage();
 
 	virtual Piece& operator = (const Piece& piece);
 };
@@ -179,6 +179,7 @@ class Pawn: public Piece {
 private:
 	Piece* promotion;
 	bool firstMove;
+	bool enableEnPassantCaptured;
 public:
 	Pawn();
 	Pawn(const Pawn& pawn);
@@ -188,6 +189,8 @@ public:
 	Piece* getPromotion() const;
 	bool getFirstMove();
 	void setFirstMove(bool firstMove);
+	void setEnableEnPassantCaptured(bool able);
+	bool getEnableEnPassantCaptured();
 	Piece* move(const Coordinate& c, std::vector<std::vector<Piece*>>);
 	std::vector<std::vector<Coordinate>> getPossibleMoves(std::vector<std::vector<Piece*>>);
 	Piece* clone();

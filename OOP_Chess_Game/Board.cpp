@@ -93,13 +93,13 @@ void Board::resetPiecesList() {
     piecesList.push_back(new Bishop(Coordinate(5, 7), Color::Black, pathToString(Path::bishopBlack)));
     piecesList[19]->setID(19);
     piecesList.push_back(new Knight(Coordinate(1, 7), Color::Black, pathToString(Path::knightBlack)));
-    piecesList[16]->setID(20);
+    piecesList[20]->setID(20);
     piecesList.push_back(new Knight(Coordinate(6, 7), Color::Black, pathToString(Path::knightBlack)));
-    piecesList[16]->setID(21);
+    piecesList[21]->setID(21);
     piecesList.push_back(new Rook(Coordinate(0, 7), Color::Black, pathToString(Path::rookBlack)));
-    piecesList[16]->setID(22);
+    piecesList[22]->setID(22);
     piecesList.push_back(new Rook(Coordinate(7, 7), Color::Black, pathToString(Path::rookBlack)));
-    piecesList[16]->setID(23);
+    piecesList[23]->setID(23);
 
     for (int i = 0; i < 8; i++) {
         piecesList.push_back(new Pawn(Coordinate(i, 6), Color::Black, pathToString(Path::pawnBlack)));
