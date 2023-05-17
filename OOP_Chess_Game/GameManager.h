@@ -34,7 +34,7 @@ private:
 	MatchResult result;
 
 public:
-	
+
 
 	GameManager(const char* title, int xPos, int yPos, int width, int height);
 	~GameManager();
@@ -66,6 +66,8 @@ public:
 	void undo();
 
 	void redo();
+
+	void checkWinner();
 };
 
 
