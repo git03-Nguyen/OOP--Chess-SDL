@@ -6,7 +6,6 @@ Piece::Piece() {
 	dead = false;
 	chosen = false; 
 	type = {};
-	tableMove = {};
 	id = -1;
 }
 Piece::Piece(const Piece& piece) {
@@ -16,14 +15,12 @@ Piece::Piece(const Piece& piece) {
 	this->chosen = piece.chosen;
 	this->type = piece.type;
 	this->id = piece.id;
-	this->tableMove = piece.tableMove;
 }
 Piece::Piece(const Coordinate& position, Color color) {
 	this->position = position;
 	this->color = color;
 }
 Piece::~Piece() {
-	tableMove.clear();
 }
 void Piece::updatePawnState(std::vector<std::vector<Piece*>> board) {
 	for (auto& u : board) {
@@ -980,95 +977,15 @@ Piece* Pawn::getPromotion() const {
 void Pawn::setFirstMove(bool firstMove) {
 	this->firstMove = firstMove;
 }
-bool Pawn::getFirstMove() {
-	return this->firstMove;
-}
-void Pawn::setFirstMove(bool firstMove) {
-	this->firstMove = firstMove;
-}
 void Pawn::setEnableEnPassantCaptured(bool able) {
 	this->enableEnPassantCaptured = able;
 }
 bool Pawn::getEnableEnPassantCaptured() {
 	return this->enableEnPassantCaptured;
 }
-//bool Piece::canEnPassant(std::vector<std::vector<Piece*>> board) {
-//	if (!this) {
-//		return false;
-//	}
-//	if (this->getType() != PieceType::Pawn) {
-//		return false;
-//	}
-//	Coordinate tmp = this->getPosition();
-//	int X = tmp.getX();
-//	int Y = tmp.getY();
-//
-//	if (this->getColor() == Color::White && Y == 4) {
-//		if (X > 0) {
-//			if (board[X - 1][Y] != nullptr && board[X - 1][Y]->getColor() == Color::Black && board[X - 1][Y]->getType() == PieceType::Pawn
-//				&& board[X - 1][Y]->tableMove[board[X - 1][Y]->tableMove.size() - 1].first == 0) {
-//				return true;
-//			}
-//		}
-//		if (X < _BOARD_HEIGHT) {
-//			if (board[X + 1][Y] != nullptr && board[X + 1][Y]->getColor() == Color::Black && board[X + 1][Y]->getType() == PieceType::Pawn
-//				&& board[X + 1][Y]->tableMove[board[X + 1][Y]->tableMove.size() - 1].first == 0) {
-//				return true;
-//			}
-//		}
-//	}
-//	/*else if (this->getColor() == Color::White && Y < 4) {
-//		bool checkLeft = true;
-//		bool checkRight = true;
-//		if (X > 0) {
-//			if (board[X - 1][4] != nullptr && board[X - 1][4]->getColor() == Color::Black && board[X - 1][4]->getType() == PieceType::Pawn
-//				&& board[X - 1][4]->tableMove[board[X - 1][4]->tableMove.size() - 1].first == 0) {
-//				checkLeft = false;
-//			}
-//		}
-//		if (X < _BOARD_HEIGHT) {
-//			if (board[X + 1][4] != nullptr && board[X + 1][4]->getColor() == Color::Black && board[X + 1][4]->getType() == PieceType::Pawn
-//				&& board[X + 1][4]->tableMove[board[X + 1][4]->tableMove.size() - 1].first == 0) {
-//				checkRight = false;
-//			}
-//		}
-//		return checkLeft && checkRight;
-//	}*/
-//		
-//	if (this->getColor() == Color::Black && Y == 3) {
-//		if (X > 0) {
-//			if (board[X - 1][Y] != nullptr && board[X - 1][Y]->getColor() == Color::White && board[X - 1][Y]->getType() == PieceType::Pawn
-//				&& board[X - 1][Y]->tableMove[board[X - 1][Y]->tableMove.size() - 1].first == 0) {
-//				return true;
-//			}
-//		}
-//		if (X < _BOARD_HEIGHT) {
-//			if (board[X + 1][Y] != nullptr && board[X + 1][Y]->getColor() == Color::White && board[X + 1][Y]->getType() == PieceType::Pawn
-//				&& board[X + 1][Y]->tableMove[board[X + 1][Y]->tableMove.size() - 1].first == 0) {
-//				return true;
-//			}
-//		}
-//	}
-//	/*else if (this->getColor() == Color::Black && Y > 3) {
-//		bool checkLeft = true;
-//		bool checkRight = true;
-//		if (X > 0) {
-//			if (board[X - 1][3] != nullptr && board[X - 1][3]->getColor() == Color::White && board[X - 1][3]->getType() == PieceType::Pawn
-//				&& board[X - 1][3]->tableMove[board[X - 1][3]->tableMove.size() - 1].first == 0) {
-//				checkLeft = false;
-//			}
-//		}
-//		if (X < _BOARD_HEIGHT) {
-//			if (board[X + 1][3] != nullptr && board[X + 1][3]->getColor() == Color::White && board[X + 1][3]->getType() == PieceType::Pawn
-//				&& board[X + 1][3]->tableMove[board[X + 1][3]->tableMove.size() - 1].first == 0) {
-//				checkRight = false;
-//			}
-//		}
-//		return checkLeft && checkRight;
-//	}*/
-//	return false;
-//}
-
+bool Pawn::getFirstMove() {
+	return this->firstMove;
+}
 Piece* Pawn::move(const Coordinate& c, std::vector<std::vector<Piece*>> board) {
 	if (this->promotion) {
 		Piece* piece = this->promotion->move(c, board);
@@ -1083,14 +1000,12 @@ Piece* Pawn::move(const Coordinate& c, std::vector<std::vector<Piece*>> board) {
 			if ((this->color == Color::White && c.getY() == 3) || (this->color == Color::Black && c.getY() == 4)) {
 				this->setEnableEnPassantCaptured(true);
 			}
-			//tableMove.push_back(std::make_pair(0, this->getPosition()));
 			this->setPosition(c);
 			this->setFirstMove(false);
 
 			return nullptr;
 		}
 		if (board[c.getX()][c.getY()] != nullptr && this->getColor() != board[c.getX()][c.getY()]->getColor()) {
-			//tableMove.push_back(std::make_pair(0, this->getPosition()));
 			board[c.getX()][c.getY()]->setDead(true);
 			this->setPosition(c);
 			this->setFirstMove(false);
@@ -1105,7 +1020,6 @@ Piece* Pawn::move(const Coordinate& c, std::vector<std::vector<Piece*>> board) {
 		if (X > 0 && Y == 4 && X - 1 == c.getX() && c.getY() == 5 && board[X - 1][Y] && board[X - 1][Y]->getType() == PieceType::Pawn) {
 			Pawn* enemyPawn = (Pawn*)board[X - 1][Y];
 			if (enemyPawn && enemyPawn->getColor() == Color::Black && enemyPawn->getEnableEnPassantCaptured()) {
-				//this->tableMove.push_back(std::make_pair(this->tableMove.size(), this->getPosition()));
 				board[X - 1][Y]->setDead(true);
 				this->setPosition(c);
 
@@ -1115,7 +1029,6 @@ Piece* Pawn::move(const Coordinate& c, std::vector<std::vector<Piece*>> board) {
 		if (X < _BOARD_HEIGHT && Y == 4 && X + 1 == c.getX() && c.getY() == 5 && board[X + 1][Y] && board[X + 1][Y]->getType() == PieceType::Pawn) {
 			Pawn* enemyPawn = (Pawn*)board[X + 1][Y];
 			if (enemyPawn && enemyPawn->getColor() == Color::Black && enemyPawn->getEnableEnPassantCaptured()) {
-				//this->tableMove.push_back(std::make_pair(this->tableMove.size(), this->getPosition()));
 				board[X + 1][Y]->setDead(true);
 				this->setPosition(c);
 
@@ -1127,7 +1040,6 @@ Piece* Pawn::move(const Coordinate& c, std::vector<std::vector<Piece*>> board) {
 		if (X > 0 && Y == 3 && X - 1 == c.getX() && c.getY() == 2 && board[X - 1][Y] && board[X - 1][Y]->getType() == PieceType::Pawn) {
 			Pawn* enemyPawn = (Pawn*)board[X - 1][Y];
 			if (enemyPawn && enemyPawn->getColor() == Color::White && enemyPawn->getEnableEnPassantCaptured()) {
-				//this->tableMove.push_back(std::make_pair(this->tableMove.size(), this->getPosition()));
 				board[X - 1][Y]->setDead(true);
 				this->setPosition(c);
 
@@ -1137,7 +1049,6 @@ Piece* Pawn::move(const Coordinate& c, std::vector<std::vector<Piece*>> board) {
 		if (X < _BOARD_HEIGHT && Y == 3 && X + 1 == c.getX() && c.getY() == 2 && board[X + 1][Y] && board[X + 1][Y]->getType() == PieceType::Pawn) {
 			Pawn* enemyPawn = (Pawn*)board[X + 1][Y];
 			if (enemyPawn && enemyPawn->getColor() == Color::White && enemyPawn->getEnableEnPassantCaptured()) {
-				//this->tableMove.push_back(std::make_pair(this->tableMove.size(), this->getPosition()));
 				board[X + 1][Y]->setDead(true);
 				this->setPosition(c);
 
@@ -1146,7 +1057,6 @@ Piece* Pawn::move(const Coordinate& c, std::vector<std::vector<Piece*>> board) {
 		}
 	}
 	if (!board[c.getX()][c.getY()]) {
-		//this->tableMove.push_back(std::make_pair(this->tableMove.size(), this->getPosition()));
 		this->updatePawnState(board);
 		this->setPosition(c);
 
@@ -1154,7 +1064,6 @@ Piece* Pawn::move(const Coordinate& c, std::vector<std::vector<Piece*>> board) {
 	}
 	if (this->getColor() != board[c.getX()][c.getY()]->getColor()) {
 		this->updatePawnState(board);
-		//this->tableMove.push_back(std::make_pair(this->tableMove.size(), this->getPosition()));
 		board[c.getX()][c.getY()]->setDead(true);
 		this->setPosition(c);
 
@@ -1308,7 +1217,6 @@ std::vector<std::vector<Coordinate>> Pawn::getPossibleMoves(std::vector<std::vec
 		}
 	}
 
-	// case: checkmate
 	this->getMovesWhenCheckmated(moves, board);
 
 	for (auto& e : moves) {

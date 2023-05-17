@@ -44,10 +44,8 @@ protected:
 	int id;
 
 	void updatePawnState(std::vector<std::vector<Piece*>> board);
-
 	void getMovesWhenCheckmated(std::vector<Coordinate>& moves, std::vector<std::vector<Piece*>> board);
 public:
-	//std::vector<std::pair<int, Coordinate>> tableMove;
 	Piece();
 	Piece(const Piece& piece);
 	Piece(const Coordinate& position, Color color);
