@@ -47,9 +47,11 @@ void History::setCapturedPiece(const Piece* capturedPiece) {
 }
 
 void History::updateData(int turn) {
+    // bug logic
+    /*
     if (turn < history.size()) {
         for (int i = 0; i < 3; i++) {
-            if (!history[turn][i]) {
+            if (history[turn][i]) {
                 delete history[turn][i];
                 history[turn][i] = nullptr;
             }
@@ -57,6 +59,19 @@ void History::updateData(int turn) {
         history[turn] = std::vector<Piece*>{ initialState, finalState, capturedPiece };
     }
     else history.push_back(std::vector<Piece*>{ initialState, finalState, capturedPiece });
+    */
+    
+    // fix bug
+    for (int i = turn; i < history.size(); i++) {
+        for (int j = 0; j < 3; j++) {
+            if (history[i][j]) {
+                delete history[i][j];
+                history[i][j] = nullptr;
+            }
+        }
+    }
+    if (turn < history.size()) history.erase(history.begin() + turn, history.end());
+    history.push_back(std::vector<Piece*>{ initialState, finalState, capturedPiece });
 }
 
 std::vector<Piece*> History::getData(int turn) {
