@@ -61,6 +61,7 @@ public:
 	~Image();
 	SDL_Rect getRectangle();
 	void setRectangle(SDL_Rect rect);
+	void makeBlend(int opacity);
 	void renderImage();
 	void destroy();
 };

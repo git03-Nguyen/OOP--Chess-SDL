@@ -6,12 +6,18 @@
 #include "Board.h"
 #include "Pieces.h"
 
+#define PIECESIZE 60
+#define DISPLACE 40
+#define WINDOWSIZEX 640
+#define WINDOWSIZEY 560
+
 enum class TypeGUI { MENU, MODE_OPTION, VOLUME_OPTION, REPLAY_RECENT_GAME, GAME_PLAY, RESULT_NOTICE, PROMOTION_NOTICE, SETTINGS };
 
 class GUI {
 protected:
 	Image* background;
 	bool active;
+	SDL_Rect rect;
 public:
 	GUI();
 	virtual ~GUI();
@@ -96,19 +102,27 @@ public:
 class GamePlayGUI : public GUI {
 protected:
 	std::vector<Image*> piece;
+	//
 	Piece* chosenPiece;
 	//
+	Image* chosen;
 	Image* possibleMove;
+	Image* possibleCapture;
+	//
 	Image* board;
 	Image* btnSetting;
 	Image* btnUndo;
 	Image* btnRedo;
 	Image* btnQuit;
-	//at first, rect all {0,0,0,0}
-	Image* btnPromoteQueen;
-	Image* btnPromoteRook;
-	Image* btnPromoteBishop;
-	Image* btnPromoteKnight;
+	//
+	Image* whiteMove;
+	Image* blackMove;
+	//
+	////at first, rect all {0,0,0,0}
+	//Image* btnPromoteQueen;
+	//Image* btnPromoteRook;
+	//Image* btnPromoteBishop;
+	//Image* btnPromoteKnight;
 public:
 	GamePlayGUI();
 	//
@@ -118,9 +132,10 @@ public:
 	//
 	void set();
 	void render();
+	void renderTurn(int turn);
 	//
-	void initPromotionButtons();	 //call when needed
-	void clearPromotionButtons();    //must call after use
+	//void initPromotionButtons();	 //call when needed
+	//void clearPromotionButtons();    //must call after use
 	//
 	SDL_Rect getRectOfBoard();
 	SDL_Rect getRectOfBtnSetting();
@@ -128,10 +143,10 @@ public:
 	SDL_Rect getRectOfBtnRedo();
 	SDL_Rect getRectOfBtnQuit();
 	//
-	SDL_Rect getRectOfBtnPromoteQueen();
-	SDL_Rect getRectOfBtnPromoteRook();
-	SDL_Rect getRectOfBtnPromoteBishop();
-	SDL_Rect getRectOfBtnPromoteKnight();
+	//SDL_Rect getRectOfBtnPromoteQueen();
+	//SDL_Rect getRectOfBtnPromoteRook();
+	//SDL_Rect getRectOfBtnPromoteBishop();
+	//SDL_Rect getRectOfBtnPromoteKnight();
 	//
 	void destroy();
 	//
