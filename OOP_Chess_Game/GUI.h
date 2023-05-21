@@ -16,6 +16,7 @@
 #define SUBSIZEY WINDOWSIZEY-SUBDISPLACE*2
 
 enum class GUIType { MENU, MODE_OPTION, VOLUME_OPTION, REPLAY_RECENT_GAME, GAME_PLAY, RESULT_NOTICE, PROMOTION_NOTICE, SETTINGS };
+enum class MatchState { BLACK_WIN, WHITE_WIN, DRAW, IN_PLAY};
 
 class GUI {
 protected:
@@ -162,20 +163,18 @@ public:
 
 //class MatchResultGUI : public GUI {
 //private:
-//	TextObject text;
-//	static Button btnPlayAgain;
-//	static Button btnBackToMenu;
+//	Image* btnPlayAgain;
+//	Image* btnBackToMenu;
 //public:
 //	MatchResultGUI();
-//	virtual ~MatchResultGUI();
+//	~MatchResultGUI();
 //
-//	void init();
 //	void render();
 //	GUIType getGUIType() const;
-//	void setText(const TextObject& text);
+//	void renderMatchResult(MatchState ms);
 //
-//	static SDL_Rect getRectOfBtnPlayAgain();
-//	static SDL_Rect getRectOfBtnBackToMenu();
+//	SDL_Rect getRectOfBtnPlayAgain();
+//	SDL_Rect getRectOfBtnBackToMenu();
 //};
 
 // TODO: use full parameter constructor
@@ -202,13 +201,6 @@ public:
 	SDL_Rect getRectOfBtnKnight();
 	SDL_Rect getRectOfBtnRook();
 };
-
-// TODO: use full parameter constructor
-//static Button btnQueen;
-//static Button btnBishop;
-//static Button btnKnight;
-//static Button btnRook;
-
 
 //class SettingGUI : public GUI {
 //private:
