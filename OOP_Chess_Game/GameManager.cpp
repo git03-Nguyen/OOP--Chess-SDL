@@ -51,10 +51,10 @@ void GameManager::gameLoop(int fps) {
 
 	while (isRunning) {
 		frameStart = SDL_GetTicks();
-		handelEvents();
+		handelEvents(); // not here
 		render();
 		frameTime = SDL_GetTicks() - frameStart;
-	
+		std::cout << "FrameTime: " << frameTime << std::endl;
 		if (frameDelay > frameTime) {
 			SDL_Delay(frameDelay - frameTime);
 		}
@@ -108,9 +108,10 @@ void GameManager::handelEvents() {
 			*/
 			Coordinate c = getClickedBox(e);
 			std::cout << c.getX() << " " << c.getY() << std::endl;
+
 			handleClickedPiece(e);
 			handleClickedHightlightBox(e);
-
+	
 			if (subGui) {
 				if (subGui->getGUIType() == GUIType::PROMOTION_NOTICE) {
 					PromotionGUI* temp = (PromotionGUI*)subGui;
@@ -169,7 +170,6 @@ void GameManager::handelEvents() {
 					std::cout << "Quit button clicked!" << std::endl;
 					history->read("history1.bin");
 				}
-				return;
 			}
 		}
 	}

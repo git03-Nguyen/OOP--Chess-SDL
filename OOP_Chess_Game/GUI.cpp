@@ -229,31 +229,38 @@ void GamePlayGUI::render() {
 	//this->btnPromoteRook->renderImage();
 	//this->btnPromoteKnight->renderImage();
 	//possible moves - possible capture - chosen
+
+	
 	if (this->chosenPiece != nullptr) {
 		//chosen
 		int x = this->chosenPiece->getPosition().getX() * PIECESIZE + DISPLACE;
 		int y = this->chosenPiece->getPosition().getY() * PIECESIZE + DISPLACE;
 		this->chosen->setRectangle({ x,y,PIECESIZE,PIECESIZE });
 		this->chosen->renderImage();
+
+		std::vector<std::vector<Coordinate>> moves = this->chosenPiece->getPossibleMoves(Board::piecesOnBoard);
 		//possible moves
-		for (int i = 0; i < this->chosenPiece->getPossibleMoves(Board::piecesOnBoard)[0].size(); i++) {
-			x = this->chosenPiece->getPossibleMoves(Board::piecesOnBoard)[0][i].getX() * PIECESIZE + DISPLACE;
-			y = this->chosenPiece->getPossibleMoves(Board::piecesOnBoard)[0][i].getY() * PIECESIZE + DISPLACE;
+		for (int i = 0; i < moves[0].size(); i++) {
+			x = moves[0][i].getX() * PIECESIZE + DISPLACE;
+			y = moves[0][i].getY() * PIECESIZE + DISPLACE;
 			this->possibleMove->setRectangle({ x,y,PIECESIZE,PIECESIZE });
 			this->possibleMove->renderImage();
 		}
 		//possible capture
-		for (int i = 0; i < this->chosenPiece->getPossibleMoves(Board::piecesOnBoard)[1].size(); i++) {
-			x = this->chosenPiece->getPossibleMoves(Board::piecesOnBoard)[1][i].getX() * PIECESIZE + DISPLACE;
-			y = this->chosenPiece->getPossibleMoves(Board::piecesOnBoard)[1][i].getY() * PIECESIZE + DISPLACE;
+		for (int i = 0; i < moves[1].size(); i++) {
+			x = moves[1][i].getX() * PIECESIZE + DISPLACE;
+			y = moves[1][i].getY() * PIECESIZE + DISPLACE;
 			this->possibleCapture->setRectangle({ x,y,PIECESIZE,PIECESIZE });
 			this->possibleCapture->renderImage();
 		}
 	}
+	
+
 	//pieces
 	for (int i = 0; i < this->piece.size(); i++) {
 		this->piece[i]->renderImage();
 	}
+
 }
 //void GamePlayGUI::initPromotionButtons() {
 //	this->btnPromoteQueen->setRectangle({ 570,300,70,70 });
