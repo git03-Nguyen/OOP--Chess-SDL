@@ -1289,7 +1289,7 @@ Piece* Pawn::clone() const{
 Piece* Pawn::getPromotion() {
 	return this->promotion;
 }
-void promote(Piece* newPiece, PieceType& type) {
+void promote(Piece*& newPiece, PieceType& type) {
 	if (newPiece->getType() == PieceType::Pawn) {
 		if (newPiece->getColor() == Color::White) {
 			if (newPiece->getPosition().getY() == 7) {
