@@ -313,7 +313,7 @@ SDL_Rect GamePlayGUI::getRectOfBtnQuit() {
 void GamePlayGUI::destroy() {
 	for (int i = 0; i < this->piece.size(); i++) {
 		this->piece[i]->destroy();
-		delete this->piece[i];
+		delete this->piece[i]; 
 		this->piece[i] = nullptr;
 	}
 	this->piece.clear();
