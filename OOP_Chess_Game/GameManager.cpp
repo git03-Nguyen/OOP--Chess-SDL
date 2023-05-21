@@ -111,10 +111,10 @@ void GameManager::handelEvents() {
 			std::cout << c.getX() << " " << c.getY() << std::endl;
 			handleClickedPiece(e);
 			handleClickedHightlightBox(e);
-			
+
 			if (subGui) {
 				if (subGui->getGUIType() == GUIType::PROMOTION_NOTICE) {
-					// handle button
+					// to do something
 				}
 			}
 
@@ -122,7 +122,7 @@ void GameManager::handelEvents() {
 				GamePlayGUI* temp = dynamic_cast<GamePlayGUI*>(mainGui);
 				if (checkFocus(e, temp->getRectOfBtnSetting())) {
 					std::cout << "Setting button clicked!" << std::endl;
-					history->write("history2.bin");
+					history->write("history1.bin");
 				}
 				if (checkFocus(e, temp->getRectOfBtnUndo())) {
 					std::cout << "Undo button clicked!" << std::endl;
@@ -134,7 +134,7 @@ void GameManager::handelEvents() {
 				}
 				if (checkFocus(e, temp->getRectOfBtnQuit())) {
 					std::cout << "Quit button clicked!" << std::endl;
-					history->read("history2.bin");
+					history->read("history1.bin");
 				}
 				return;
 			}
@@ -403,11 +403,10 @@ void GameManager::handleClickedHightlightBox(const SDL_Event& e) {
 			history->setCapturedPiece(capturedPiece);
 			history->updateData(turn);
 			turn++;
-			Board::updateBoard();       
+			Board::updateBoard();
 			break;
 		}
 	}
-
 	// TODO - check promotion
 	//if (checkPromotion(chosenPiece)) {
 	//	delete gui;
@@ -457,7 +456,7 @@ int GameManager::getValueFromSlider(const SDL_Rect* buttonRect, const SDL_Rect* 
 // TODO - Carefully pointer to texture (I call slow change state)
 void GameManager::undo() {
 	if (turn <= 0) return;
-	
+
 	turn--;
 	std::vector<Piece*> temp = history->getData(turn);
 	delete Board::piecesList[temp[0]->getID()];
@@ -486,7 +485,7 @@ void GameManager::undo() {
 // TODO - Carefully pointer to texture (I call quick change state)
 void GameManager::redo() {
 	if (turn >= history->getLengthData()) return;
-	
+
 	std::vector<Piece*> temp = history->getData(turn);
 	delete Board::piecesList[temp[1]->getID()];
 	Board::piecesList[temp[1]->getID()] = temp[1]->clone();
@@ -494,7 +493,7 @@ void GameManager::redo() {
 		delete Board::piecesList[temp[2]->getID()];
 		Board::piecesList[temp[2]->getID()] = temp[2]->clone();
 	}
-	
+
 	// case: king performed castling
 	if (temp[0]->getType() == PieceType::King && abs(temp[0]->getPosition().getX() - temp[1]->getPosition().getX()) == 2) {
 		if (temp[0]->getPosition().getX() > temp[1]->getPosition().getX()) {
@@ -512,35 +511,35 @@ void GameManager::redo() {
 	Board::updateBoard();
 }
 
-void GameManager::checkWinner(){
+void GameManager::checkWinner() {
 	if (turn % 2 == 0) {
 		// this is turn of white pieces	
 		King* king = (King*)(Board::piecesList[0]);
 		bool kingChosen = king->getChosen();
-		king->setChosen(true);
 		int cnt = 0;
 		for (int i = 0; i < 16; i++) {
+			if (Board::piecesList[i]->getDead()) continue;
 			bool pieceChosen = Board::piecesList[i]->getChosen();
 			Board::piecesList[i]->setChosen(true);
 			std::vector<std::vector<Coordinate>> temp = Board::piecesList[i]->getPossibleMoves(Board::piecesOnBoard);
 			cnt += temp[0].size() + temp[1].size();
 			Board::piecesList[i]->setChosen(pieceChosen);
 		}
-
+		
+		king->setChosen(true);
 		if (cnt == 0) {
 			if (king->checkmate(king->getPosition(), Board::piecesOnBoard)) std::cout << "Black winner!!!" << std::endl;
 			else std::cout << "Draw!!!" << std::endl;
 		}
-
 		king->setChosen(kingChosen);
 	}
 	else {
 		// this is turn of black pieces	
 		King* king = (King*)(Board::piecesList[16]);
 		bool kingChosen = king->getChosen();
-		king->setChosen(true);
 		int cnt = 0;
 		for (int i = 16; i < 32; i++) {
+			if (Board::piecesList[i]->getDead()) continue;
 			bool pieceChosen = Board::piecesList[i]->getChosen();
 			Board::piecesList[i]->setChosen(true);
 			std::vector<std::vector<Coordinate>> temp = Board::piecesList[i]->getPossibleMoves(Board::piecesOnBoard);
@@ -548,13 +547,12 @@ void GameManager::checkWinner(){
 			Board::piecesList[i]->setChosen(pieceChosen);
 		}
 
+		king->setChosen(true);
 		if (cnt == 0) {
-			if (king->checkmate(king->getPosition(), Board::piecesOnBoard)) std::cout << "White winner!!!" << std::endl;
-			else std::cout << "Draw!!!" << std::endl;
+			if (king->checkmate(king->getPosition(), Board::piecesOnBoard)) std::cout << "Black winner!!!" << std::endl;
+			else std::cout << "White!!!" << std::endl;
 		}
-
 		king->setChosen(kingChosen);
 	}
 }
-
 

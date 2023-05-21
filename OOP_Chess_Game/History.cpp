@@ -41,6 +41,8 @@ void History::write(std::string path) const {
             }
             type = piece->getType();
             os.write((char*)&type, sizeof(type));
+            piece->write(os);
+            /*
             switch (type) {
                 case PieceType::King: {
                     
@@ -79,6 +81,7 @@ void History::write(std::string path) const {
                     break;
                 }
             }
+            */
             
             if (promotion) promotion = nullptr;
         }
@@ -114,37 +117,37 @@ void History::read(std::string path) {
             switch (type) {
                 case PieceType::King: {
                     King* king = new King();
-                    is.read((char*)king, sizeof(*king));
+                    king->read(is);
                     piece = king;
                     break;
                 }
                 case PieceType::Queen: {
                     Queen* queen = new Queen();
-                    is.read((char*)queen, sizeof(*queen));
+                    queen->read(is);
                     piece = queen;
                     break;
                 }
                 case PieceType::Bishop: {
                     Bishop* bishop = new Bishop();
-                    is.read((char*)bishop, sizeof(*bishop));
+                    bishop->read(is);
                     piece = bishop;
                     break;
                 }
                 case PieceType::Knight: {
                     Knight* knight = new Knight();
-                    is.read((char*)knight, sizeof(*knight));
+                    knight->read(is);
                     piece = knight;
                     break;
                 }
                 case PieceType::Rook: {
                     Rook* rook = new Rook();
-                    is.read((char*)rook, sizeof(*rook));
+                    rook->read(is);
                     piece = rook;
                     break;
                 }
                 case PieceType::Pawn: {
                     Pawn* pawn = new Pawn();
-                    is.read((char*)pawn, sizeof(*pawn));
+                    pawn->read(is);
                     piece = pawn;
                     promotion = pawn->getPromotion();
                     if (promotion) {

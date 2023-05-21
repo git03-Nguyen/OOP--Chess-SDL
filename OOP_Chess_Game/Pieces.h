@@ -5,6 +5,7 @@
 #include <math.h>
 #include <SDL.h>
 #include <SDL_image.h>
+#include <fstream>
 
 #include "Coordinate.h"
 #include "Window.h"
@@ -65,7 +66,9 @@ public:
 
 	virtual Piece* move(const Coordinate& c, std::vector<std::vector<Piece*>>) = 0;
 	virtual std::vector<std::vector<Coordinate>> getPossibleMoves(std::vector<std::vector<Piece*>>) = 0;
-	virtual Piece* clone() const = 0 ;
+	virtual Piece* clone() const = 0;
+	virtual void write(std::fstream& os);
+	virtual void read(std::fstream& is);
 };
 
 class King : public Piece {
@@ -83,6 +86,8 @@ public:
 
 	std::vector<Coordinate> getCastlingMove(std::vector<std::vector<Piece*>> board);
 	bool checkmate(const Coordinate& positionOfKing, std::vector<std::vector<Piece*>> board);
+	void write(std::fstream& os);
+	void read(std::fstream& is);
 };
 
 class Queen : public Piece {
@@ -96,6 +101,8 @@ public:
 	Piece* move(const Coordinate& c, std::vector<std::vector<Piece*>>);
 	std::vector<std::vector<Coordinate>> getPossibleMoves(std::vector<std::vector<Piece*>>);
 	Piece* clone() const;
+	void write(std::fstream& os);
+	void read(std::fstream& is);
 };
 
 class Bishop : public Piece {
@@ -109,6 +116,8 @@ public:
 	Piece* move(const Coordinate& c, std::vector<std::vector<Piece*>>);
 	std::vector<std::vector<Coordinate>> getPossibleMoves(std::vector<std::vector<Piece*>>);
 	Piece* clone() const;
+	void write(std::fstream& os);
+	void read(std::fstream& is);
 };
 
 
@@ -128,6 +137,8 @@ public:
 	Piece* move(const Coordinate& c, std::vector<std::vector<Piece*>>);
 	std::vector<std::vector<Coordinate>> getPossibleMoves(std::vector<std::vector<Piece*>>);
 	Piece* clone() const;
+	void write(std::fstream& os);
+	void read(std::fstream& is);
 };
 
 class Knight : public Piece {
@@ -141,6 +152,8 @@ public:
 	Piece* move(const Coordinate& c, std::vector<std::vector<Piece*>>);
 	std::vector<std::vector<Coordinate>> getPossibleMoves(std::vector<std::vector<Piece*>>);
 	Piece* clone() const;
+	void write(std::fstream& os);
+	void read(std::fstream& is);
 };
 
 class Pawn: public Piece {
@@ -165,5 +178,7 @@ public:
 	Piece* clone() const;
 	Piece* getPromotion();
 	friend void promote(Piece* newPiece, PieceType& type);
+	void write(std::fstream& os);
+	void read(std::fstream& is);
 };
 
