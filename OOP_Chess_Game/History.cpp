@@ -39,47 +39,19 @@ void History::write(std::string path) const {
                 isNull = false;
                 os.write((char*)&isNull, sizeof(isNull));
             }
+
             type = piece->getType();
             os.write((char*)&type, sizeof(type));
-            switch (type) {
-                case PieceType::King: {
-                    
-                    King* king = (King*) piece;
-                    os.write((char*)king, sizeof(*king));
-                    break;
-                }
-                case PieceType::Queen: {
-                    Queen* queen = (Queen*)piece;
-                    os.write((char*)queen, sizeof(*queen));
-                    break;
-                }
-                case PieceType::Bishop: {
-                    Bishop* bishop = (Bishop*)piece;
-                    os.write((char*)bishop, sizeof(*bishop));
-                    break;
-                }
-                case PieceType::Knight: {
-                    Knight* knight = (Knight*)piece;
-                    os.write((char*)knight, sizeof(*knight));
-                    break;
-                }
-                case PieceType::Rook: {
-                    Rook* rook = (Rook*)piece;
-                    os.write((char*)rook, sizeof(*rook));
-                    break;
-                }
-                case PieceType::Pawn: {
-                    Pawn* pawn = (Pawn*)piece;
-                    os.write((char*)pawn, sizeof(*pawn));
-                    promotion = pawn->getPromotion();
-                    if (promotion) {
-                        j--;
-                        continue;
-                    }
-                    break;
+            piece->write(os);
+
+            if (piece->getType() == PieceType::Pawn) {
+                Pawn* pawn = (Pawn*)piece;
+                promotion = pawn->getPromotion();
+                if (promotion) {
+                    j--;
+                    continue;
                 }
             }
-            
             if (promotion) promotion = nullptr;
         }
     }
@@ -114,37 +86,37 @@ void History::read(std::string path) {
             switch (type) {
                 case PieceType::King: {
                     King* king = new King();
-                    is.read((char*)king, sizeof(*king));
+                    king->read(is);
                     piece = king;
                     break;
                 }
                 case PieceType::Queen: {
                     Queen* queen = new Queen();
-                    is.read((char*)queen, sizeof(*queen));
+                    queen->read(is);
                     piece = queen;
                     break;
                 }
                 case PieceType::Bishop: {
                     Bishop* bishop = new Bishop();
-                    is.read((char*)bishop, sizeof(*bishop));
+                    bishop->read(is);
                     piece = bishop;
                     break;
                 }
                 case PieceType::Knight: {
                     Knight* knight = new Knight();
-                    is.read((char*)knight, sizeof(*knight));
+                    knight->read(is);
                     piece = knight;
                     break;
                 }
                 case PieceType::Rook: {
                     Rook* rook = new Rook();
-                    is.read((char*)rook, sizeof(*rook));
+                    rook->read(is);
                     piece = rook;
                     break;
                 }
                 case PieceType::Pawn: {
                     Pawn* pawn = new Pawn();
-                    is.read((char*)pawn, sizeof(*pawn));
+                    pawn->read(is);
                     piece = pawn;
                     promotion = pawn->getPromotion();
                     if (promotion) {

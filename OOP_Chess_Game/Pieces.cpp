@@ -97,6 +97,24 @@ void Piece::getMovesWhenCheckmated(std::vector<Coordinate>& moves, std::vector<s
 	}
 }
 
+void Piece::write(std::fstream& os) {
+	os.write((char*)&position, sizeof(position));
+	os.write((char*)&color, sizeof(color));
+	os.write((char*)&dead, sizeof(color));
+	os.write((char*)&chosen, sizeof(chosen));
+	os.write((char*)&type, sizeof(type));
+	os.write((char*)&id, sizeof(id));
+}
+
+void Piece::read(std::fstream& is) {
+	is.read((char*)&position, sizeof(position));
+	is.read((char*)&color, sizeof(color));
+	is.read((char*)&dead, sizeof(color));
+	is.read((char*)&chosen, sizeof(chosen));
+	is.read((char*)&type, sizeof(type));
+	is.read((char*)&id, sizeof(id));
+}
+
 //--------------------------------------------------------------------------------------------------
 King::King() {
 	ableCastling = true;
@@ -279,6 +297,7 @@ std::vector<Coordinate> King::getCastlingMove(std::vector<std::vector<Piece*>> b
 
 	for (int i = 0; i < 2; i++) {
 		// Violate rule 1
+		if (i >= rooks.size()) continue;
 		if (!rooks[i]->getFirstMove()) continue;
 
 		bool flag = false;
@@ -328,6 +347,14 @@ bool King::checkmate(const Coordinate& positionOfKing, std::vector<std::vector<P
 		}
 	}
 	return false;
+}
+void King::write(std::fstream& os) {
+	Piece::write(os);
+	os.write((char*)&ableCastling, sizeof(ableCastling));
+}
+void King::read(std::fstream& is) {
+	Piece::read(is);
+	is.read((char*)&ableCastling, sizeof(ableCastling));
 }
 
 //King& King::operator=(const Piece* piece) {
@@ -520,6 +547,12 @@ std::vector<std::vector<Coordinate>> Queen::getPossibleMoves(std::vector<std::ve
 Piece* Queen::clone() const{
 	return new Queen(*this);
 }
+void Queen::write(std::fstream& os) {
+	Piece::write(os);
+}
+void Queen::read(std::fstream& is) {
+	Piece::read(is);
+}
 
 //Queen& Queen::operator=(const Queen& piece) {
 //	if (this == &piece) return *this;
@@ -651,6 +684,12 @@ std::vector<std::vector<Coordinate>> Bishop::getPossibleMoves(std::vector<std::v
 }
 Piece* Bishop::clone() const{
 	return new Bishop(*this);
+}
+void Bishop::write(std::fstream& os) {
+	Piece::write(os);
+}
+void Bishop::read(std::fstream& is) {
+	Piece::read(is);
 }
 
 //Bishop& Bishop::operator=(const Bishop& piece) {
@@ -787,6 +826,14 @@ std::vector<std::vector<Coordinate>> Rook::getPossibleMoves(std::vector<std::vec
 }
 Piece* Rook::clone() const{
 	return new Rook(*this);
+}
+void Rook::write(std::fstream& os) {
+	Piece::write(os);
+	os.write((char*)&firstMove, sizeof(firstMove));
+}
+void Rook::read(std::fstream& is){
+	Piece::read(is);
+	is.read((char*)&firstMove, sizeof(firstMove));
 }
 
 //Rook& Rook::operator=(const Rook& piece) {
@@ -927,6 +974,12 @@ std::vector<std::vector<Coordinate>> Knight::getPossibleMoves(std::vector<std::v
 }
 Piece* Knight::clone() const{
 	return new Knight(*this);
+}
+void Knight::write(std::fstream& os) {
+	Piece::write(os);
+}
+void Knight::read(std::fstream& is) {
+	Piece::read(is);
 }
 
 //Knight& Knight::operator=(const Knight& piece) {
@@ -1296,4 +1349,16 @@ void promote(Piece* newPiece, PieceType& type) {
 		}
 	}
 	
+}
+void Pawn::write(std::fstream& os) {
+	Piece::write(os);
+	os.write((char*)&promotion, sizeof(promotion));
+	os.write((char*)&firstMove, sizeof(firstMove));
+	os.write((char*)&enableEnPassantCaptured, sizeof(enableEnPassantCaptured));
+}
+void Pawn::read(std::fstream& is) {
+	Piece::read(is);
+	is.read((char*)&promotion, sizeof(promotion));
+	is.read((char*)&firstMove, sizeof(firstMove));
+	is.read((char*)&enableEnPassantCaptured, sizeof(enableEnPassantCaptured));
 }
