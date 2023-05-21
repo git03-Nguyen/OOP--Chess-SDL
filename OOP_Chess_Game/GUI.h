@@ -117,16 +117,10 @@ protected:
 	Image* btnSetting;
 	Image* btnUndo;
 	Image* btnRedo;
-	Image* btnQuit;
 	//
 	Image* whiteMove;
 	Image* blackMove;
 	//
-	////at first, rect all {0,0,0,0}
-	//Image* btnPromoteQueen;
-	//Image* btnPromoteRook;
-	//Image* btnPromoteBishop;
-	//Image* btnPromoteKnight;
 public:
 	GamePlayGUI();
 	//
@@ -138,48 +132,37 @@ public:
 	void render();
 	void renderTurn(int turn);
 	//
-	//void initPromotionButtons();	 //call when needed
-	//void clearPromotionButtons();    //must call after use
-	//
 	SDL_Rect getRectOfBoard();
 	SDL_Rect getRectOfBtnSetting();
 	SDL_Rect getRectOfBtnUndo();
 	SDL_Rect getRectOfBtnRedo();
-	SDL_Rect getRectOfBtnQuit();
-	//
-	//SDL_Rect getRectOfBtnPromoteQueen();
-	//SDL_Rect getRectOfBtnPromoteRook();
-	//SDL_Rect getRectOfBtnPromoteBishop();
-	//SDL_Rect getRectOfBtnPromoteKnight();
+	SDL_Rect getRectOfBtnQuit() {
+		return { 0,0,0,0 };
+	}
 	//
 	void destroy();
 	//
 };
 
-// TODO: use full parameter constructor
-//Button GamePlayGUI::btnSetting;
-//Button GamePlayGUI::btnUndo;
-//Button GamePlayGUI::btnRedo;
+class MatchResultGUI : public GUI {
+private:
+	Image* blackWin;
+	Image* whiteWin;
+	Image* draw;
+	Image* btnPlayAgain;
+	Image* btnBackToMenu;
+public:
+	MatchResultGUI();
+	~MatchResultGUI();
 
-//class MatchResultGUI : public GUI {
-//private:
-//	Image* btnPlayAgain;
-//	Image* btnBackToMenu;
-//public:
-//	MatchResultGUI();
-//	~MatchResultGUI();
-//
-//	void render();
-//	GUIType getGUIType() const;
-//	void renderMatchResult(MatchState ms);
-//
-//	SDL_Rect getRectOfBtnPlayAgain();
-//	SDL_Rect getRectOfBtnBackToMenu();
-//};
+	void render();
+	GUIType getGUIType() const;
+	void renderMatchResult(MatchState ms);
+	void destroy();
 
-// TODO: use full parameter constructor
-//static Button btnPlayAgain;
-//static Button btnBackToMenu;
+	SDL_Rect getRectOfBtnPlayAgain();
+	SDL_Rect getRectOfBtnBackToMenu();
+};
 
 class PromotionGUI : public GUI {
 private:
@@ -202,23 +185,27 @@ public:
 	SDL_Rect getRectOfBtnRook();
 };
 
-//class SettingGUI : public GUI {
-//private:
-//	static Button btnContinue;
-//	static Button btnVolumeOption;
-//	static Button btnBackToMenu;
-//public:
-//	SettingGUI();
-//	virtual ~SettingGUI();
-//
-//	void init();
-//	void render();
-//	GUIType getGUIType() const;
-//
-//	static SDL_Rect getRectOfBtnContinue();
-//	static SDL_Rect getRectOfBtnVolumeOption();
-//	static SDL_Rect getRectOfBtnBackToMenu();
-//};
+class SettingGUI : public GUI {
+private:
+	Image* symbol;
+	Image* btnResume;
+	Image* btnVolumeOption;
+	Image* btnBackToMenu;
+	Image* btnSave;
+public:
+	SettingGUI();
+	~SettingGUI();
+
+	void render();
+	GUIType getGUIType() const;
+	void destroy();
+
+	SDL_Rect getRectOfBtnResume();
+	SDL_Rect getRectOfBtnVolumeOption();
+	SDL_Rect getRectOfBtnBackToMenu();
+	SDL_Rect getRectOfBtnSave();
+
+};
 
 //TODO: use full parameter constructor
 //static Button btnContinue;

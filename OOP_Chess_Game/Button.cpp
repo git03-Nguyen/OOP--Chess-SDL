@@ -152,6 +152,8 @@ void Image::renderImage() {
 	SDL_RenderCopy(Window::renderer, this->texture, nullptr, &this->rect);
 }
 void Image::setTexture(SDL_Texture* t) {
+	SDL_DestroyTexture(this->texture);
+	this->texture = nullptr;
 	this->texture = t;
 }
 SDL_Texture* Image::getTexture() {

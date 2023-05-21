@@ -21,7 +21,6 @@ int main(int argc, char* argv[]) {
 		std::cerr << "Undefined error!\n";
 		errorCode = 3;
 	}
-
 	delete gameManager;
 	std::cout << "Exitting! Error code: " << errorCode << std::endl;
 	return errorCode;
