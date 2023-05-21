@@ -114,7 +114,7 @@ void GameManager::handelEvents() {
 			
 			if (subGui) {
 				if (subGui->getGUIType() == GUIType::PROMOTION_NOTICE) {
-					// to do something
+					// handle button
 				}
 			}
 
@@ -122,6 +122,7 @@ void GameManager::handelEvents() {
 				GamePlayGUI* temp = dynamic_cast<GamePlayGUI*>(mainGui);
 				if (checkFocus(e, temp->getRectOfBtnSetting())) {
 					std::cout << "Setting button clicked!" << std::endl;
+					history->write("history2.bin");
 				}
 				if (checkFocus(e, temp->getRectOfBtnUndo())) {
 					std::cout << "Undo button clicked!" << std::endl;
@@ -133,6 +134,7 @@ void GameManager::handelEvents() {
 				}
 				if (checkFocus(e, temp->getRectOfBtnQuit())) {
 					std::cout << "Quit button clicked!" << std::endl;
+					history->read("history2.bin");
 				}
 				return;
 			}
@@ -405,6 +407,7 @@ void GameManager::handleClickedHightlightBox(const SDL_Event& e) {
 			break;
 		}
 	}
+
 	// TODO - check promotion
 	//if (checkPromotion(chosenPiece)) {
 	//	delete gui;
@@ -515,17 +518,20 @@ void GameManager::checkWinner(){
 		King* king = (King*)(Board::piecesList[0]);
 		bool kingChosen = king->getChosen();
 		king->setChosen(true);
-		if (king->checkmate(king->getPosition(), Board::piecesOnBoard)) {
-			int cnt = 0;
-			for (int i = 0; i < 16; i++) {
-				bool pieceChosen = Board::piecesList[i]->getChosen();
-				Board::piecesList[i]->setChosen(true);
-				std::vector<std::vector<Coordinate>> temp = Board::piecesList[i]->getPossibleMoves(Board::piecesOnBoard);
-				cnt += temp[0].size() + temp[1].size();
-				Board::piecesList[i]->setChosen(pieceChosen);
-			}
-			if (cnt == 0) std::cout << "Black winner!!!" << std::endl;
+		int cnt = 0;
+		for (int i = 0; i < 16; i++) {
+			bool pieceChosen = Board::piecesList[i]->getChosen();
+			Board::piecesList[i]->setChosen(true);
+			std::vector<std::vector<Coordinate>> temp = Board::piecesList[i]->getPossibleMoves(Board::piecesOnBoard);
+			cnt += temp[0].size() + temp[1].size();
+			Board::piecesList[i]->setChosen(pieceChosen);
 		}
+
+		if (cnt == 0) {
+			if (king->checkmate(king->getPosition(), Board::piecesOnBoard)) std::cout << "Black winner!!!" << std::endl;
+			else std::cout << "Draw!!!" << std::endl;
+		}
+
 		king->setChosen(kingChosen);
 	}
 	else {
@@ -533,17 +539,20 @@ void GameManager::checkWinner(){
 		King* king = (King*)(Board::piecesList[16]);
 		bool kingChosen = king->getChosen();
 		king->setChosen(true);
-		if (king->checkmate(king->getPosition(), Board::piecesOnBoard)) {
-			int cnt = 0;
-			for (int i = 16; i < 32; i++) {
-				bool pieceChosen = Board::piecesList[i]->getChosen();
-				Board::piecesList[i]->setChosen(true);
-				std::vector<std::vector<Coordinate>> temp = Board::piecesList[i]->getPossibleMoves(Board::piecesOnBoard);
-				cnt += temp[0].size() + temp[1].size();
-				Board::piecesList[i]->setChosen(pieceChosen);
-			}
-			if (cnt == 0) std::cout << "White winner!!!" << std::endl;
+		int cnt = 0;
+		for (int i = 16; i < 32; i++) {
+			bool pieceChosen = Board::piecesList[i]->getChosen();
+			Board::piecesList[i]->setChosen(true);
+			std::vector<std::vector<Coordinate>> temp = Board::piecesList[i]->getPossibleMoves(Board::piecesOnBoard);
+			cnt += temp[0].size() + temp[1].size();
+			Board::piecesList[i]->setChosen(pieceChosen);
 		}
+
+		if (cnt == 0) {
+			if (king->checkmate(king->getPosition(), Board::piecesOnBoard)) std::cout << "White winner!!!" << std::endl;
+			else std::cout << "Draw!!!" << std::endl;
+		}
+
 		king->setChosen(kingChosen);
 	}
 }
