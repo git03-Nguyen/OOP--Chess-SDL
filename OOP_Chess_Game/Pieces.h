@@ -176,8 +176,7 @@ public:
 	Piece* move(const Coordinate& c, std::vector<std::vector<Piece*>>);
 	std::vector<std::vector<Coordinate>> getPossibleMoves(std::vector<std::vector<Piece*>>);
 	Piece* clone() const;
-	Piece* getPromotion();
-	friend void promote(Piece*& newPiece, PieceType& type);
+	void promote(PieceType type);
 	void write(std::fstream& os);
 	void read(std::fstream& is);
 };

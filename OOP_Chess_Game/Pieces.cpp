@@ -1286,10 +1286,8 @@ std::vector<std::vector<Coordinate>> Pawn::getPossibleMoves(std::vector<std::vec
 Piece* Pawn::clone() const{
 	return new Pawn(*this);
 }
-Piece* Pawn::getPromotion() {
-	return this->promotion;
-}
-void promote(Piece*& newPiece, PieceType& type) {
+void Pawn::promote(PieceType type) {
+/*
 	if (newPiece->getType() == PieceType::Pawn) {
 		if (newPiece->getColor() == Color::White) {
 			if (newPiece->getPosition().getY() == 7) {
@@ -1348,7 +1346,34 @@ void promote(Piece*& newPiece, PieceType& type) {
 			}
 		}
 	}
-	
+*/
+	switch (type) {
+		case PieceType::Queen: {
+			Queen* queen = new Queen(this->position, this->color);
+			queen->setID(this->id);
+			this->promotion = (Piece*) queen;
+			break;
+		}
+		case PieceType::Rook: {
+			Rook* rook = new Rook(this->position, this->color);
+			rook->setID(this->id);
+			rook->setFirstMove(false);
+			this->promotion = (Piece*)rook;
+			break;
+		}
+		case PieceType::Knight: {
+			Knight* knight = new Knight(this->position, this->color);
+			knight->setID(this->id);
+			this->promotion = (Piece*)knight;
+			break;
+		}
+		case PieceType::Bishop: {
+			Bishop* bishop = new Bishop(this->position, this->color);
+			bishop->setID(this->id);
+			this->promotion = (Piece*)bishop;
+			break;
+		}
+	}
 }
 void Pawn::write(std::fstream& os) {
 	Piece::write(os);
