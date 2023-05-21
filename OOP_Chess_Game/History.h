@@ -1,6 +1,7 @@
 #pragma once
 #include <vector>
 #include <string>
+#include <fstream>
 #include "Pieces.h"
 
 class History {
@@ -13,8 +14,8 @@ private:
 public:
 	History();
 	virtual ~History();
-	void read();
-	void write() const;
+	void write(std::string path) const;
+	void read(std::string path);
 	void setInitalState(const Piece* initialState); // allocation and deep copy
 	void setFinalState(const Piece* finalState); // allocation and deep copy
 	void setCapturedPiece(const Piece* capturedPiece); // allocation and deep copy

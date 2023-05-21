@@ -155,6 +155,7 @@ public:
 	virtual ~Pawn();
 
 	Piece* getPromotion() const;
+	void setPromotion(Piece* piece);
 	bool getFirstMove();
 	void setFirstMove(bool firstMove);
 	void setEnableEnPassantCaptured(bool able);

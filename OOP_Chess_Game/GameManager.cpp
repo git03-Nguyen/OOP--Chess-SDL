@@ -93,6 +93,13 @@ void GameManager::handelEvents() {
 		case SDL_QUIT:
 			isRunning = false; break;
 		case SDL_MOUSEBUTTONDOWN:
+			/*
+			WHILE ALWAYS FIRST, BLACK SECOND.
+			COMPUTER: EVEN TURN => WHITE; ODD TURN => BLACK; IF PLAYER CHOOSE WHITE => COMPUTER CHOOSE FALSE; AND ...
+			MAYBE: ADD NEW ATTRIBUTE ""
+			if(opponent == Opponent::COMPUTER)
+				// CALL API FROM CLASS COMPUTER => CONSIDER TURN IS EVEN OR ODD; CALCULATE MOVE=> COORDINATE, INCREASE TURN, SAVE HISTORY.
+			*/
 			Coordinate c = getClickedBox(e);
 			std::cout << c.getX() << " " << c.getY() << std::endl;
 			handleClickedPiece(e);
@@ -460,7 +467,7 @@ void GameManager::undo() {
 
 // TODO - Carefully pointer to texture (I call quick change state)
 void GameManager::redo() {
-	if (turn >= history->getLengthData() - 1) return;
+	if (turn >= history->getLengthData()) return;
 	
 	std::vector<Piece*> temp = history->getData(turn);
 	delete Board::piecesList[temp[1]->getID()];

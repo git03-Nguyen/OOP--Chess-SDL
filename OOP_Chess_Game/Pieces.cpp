@@ -974,6 +974,9 @@ Pawn::~Pawn() {
 Piece* Pawn::getPromotion() const {
 	return this->promotion;
 }
+void Pawn::setPromotion(Piece* piece) {
+	this->promotion = piece;
+}
 void Pawn::setFirstMove(bool firstMove) {
 	this->firstMove = firstMove;
 }

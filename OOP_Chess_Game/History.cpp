@@ -13,11 +13,164 @@ History::~History() {
     capturedPiece = nullptr;
 }
 
-void History::read() {
+void History::write(std::string path) const {
+    std::fstream os(path, std::fstream::out| std::fstream::binary);
+    int32_t size = this->history.size();
+    
+    // write int32_t size of vector to file
+    os.write((char*) &size, sizeof(size));
+
+    //write type and entire data of piece
+    enum PieceType type;
+    bool isNull;
+    Piece* piece = nullptr;
+    Piece* promotion = nullptr;
+    for (int i = 0; i < size; i++) {
+        for (int j = 0; j < 3; j++) {
+            if (promotion) piece = promotion;
+            else piece = this->history[i][j];
+
+            if (!piece) {
+                isNull = true;
+                os.write((char*)&isNull, sizeof(isNull));
+                break;
+            }
+            else {
+                isNull = false;
+                os.write((char*)&isNull, sizeof(isNull));
+            }
+            type = piece->getType();
+            os.write((char*)&type, sizeof(type));
+            switch (type) {
+                case PieceType::King: {
+                    
+                    King* king = (King*) piece;
+                    os.write((char*)king, sizeof(*king));
+                    break;
+                }
+                case PieceType::Queen: {
+                    Queen* queen = (Queen*)piece;
+                    os.write((char*)queen, sizeof(*queen));
+                    break;
+                }
+                case PieceType::Bishop: {
+                    Bishop* bishop = (Bishop*)piece;
+                    os.write((char*)bishop, sizeof(*bishop));
+                    break;
+                }
+                case PieceType::Knight: {
+                    Knight* knight = (Knight*)piece;
+                    os.write((char*)knight, sizeof(*knight));
+                    break;
+                }
+                case PieceType::Rook: {
+                    Rook* rook = (Rook*)piece;
+                    os.write((char*)rook, sizeof(*rook));
+                    break;
+                }
+                case PieceType::Pawn: {
+                    Pawn* pawn = (Pawn*)piece;
+                    os.write((char*)pawn, sizeof(*pawn));
+                    promotion = pawn->getPromotion();
+                    if (promotion) {
+                        j--;
+                        continue;
+                    }
+                    break;
+                }
+            }
+            
+            if (promotion) promotion = nullptr;
+        }
+    }
+    os.close();
 }
 
-void History::write() const {
-}
+void History::read(std::string path) {
+    this->clear();
+    std::fstream is(path, std::fstream::in | std::fstream::binary);
+    if (!is.is_open()) {
+        std::string msg = "This item '" + path + "' doesn't exist\n";
+        throw std::string(msg);
+    }
+
+    int32_t size;
+    bool isNull;
+    PieceType type;
+    Piece* piece = nullptr;
+    Piece* promotion = nullptr;
+    Pawn* tempPawn = nullptr;
+    is.read((char*)&size, sizeof(size));
+    history.resize(size);
+    for (int i = 0; i < size; i++) {
+        for (int j = 0; j < 3; j++) {
+            is.read((char*)&isNull, sizeof(isNull));
+            if (isNull) {
+                history[i].push_back(nullptr);
+                break;
+            }
+
+            is.read((char*)&type, sizeof(type));
+            switch (type) {
+                case PieceType::King: {
+                    King* king = new King();
+                    is.read((char*)king, sizeof(*king));
+                    piece = king;
+                    break;
+                }
+                case PieceType::Queen: {
+                    Queen* queen = new Queen();
+                    is.read((char*)queen, sizeof(*queen));
+                    piece = queen;
+                    break;
+                }
+                case PieceType::Bishop: {
+                    Bishop* bishop = new Bishop();
+                    is.read((char*)bishop, sizeof(*bishop));
+                    piece = bishop;
+                    break;
+                }
+                case PieceType::Knight: {
+                    Knight* knight = new Knight();
+                    is.read((char*)knight, sizeof(*knight));
+                    piece = knight;
+                    break;
+                }
+                case PieceType::Rook: {
+                    Rook* rook = new Rook();
+                    is.read((char*)rook, sizeof(*rook));
+                    piece = rook;
+                    break;
+                }
+                case PieceType::Pawn: {
+                    Pawn* pawn = new Pawn();
+                    is.read((char*)pawn, sizeof(*pawn));
+                    piece = pawn;
+                    promotion = pawn->getPromotion();
+                    if (promotion) {
+                        j--;
+                        tempPawn = pawn;
+                        continue;
+                    }
+                    break;
+                }
+            }
+            
+            //push to history
+            if (promotion) {
+                tempPawn->setPromotion(piece);
+                history[i].push_back(tempPawn);
+                promotion = nullptr;
+                tempPawn = nullptr;
+            }
+            else {
+                history[i].push_back(piece);
+            }
+        }
+    }
+    is.close();
+} 
+
 
 void History::setInitalState(const Piece* initialState) {
     if (!initialState) {
