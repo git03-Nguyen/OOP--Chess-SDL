@@ -26,7 +26,7 @@ GameManager::GameManager(const char* title, int xPos, int yPos, int width, int h
 	computer = new Computer();
 	history = new History();
 	mainGui = new GamePlayGUI();
-	subGui = new PromotionGUI();
+	subGui = nullptr;
 
 	opponent = Opponent::HUMAN; // default
 	turn = 0; // start game, player1: 0 -> white; palyer2: 1->black
@@ -53,14 +53,12 @@ void GameManager::gameLoop(int fps) {
 		frameStart = SDL_GetTicks();
 		handelEvents();
 		render();
-
 		frameTime = SDL_GetTicks() - frameStart;
-
+	
 		if (frameDelay > frameTime) {
 			SDL_Delay(frameDelay - frameTime);
 		}
 	}
-
 }
 
 void GameManager::render() {
@@ -115,8 +113,42 @@ void GameManager::handelEvents() {
 
 			if (subGui) {
 				if (subGui->getGUIType() == GUIType::PROMOTION_NOTICE) {
-					// to do something
+					PromotionGUI* temp = (PromotionGUI*)subGui;
+					bool flag = false;
+					Pawn* pawn = nullptr;
+					for (int i = 0; i < 32; i++) {
+						if (checkPromotion(Board::piecesList[i])) {
+							pawn =(Pawn*) Board::piecesList[i];
+							break;
+						}
+					}
+					
+					if (checkFocus(e, temp->getRectOfBtnQueen())) {
+						std::cout << "Promote Queen!!!" << std::endl;
+						flag = true;
+						pawn->promote(PieceType::Queen);
+					}
+					if (checkFocus(e, temp->getRectOfBtnRook())) {
+						std::cout << "Promote Rook!!!" << std::endl;
+						flag = true;
+						pawn->promote(PieceType::Rook);
+					}
+					if (checkFocus(e, temp->getRectOfBtnKnight())) {
+						std::cout << "Promote Knight!!!" << std::endl;
+						flag = true;
+						pawn->promote(PieceType::Knight);
+					}
+					if (checkFocus(e, temp->getRectOfBtnBishop())) {
+						std::cout << "Promote Bishop!!!" << std::endl;
+						flag = true;
+						pawn->promote(PieceType::Bishop);
+					}
+					if (flag) {
+						delete subGui;
+						subGui = nullptr;
+					}
 				}
+				return;
 			}
 
 			if (mainGui->getGUIType() == GUIType::GAME_PLAY) {
@@ -409,10 +441,10 @@ void GameManager::handleClickedHightlightBox(const SDL_Event& e) {
 		}
 	}
 	// TODO - check promotion
-	//if (checkPromotion(chosenPiece)) {
-	//	delete gui;
-	//	gui = new PromotionNoticeGUI(chosenPiece->getId());
-	//}
+	if (checkPromotion(chosenPiece)) {
+		std::cout << "Promotion!!!" << std::endl;
+		subGui = new PromotionGUI();
+	}
 
 	chosenPiece = nullptr;
 }
