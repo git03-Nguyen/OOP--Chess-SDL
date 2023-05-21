@@ -39,50 +39,19 @@ void History::write(std::string path) const {
                 isNull = false;
                 os.write((char*)&isNull, sizeof(isNull));
             }
+
             type = piece->getType();
             os.write((char*)&type, sizeof(type));
             piece->write(os);
-            /*
-            switch (type) {
-                case PieceType::King: {
-                    
-                    King* king = (King*) piece;
-                    os.write((char*)king, sizeof(*king));
-                    break;
-                }
-                case PieceType::Queen: {
-                    Queen* queen = (Queen*)piece;
-                    os.write((char*)queen, sizeof(*queen));
-                    break;
-                }
-                case PieceType::Bishop: {
-                    Bishop* bishop = (Bishop*)piece;
-                    os.write((char*)bishop, sizeof(*bishop));
-                    break;
-                }
-                case PieceType::Knight: {
-                    Knight* knight = (Knight*)piece;
-                    os.write((char*)knight, sizeof(*knight));
-                    break;
-                }
-                case PieceType::Rook: {
-                    Rook* rook = (Rook*)piece;
-                    os.write((char*)rook, sizeof(*rook));
-                    break;
-                }
-                case PieceType::Pawn: {
-                    Pawn* pawn = (Pawn*)piece;
-                    os.write((char*)pawn, sizeof(*pawn));
-                    promotion = pawn->getPromotion();
-                    if (promotion) {
-                        j--;
-                        continue;
-                    }
-                    break;
+
+            if (piece->getType() == PieceType::Pawn) {
+                Pawn* pawn = (Pawn*)piece;
+                promotion = pawn->getPromotion();
+                if (promotion) {
+                    j--;
+                    continue;
                 }
             }
-            */
-            
             if (promotion) promotion = nullptr;
         }
     }
