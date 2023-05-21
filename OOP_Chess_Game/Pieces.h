@@ -64,6 +64,10 @@ public:
 	int getID();
 	PieceType getType() const;
 
+	virtual Piece* getPromotion() const {
+		return nullptr;
+	}
+
 	virtual Piece* move(const Coordinate& c, std::vector<std::vector<Piece*>>) = 0;
 	virtual std::vector<std::vector<Coordinate>> getPossibleMoves(std::vector<std::vector<Piece*>>) = 0;
 	virtual Piece* clone() const = 0;

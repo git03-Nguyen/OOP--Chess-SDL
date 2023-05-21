@@ -151,6 +151,12 @@ void Image::renderImage() {
 	if (!texture || !(&rect) || !Window::renderer) std::cout << "ERROR\n";
 	SDL_RenderCopy(Window::renderer, this->texture, nullptr, &this->rect);
 }
+void Image::setTexture(SDL_Texture* t) {
+	this->texture = t;
+}
+SDL_Texture* Image::getTexture() {
+	return this->texture;
+}
 void Image::makeBlend(int opacity) {
 	SDL_SetTextureAlphaMod(this->texture, opacity);
 }

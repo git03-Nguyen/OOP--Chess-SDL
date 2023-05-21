@@ -62,6 +62,8 @@ public:
 	SDL_Rect getRectangle();
 	void setRectangle(SDL_Rect rect);
 	void makeBlend(int opacity);
+	void setTexture(SDL_Texture* t);
+	SDL_Texture* getTexture();
 	void renderImage();
 	void destroy();
 };

@@ -209,6 +209,21 @@ void GamePlayGUI::set() {
 			this->piece[i]->setRectangle({ x,y,PIECESIZE,PIECESIZE });
 		}
 	}
+	//check promoted pawns
+	for (int i = 0; i < Board::piecesList.size(); i++) {
+		if (Board::piecesList[i]->getType() == PieceType::Pawn && Board::piecesList[i]->getColor() == Color::White && Board::piecesList[i]->getPromotion()) {
+			if (Board::piecesList[i]->getPromotion()->getType() == PieceType::Queen) this->piece[i]->setTexture(this->piece[1]->getTexture());
+			if (Board::piecesList[i]->getPromotion()->getType() == PieceType::Bishop) this->piece[i]->setTexture(this->piece[2]->getTexture());
+			if (Board::piecesList[i]->getPromotion()->getType() == PieceType::Knight) this->piece[i]->setTexture(this->piece[4]->getTexture());
+			if (Board::piecesList[i]->getPromotion()->getType() == PieceType::Rook) this->piece[i]->setTexture(this->piece[6]->getTexture());
+		}
+		if (Board::piecesList[i]->getType() == PieceType::Pawn && Board::piecesList[i]->getColor() == Color::Black && Board::piecesList[i]->getPromotion()) {
+			if (Board::piecesList[i]->getPromotion()->getType() == PieceType::Queen) this->piece[i]->setTexture(this->piece[17]->getTexture());
+			if (Board::piecesList[i]->getPromotion()->getType() == PieceType::Bishop) this->piece[i]->setTexture(this->piece[18]->getTexture());
+			if (Board::piecesList[i]->getPromotion()->getType() == PieceType::Knight) this->piece[i]->setTexture(this->piece[20]->getTexture());
+			if (Board::piecesList[i]->getPromotion()->getType() == PieceType::Rook) this->piece[i]->setTexture(this->piece[22]->getTexture());
+		}
+	}
 }
 
 void GamePlayGUI::render() {
