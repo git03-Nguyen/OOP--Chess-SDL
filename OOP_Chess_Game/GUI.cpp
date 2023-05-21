@@ -5,7 +5,6 @@
 GUI::GUI() {
 	this->active = true;
 	this->background = new Image({ 0,0,640,560 }, "..\\Assets\\back.png");
-	this->rect = { 0,0,0,0 };
 }
 GUI::~GUI() {
 }
@@ -22,11 +21,11 @@ void GUI::activate() {
 void GUI::deactivate() {
 	this->active = false;
 }
+SDL_Rect GUI::getGUIRect() {
+	return this->background->getRectangle();
+}
 GUIType GUI::getGUIType() const {
 	return GUIType();
-}
-void GUI::clear() { //clear 
-	SDL_RenderClear(Window::renderer);
 }
 // 
 //GUIType MenuGUI::getGUIType() const {
@@ -128,7 +127,6 @@ GamePlayGUI::GamePlayGUI() { //LOAD ALL THE ESSENTIALS
 	SDL_RenderClear(Window::renderer);
 	this->active = true;
 	this->background = new Image({ 0,0,640,560 }, "..\\Assets\\back.png");
-	this->rect = { 0,0,700,600 };
 	this->chosenPiece = nullptr;
 	//load board image
 	this->board = new Image({ DISPLACE,DISPLACE,PIECESIZE*8,PIECESIZE*8 }, "..\\Assets\\board.png");
@@ -393,33 +391,67 @@ void GamePlayGUI::destroy() {
 //void MatchResultGUI::setText(const TextObject& text) {
 //}
 
-//PromotionNoticeGUI::PromotionNoticeGUI(int idOfPromotionPiece) {
-//}
-//
-//PromotionNoticeGUI::~PromotionNoticeGUI() {
-//}
-//
-//void PromotionNoticeGUI::init() {
-//}
-//
-//void PromotionNoticeGUI::render() {
-//}
-//
-//GUIType PromotionNoticeGUI::getGUIType() const {
-//	return GUIType();
-//}
-//
-//int PromotionNoticeGUI::getIdOfPromotionPiece() const {
-//	return 0;
-//}
-//
-//SDL_Rect PromotionNoticeGUI::getRectOfBtnQueen() {
-//	return SDL_Rect();
-//}
-//
-//SDL_Rect PromotionNoticeGUI::getRectOfBtnBishop() {
-//	return SDL_Rect();
-//}
+
+PromotionGUI::PromotionGUI() {
+	this->up = new Image({ SUBDISPLACE + 110, WINDOWSIZEY - 360, 70, 70 }, "..\\Assets\\ProNotice.png");
+	this->background = new Image({ SUBDISPLACE,SUBDISPLACE,SUBSIZEX, SUBSIZEY }, "..\\Assets\\subback.png");
+	this->btnQueen = new Image({ SUBDISPLACE + 10, WINDOWSIZEY - 280, PIECESIZE, PIECESIZE }, "..\\Assets\\ProQueen.png");
+	this->btnRook = new Image({ SUBDISPLACE + 20 + PIECESIZE, WINDOWSIZEY - 280, PIECESIZE, PIECESIZE }, "..\\Assets\\ProRook.png");
+	this->btnKnight = new Image({ SUBDISPLACE + 30 + PIECESIZE * 2, WINDOWSIZEY - 280, PIECESIZE, PIECESIZE }, "..\\Assets\\ProKnight.png");
+	this->btnBishop = new Image({ SUBDISPLACE + 40 + PIECESIZE * 3, WINDOWSIZEY - 280, PIECESIZE, PIECESIZE }, "..\\Assets\\ProBishop.png");
+}
+
+PromotionGUI::~PromotionGUI() {
+	this->destroy();
+}
+
+void PromotionGUI::render() {
+	this->background->renderImage();
+	this->up->renderImage();
+	this->btnBishop->renderImage();
+	this->btnKnight->renderImage();
+	this->btnQueen->renderImage();
+	this->btnRook->renderImage();
+}
+
+GUIType PromotionGUI::getGUIType() const {
+	return GUIType::PROMOTION_NOTICE;
+}
+
+SDL_Rect PromotionGUI::getRectOfBtnQueen() {
+	return this->btnQueen->getRectangle();
+}
+SDL_Rect PromotionGUI::getRectOfBtnBishop() {
+	return this->btnBishop->getRectangle();
+}
+SDL_Rect PromotionGUI::getRectOfBtnRook() {
+	return this->btnRook->getRectangle();
+}
+SDL_Rect PromotionGUI::getRectOfBtnKnight() {
+	return this->btnKnight->getRectangle();
+}
+void PromotionGUI::destroy() {
+	//
+	this->up->destroy();
+	delete this->up;
+	this->up = nullptr;
+	//
+	this->btnQueen->destroy();
+	delete this->btnQueen;
+	this->btnQueen = nullptr;
+	//
+	this->btnRook->destroy();
+	delete this->btnRook;
+	this->btnRook = nullptr;
+	//
+	this->btnBishop->destroy();
+	delete this->btnBishop;
+	this->btnBishop = nullptr;
+	//
+	this->btnKnight->destroy();
+	delete this->btnKnight;
+	this->btnKnight = nullptr;
+}
 
 //SettingGUI::SettingGUI() {
 //}

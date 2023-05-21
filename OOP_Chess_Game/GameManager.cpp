@@ -26,6 +26,7 @@ GameManager::GameManager(const char* title, int xPos, int yPos, int width, int h
 	computer = new Computer();
 	history = new History();
 	mainGui = new GamePlayGUI();
+	subGui = new PromotionGUI();
 
 	opponent = Opponent::HUMAN; // default
 	turn = 0; // start game, player1: 0 -> white; palyer2: 1->black
