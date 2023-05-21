@@ -151,6 +151,9 @@ void Image::renderImage() {
 	if (!texture || !(&rect) || !Window::renderer) std::cout << "ERROR\n";
 	SDL_RenderCopy(Window::renderer, this->texture, nullptr, &this->rect);
 }
+void Image::makeBlend(int opacity) {
+	SDL_SetTextureAlphaMod(this->texture, opacity);
+}
 void Image::destroy() {
 	//SDL_FreeSurface(this->img);
 	//this->img = nullptr;
