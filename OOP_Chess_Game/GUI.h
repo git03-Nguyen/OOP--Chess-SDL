@@ -10,6 +10,10 @@
 #define DISPLACE 40
 #define WINDOWSIZEX 640
 #define WINDOWSIZEY 560
+//
+#define SUBDISPLACE 175
+#define SUBSIZEX WINDOWSIZEX-SUBDISPLACE*2
+#define SUBSIZEY WINDOWSIZEY-SUBDISPLACE*2
 
 enum class GUIType { MENU, MODE_OPTION, VOLUME_OPTION, REPLAY_RECENT_GAME, GAME_PLAY, RESULT_NOTICE, PROMOTION_NOTICE, SETTINGS };
 
@@ -17,15 +21,14 @@ class GUI {
 protected:
 	Image* background;
 	bool active;
-	SDL_Rect rect;
 public:
 	GUI();
 	virtual ~GUI();
 	virtual GUIType getGUIType() const;
 	void renderBackground();
-	void clear();
 	virtual void render() = 0;
 	virtual void destroy() = 0;
+	SDL_Rect getGUIRect();
 	bool isActive();
 	void activate();
 	void deactivate();
@@ -179,27 +182,26 @@ public:
 //static Button btnPlayAgain;
 //static Button btnBackToMenu;
 
-//class PromotionNoticeGUI : public GUI {
-//private:
-//	int idOfPromotionPiece;
-//	static Button btnQueen;
-//	static Button btnBishop;
-//	static Button btnKnight;
-//	static Button btnRook;
-//public:
-//	PromotionNoticeGUI(int idOfPromotionPiece);
-//	virtual ~PromotionNoticeGUI();
-//
-//	void init();
-//	void render();
-//	GUIType getGUIType() const;
-//	int getIdOfPromotionPiece() const;
-//
-//	static SDL_Rect getRectOfBtnQueen();
-//	static SDL_Rect getRectOfBtnBishop();
-//	static SDL_Rect getRectOfBtnKnight();
-//	static SDL_Rect getRectOfBtnRook();
-//};
+class PromotionGUI : public GUI {
+private:
+	Image* btnQueen;
+	Image* btnBishop;
+	Image* btnKnight;
+	Image* btnRook;
+	Image* up;
+public:
+	PromotionGUI();
+	~PromotionGUI();
+
+	void render();
+	GUIType getGUIType() const;
+	void destroy();
+
+	SDL_Rect getRectOfBtnQueen();
+	SDL_Rect getRectOfBtnBishop();
+	SDL_Rect getRectOfBtnKnight();
+	SDL_Rect getRectOfBtnRook();
+};
 
 // TODO: use full parameter constructor
 //static Button btnQueen;
