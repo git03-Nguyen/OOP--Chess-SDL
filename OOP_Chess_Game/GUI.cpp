@@ -432,6 +432,10 @@ SDL_Rect PromotionGUI::getRectOfBtnKnight() {
 }
 void PromotionGUI::destroy() {
 	//
+	this->background->destroy();
+	delete this->background;
+	this->background = nullptr;
+	//
 	this->up->destroy();
 	delete this->up;
 	this->up = nullptr;
