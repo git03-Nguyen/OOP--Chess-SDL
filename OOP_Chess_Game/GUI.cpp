@@ -22,15 +22,15 @@ void GUI::activate() {
 void GUI::deactivate() {
 	this->active = false;
 }
-TypeGUI GUI::getTypeGUI() const {
-	return TypeGUI();
+GUIType GUI::getGUIType() const {
+	return GUIType();
 }
 void GUI::clear() { //clear 
 	SDL_RenderClear(Window::renderer);
 }
 // 
-//TypeGUI MenuGUI::getTypeGUI() const {
-//	return TypeGUI::MENU;
+//GUIType MenuGUI::getGUIType() const {
+//	return GUIType::MENU;
 //}
 //
 //MenuGUI::MenuGUI() {
@@ -77,8 +77,8 @@ void GUI::clear() { //clear
 //void ModeOptionGUI::render() {
 //}
 //
-//TypeGUI ModeOptionGUI::getTypeGUI() const {
-//	return TypeGUI();
+//GUIType ModeOptionGUI::getGUIType() const {
+//	return GUIType();
 //}
 //
 //SDL_Rect ModeOptionGUI::getRectOfBtnEasy() {
@@ -105,8 +105,8 @@ void GUI::clear() { //clear
 //void VolumeOptionGUI::render() {
 //}
 //
-//TypeGUI VolumeOptionGUI::getTypeGUI() const {
-//	return TypeGUI();
+//GUIType VolumeOptionGUI::getGUIType() const {
+//	return GUIType();
 //}
 //
 //Slider* VolumeOptionGUI::getSliderThemeMusic() {
@@ -278,8 +278,8 @@ void GamePlayGUI::renderTurn(int turn) {
 	}
 }
 //get rect
-TypeGUI GamePlayGUI::getTypeGUI() const {
-	return TypeGUI::GAME_PLAY;
+GUIType GamePlayGUI::getGUIType() const {
+	return GUIType::GAME_PLAY;
 }
 SDL_Rect GamePlayGUI::getRectOfBtnUndo() {
 	return this->btnUndo->getRectangle();
@@ -386,8 +386,8 @@ void GamePlayGUI::destroy() {
 //void MatchResultGUI::render() {
 //}
 //
-//TypeGUI MatchResultGUI::getTypeGUI() const {
-//	return TypeGUI();
+//GUIType MatchResultGUI::getGUIType() const {
+//	return GUIType();
 //}
 //
 //void MatchResultGUI::setText(const TextObject& text) {
@@ -405,8 +405,8 @@ void GamePlayGUI::destroy() {
 //void PromotionNoticeGUI::render() {
 //}
 //
-//TypeGUI PromotionNoticeGUI::getTypeGUI() const {
-//	return TypeGUI();
+//GUIType PromotionNoticeGUI::getGUIType() const {
+//	return GUIType();
 //}
 //
 //int PromotionNoticeGUI::getIdOfPromotionPiece() const {
@@ -433,8 +433,8 @@ void GamePlayGUI::destroy() {
 //void SettingGUI::render() {
 //}
 //
-//TypeGUI SettingGUI::getTypeGUI() const {
-//	return TypeGUI();
+//GUIType SettingGUI::getGUIType() const {
+//	return GUIType();
 //}
 //
 //SDL_Rect SettingGUI::getRectOfBtnContinue() {

@@ -65,6 +65,13 @@ void GameManager::gameLoop(int fps) {
 void GameManager::render() {
 	SDL_RenderClear(Window::renderer);
 	mainGui->render();
+	if (mainGui->getGUIType() == GUIType::GAME_PLAY) {
+		GamePlayGUI* tempGui = (GamePlayGUI*)mainGui;
+		tempGui->renderTurn(turn);
+	}
+	if (subGui) {
+		subGui->render();
+	}
 	SDL_RenderPresent(Window::renderer);
 }
 
@@ -104,7 +111,14 @@ void GameManager::handelEvents() {
 			std::cout << c.getX() << " " << c.getY() << std::endl;
 			handleClickedPiece(e);
 			handleClickedHightlightBox(e);
-			if (mainGui->getTypeGUI() == TypeGUI::GAME_PLAY) {
+			
+			if (subGui) {
+				if (subGui->getGUIType() == GUIType::PROMOTION_NOTICE) {
+					// to do something
+				}
+			}
+
+			if (mainGui->getGUIType() == GUIType::GAME_PLAY) {
 				GamePlayGUI* temp = dynamic_cast<GamePlayGUI*>(mainGui);
 				if (checkFocus(e, temp->getRectOfBtnSetting())) {
 					std::cout << "Setting button clicked!" << std::endl;
@@ -120,6 +134,7 @@ void GameManager::handelEvents() {
 				if (checkFocus(e, temp->getRectOfBtnQuit())) {
 					std::cout << "Quit button clicked!" << std::endl;
 				}
+				return;
 			}
 		}
 	}
@@ -133,7 +148,7 @@ void GameManager::handelEvents() {
 	//		handleClickedPiece(e);
 	//		handleClickedHightlightBox(e);
 
-	//		if (gui->getTypeGUI() == TypeGUI::MENU) {
+	//		if (gui->getGUIType() == GUIType::MENU) {
 	//			// TODO: add more handles
 
 	//			if (checkFocus(e, MenuGUI::getRectOfBtnVsCom())) {
@@ -169,7 +184,7 @@ void GameManager::handelEvents() {
 	//			}
 	//		}
 
-	//		if (gui->getTypeGUI() == TypeGUI::MODE_OPTION) {
+	//		if (gui->getGUIType() == GUIType::MODE_OPTION) {
 	//			if (checkFocus(e, ModeOptionGUI::getRectOfBtnEasy())) {
 	//				computer->setMode(Mode::EASY);
 	//				delete gui;
@@ -192,7 +207,7 @@ void GameManager::handelEvents() {
 	//			}
 	//		}
 
-	//		if (gui->getTypeGUI() == TypeGUI::VOLUME_OPTION) {
+	//		if (gui->getGUIType() == GUIType::VOLUME_OPTION) {
 	//			Slider* sliderThemeMusic = VolumeOptionGUI::getSliderThemeMusic();
 	//			Slider* sliderEventMusic = VolumeOptionGUI::getSliderEventMusic();
 
@@ -214,11 +229,11 @@ void GameManager::handelEvents() {
 	//			}
 	//		}
 
-	//		if (gui->getTypeGUI() == TypeGUI::REPLAY_RECENT_GAME) {
+	//		if (gui->getGUIType() == GUIType::REPLAY_RECENT_GAME) {
 
 	//		}
 
-	//		if (gui->getTypeGUI() == TypeGUI::GAME_PLAY) {
+	//		if (gui->getGUIType() == GUIType::GAME_PLAY) {
 	//			if (checkFocus(e, GamePlayGUI::getRectOfBtnSetting())) {
 	//				delete gui;
 	//				gui = new SettingGUI();
@@ -236,7 +251,7 @@ void GameManager::handelEvents() {
 	//			}
 	//		}
 
-	//		if (gui->getTypeGUI() == TypeGUI::RESULT_NOTICE) {
+	//		if (gui->getGUIType() == GUIType::RESULT_NOTICE) {
 	//			if (checkFocus(e, MatchResultGUI::getRectOfBtnPlayAgain())) {
 	//				delete gui;
 	//				gui = new GamePlayGUI();
@@ -250,7 +265,7 @@ void GameManager::handelEvents() {
 	//			}
 	//		}
 
-	//		if (gui->getTypeGUI() == TypeGUI::PROMOTION_NOTICE) {
+	//		if (gui->getGUIType() == GUIType::PROMOTION_NOTICE) {
 	//			Pawn* pawn = dynamic_cast<Pawn*>(Board::pieces[dynamic_cast<PromotionNoticeGUI*>(gui)->getIdOfPromotionPiece()]);
 
 	//			if (checkFocus(e, PromotionNoticeGUI::getRectOfBtnQueen()) && pawn) {
@@ -282,7 +297,7 @@ void GameManager::handelEvents() {
 	//			}
 	//		}
 
-	//		if (gui->getTypeGUI() == TypeGUI::SETTINGS) {
+	//		if (gui->getGUIType() == GUIType::SETTINGS) {
 	//			if (checkFocus(e, SettingGUI::getRectOfBtnContinue())) {
 	//				delete gui;
 	//				gui = new GamePlayGUI();

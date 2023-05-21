@@ -11,7 +11,7 @@
 #define WINDOWSIZEX 640
 #define WINDOWSIZEY 560
 
-enum class TypeGUI { MENU, MODE_OPTION, VOLUME_OPTION, REPLAY_RECENT_GAME, GAME_PLAY, RESULT_NOTICE, PROMOTION_NOTICE, SETTINGS };
+enum class GUIType { MENU, MODE_OPTION, VOLUME_OPTION, REPLAY_RECENT_GAME, GAME_PLAY, RESULT_NOTICE, PROMOTION_NOTICE, SETTINGS };
 
 class GUI {
 protected:
@@ -21,7 +21,7 @@ protected:
 public:
 	GUI();
 	virtual ~GUI();
-	virtual TypeGUI getTypeGUI() const;
+	virtual GUIType getGUIType() const;
 	void renderBackground();
 	void clear();
 	virtual void render() = 0;
@@ -44,7 +44,7 @@ public:
 //
 //	void init();
 //	void render();
-//	TypeGUI getTypeGUI() const;
+//	GUIType getGUIType() const;
 //
 //	static SDL_Rect getRectOfBtnVsCom();
 //	static SDL_Rect getRectOfBtnVsPlayer();
@@ -71,7 +71,7 @@ public:
 //
 //	void init();
 //	void render();
-//	TypeGUI getTypeGUI() const;
+//	GUIType getGUIType() const;
 //
 //	static SDL_Rect getRectOfBtnEasy();
 //	static SDL_Rect getRectOfBtnHard();
@@ -89,7 +89,7 @@ public:
 //
 //	void init();
 //	void render();
-//	TypeGUI getTypeGUI() const;
+//	GUIType getGUIType() const;
 //
 //	static Slider* getSliderThemeMusic();
 //	static Slider* getSliderEventMusic();
@@ -128,7 +128,7 @@ public:
 	//
 	~GamePlayGUI();
 	//
-	TypeGUI getTypeGUI() const;
+	GUIType getGUIType() const;
 	//
 	void set();
 	void render();
@@ -168,7 +168,7 @@ public:
 //
 //	void init();
 //	void render();
-//	TypeGUI getTypeGUI() const;
+//	GUIType getGUIType() const;
 //	void setText(const TextObject& text);
 //
 //	static SDL_Rect getRectOfBtnPlayAgain();
@@ -192,7 +192,7 @@ public:
 //
 //	void init();
 //	void render();
-//	TypeGUI getTypeGUI() const;
+//	GUIType getGUIType() const;
 //	int getIdOfPromotionPiece() const;
 //
 //	static SDL_Rect getRectOfBtnQueen();
@@ -219,7 +219,7 @@ public:
 //
 //	void init();
 //	void render();
-//	TypeGUI getTypeGUI() const;
+//	GUIType getGUIType() const;
 //
 //	static SDL_Rect getRectOfBtnContinue();
 //	static SDL_Rect getRectOfBtnVolumeOption();
