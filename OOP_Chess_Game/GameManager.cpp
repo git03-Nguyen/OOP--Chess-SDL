@@ -92,10 +92,7 @@ void GameManager::handelEvents() {
 	if (opponent == Opponent::COMPUTER && turn % 2 == 0 && matchState == MatchState::IN_PLAY) {
 		if (true)// move easy
 		{
-			//std::cout << "Turn: " << turn << std::endl;
 			std::pair<int, Coordinate> res = computer->playWithEasyMode();
-			std::cout << res.first << std::endl;
-			//std::cout << "Coordinate: " << res.second.getX() << ", " << res.second.getY() << std::endl;
 			Piece* piece = Board::piecesList[res.first];
 			Piece* capturedPiece = nullptr;
 			history->setInitalState(piece);
