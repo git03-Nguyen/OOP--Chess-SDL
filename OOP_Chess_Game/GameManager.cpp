@@ -54,7 +54,7 @@ void GameManager::gameLoop(int fps) {
 		handelEvents(); // not here
 		render();
 		frameTime = SDL_GetTicks() - frameStart;
-		std::cout << "FrameTime: " << frameTime << std::endl;
+		//std::cout << "FrameTime: " << frameTime << std::endl;
 		if (frameDelay > frameTime) {
 			SDL_Delay(frameDelay - frameTime);
 		}
@@ -86,6 +86,26 @@ void GameManager::handelEvents() {
 	MatchState matchState = checkWinner();
 	if (matchState != MatchState::IN_PLAY) {
 		subGui = new MatchResultGUI();
+	}
+
+	// defualt computer: first => white
+	if (opponent == Opponent::COMPUTER && turn % 2 == 0 && matchState == MatchState::IN_PLAY) {
+		if (true)// move easy
+		{
+			//std::cout << "Turn: " << turn << std::endl;
+			std::pair<int, Coordinate> res = computer->playWithEasyMode();
+			std::cout << res.first << std::endl;
+			//std::cout << "Coordinate: " << res.second.getX() << ", " << res.second.getY() << std::endl;
+			Piece* piece = Board::piecesList[res.first];
+			Piece* capturedPiece = nullptr;
+			history->setInitalState(piece);
+			capturedPiece = piece->move(res.second, Board::piecesOnBoard);
+			history->setFinalState(Board::piecesList[res.first]);
+			history->updateData(turn);
+			turn++;
+			Board::updateBoard();
+			return;
+		}
 	}
 
 	while (SDL_PollEvent(&e)) {
@@ -319,6 +339,10 @@ void GameManager::undo() {
 	}
 	for (auto& e : Board::piecesList) e->setChosen(false);
 	Board::updateBoard();
+
+	if (opponent == Opponent::COMPUTER && turn % 2 == 0) {
+		undo();
+	}
 }
 
 // TODO - Carefully pointer to texture (I call quick change state)
@@ -348,6 +372,10 @@ void GameManager::redo() {
 	turn++;
 	for (auto& e : Board::piecesList) e->setChosen(false);
 	Board::updateBoard();
+
+	if (opponent == Opponent::COMPUTER && turn % 2 == 0) {
+		redo();
+	}
 }
 
 MatchState GameManager::checkWinner() {

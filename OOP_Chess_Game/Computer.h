@@ -1,5 +1,9 @@
 #pragma once
+#include<ctime>
+#include "Pieces.h"
 #include "Board.h"
+#include <limits>
+
 
 enum class Mode { EASY, HARD };
 
@@ -10,7 +14,7 @@ public:
 	Computer();
 	// don't need destructor
 
-	void setMode(Mode mode);
-	void playWithEasyMode();
-	void playWithHardMode();
+	//void setMode(Mode mode);
+	std::pair<int, Coordinate> playWithEasyMode();
+	//void playWithHardMode();
 };
