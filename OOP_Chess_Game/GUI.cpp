@@ -412,6 +412,7 @@ void MatchResultGUI::renderMatchResult(MatchState ms) {
 	}
 }
 
+
 GUIType MatchResultGUI::getGUIType() const {
 	return GUIType::RESULT_NOTICE;
 }
