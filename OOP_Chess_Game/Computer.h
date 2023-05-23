@@ -16,5 +16,7 @@ public:
 
 	//void setMode(Mode mode);
 	std::pair<int, Coordinate> playWithEasyMode();
-	//void playWithHardMode();
+	std::pair<int, Coordinate> evadeEaten();
+	std::pair<int, Coordinate> getNonEatenMove(int idx);
+	std::pair<int, Coordinate> playWithHardMode();
 };
