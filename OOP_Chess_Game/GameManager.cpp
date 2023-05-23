@@ -28,7 +28,7 @@ GameManager::GameManager(const char* title, int xPos, int yPos, int width, int h
 	mainGui = new GamePlayGUI();
 	subGui = nullptr;
 
-	opponent = Opponent::HUMAN; // default
+	opponent = Opponent::COMPUTER; // default
 	turn = 0; // start game, player1: 0 -> white; palyer2: 1->black
 	result = MatchResult::PLAYING; // The game is currently taking place
 	isRunning = true;
@@ -92,16 +92,33 @@ void GameManager::handelEvents() {
 	if (opponent == Opponent::COMPUTER && turn % 2 == 0 && matchState == MatchState::IN_PLAY) {
 		if (true)// move easy
 		{
-			//std::cout << "computer turn: " << std::endl;
 			std::pair<int, Coordinate> res = computer->playWithHardMode();
+			std::cout << "------------------ start move-----------------" << std::endl;
+			std::cout << "computer turn: " << turn << std::endl;
+			std::cout << "New postion: " << res.second.getX() << ", " << res.second.getY() << std::endl;
+			std::cout << "ID: " << res.first << std::endl;
 			Piece* piece = Board::piecesList[res.first];
 			Piece* capturedPiece = nullptr;
 			history->setInitalState(piece);
 			capturedPiece = piece->move(res.second, Board::piecesOnBoard);
-			history->setFinalState(Board::piecesList[res.first]);
+
+			// auto promote to queen
+			if (checkPromotion(piece)) {
+				Pawn* pawn = (Pawn*)piece;
+				pawn->promote(PieceType::Queen);
+			}
+
+			history->setFinalState(piece);
+			history->setCapturedPiece(capturedPiece);
 			history->updateData(turn);
+			std::cout << "initial piece: " << history->getData(turn)[0] << std::endl;
+			std::cout << "final piece: " << history->getData(turn)[1] << std::endl;
+			std::cout << "captured piece: " << history->getData(turn)[2] << std::endl;
 			turn++;
+
+
 			Board::updateBoard();
+			std::cout << "---------------- end move-------------------" << std::endl;
 			return;
 		}
 	}
@@ -216,17 +233,13 @@ Coordinate GameManager::getClickedBox(const SDL_Event& e) const {
 void GameManager::handleClickedPiece(const SDL_Event& e) {
 	Coordinate c = getClickedBox(e);
 	if (c.getX() < 0 && c.getY() < 0) return;
-
 	Piece* piece = Board::getPieceAt(c);
 	if (!piece) return;
-	std::cout << "Turn:" << turn << std::endl;
 	if (piece->getColor() == Color::White && turn % 2 == 1 || piece->getColor() == Color::Black && turn % 2 == 0) return;
 
 	for (int i = 0; i < 32; i++) Board::piecesList[i]->setChosen(false);
 
 	piece->setChosen(true);
-	std::cout << "here" << std::endl;
-	if (piece->getType() == PieceType::Pawn) std::cout << "right" << std::endl;
 }
 
 //TODO: add music
@@ -338,6 +351,13 @@ void GameManager::undo() {
 	for (auto& e : Board::piecesList) e->setChosen(false);
 	Board::updateBoard();
 
+	std::cout << "------------------ start redo -----------------" << std::endl;
+	std::cout << turn << std::endl;
+	std::cout << "initial piece: " << history->getData(turn)[0] << std::endl;
+	std::cout << "final piece: " << history->getData(turn)[1] << std::endl;
+	std::cout << "captured piece: " << history->getData(turn)[2] << std::endl;
+	std::cout << "------------------ end redo -----------------" << std::endl;
+
 	if (opponent == Opponent::COMPUTER && turn % 2 == 0) {
 		undo();
 	}
@@ -366,6 +386,13 @@ void GameManager::redo() {
 			((Rook*)(Board::piecesList[temp[1]->getID() + 7]))->setFirstMove(false);
 		}
 	}
+
+	std::cout << "------------------ start undo -----------------" << std::endl;
+	std::cout << turn << std::endl;
+	std::cout << "initial piece: " << history->getData(turn)[0] << std::endl;
+	std::cout << "final piece: " << history->getData(turn)[1] << std::endl;
+	std::cout << "captured piece: " << history->getData(turn)[2] << std::endl;
+	std::cout << "------------------ end undo -----------------" << std::endl;
 
 	turn++;
 	for (auto& e : Board::piecesList) e->setChosen(false);
