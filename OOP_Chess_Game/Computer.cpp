@@ -23,7 +23,8 @@ std::pair<int, Coordinate> Computer::playWithEasyMode()
         if (tempMoves.size() >= 1) {
             enableMovingPieces.push_back(i);
             moves.push_back(tempMoves);
-        tempMoves.clear();
+            tempMoves.clear();
+        }
     }
     
     if (enableMovingPieces.size() == 0) throw std::string("Don't have any moves\n!!!");
