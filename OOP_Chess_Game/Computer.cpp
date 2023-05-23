@@ -23,14 +23,6 @@ std::pair<int, Coordinate> Computer::playWithEasyMode()
         if (tempMoves.size() >= 1) {
             enableMovingPieces.push_back(i);
             moves.push_back(tempMoves);
-            std::cout << "--------------------------------------------" << std::endl;
-            for (auto e : tempMoves){
-                 std::cout << "index: " << i;
-                 std::cout << "Coordinate: " << e.getX() << ", " << e.getY() << std::endl;
-             }
-            std::cout << "--------------------------------------------" << std::endl;
-        }
-
         tempMoves.clear();
     }
     
@@ -41,8 +33,6 @@ std::pair<int, Coordinate> Computer::playWithEasyMode()
     // random move for piece;
     int moveIdx = rand() % moves[pieceIdx].size();
 
-    std::cout << "index: " << enableMovingPieces[pieceIdx] << std::endl;
-    std::cout << "Coordinate: " << moves[pieceIdx][moveIdx].getX() << ", " << moves[pieceIdx][moveIdx].getY() << std::endl;
-
+  
     return std::pair<int, Coordinate>(enableMovingPieces[pieceIdx], moves[pieceIdx][moveIdx]);
 }
