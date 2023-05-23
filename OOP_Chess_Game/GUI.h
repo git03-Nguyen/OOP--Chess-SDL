@@ -146,18 +146,16 @@ public:
 
 class MatchResultGUI : public GUI {
 private:
-	Image* blackWin;
-	Image* whiteWin;
-	Image* draw;
+	Image* result;
 	Image* btnPlayAgain;
 	Image* btnBackToMenu;
 public:
 	MatchResultGUI();
+	MatchResultGUI(MatchState ms);
 	~MatchResultGUI();
 
 	void render();
 	GUIType getGUIType() const;
-	void renderMatchResult(MatchState ms);
 	void destroy();
 
 	SDL_Rect getRectOfBtnPlayAgain();
@@ -189,9 +187,14 @@ class SettingGUI : public GUI {
 private:
 	Image* symbol;
 	Image* btnResume;
-	Image* btnVolumeOption;
+	//
+	Image* btnMute;
+	Image* btnUnMute;
+	//
 	Image* btnBackToMenu;
 	Image* btnSave;
+	//
+	bool mute;
 public:
 	SettingGUI();
 	~SettingGUI();
@@ -201,10 +204,9 @@ public:
 	void destroy();
 
 	SDL_Rect getRectOfBtnResume();
-	SDL_Rect getRectOfBtnVolumeOption();
+	SDL_Rect getRectOfBtnVolume();
 	SDL_Rect getRectOfBtnBackToMenu();
 	SDL_Rect getRectOfBtnSave();
-
 };
 
 //TODO: use full parameter constructor
