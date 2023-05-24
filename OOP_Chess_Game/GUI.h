@@ -194,6 +194,7 @@ private:
 	Image* btnBackToMenu;
 	Image* btnSave;
 	//
+
 	bool mute;
 public:
 	SettingGUI();
