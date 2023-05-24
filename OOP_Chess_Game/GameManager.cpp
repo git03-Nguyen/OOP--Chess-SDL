@@ -191,7 +191,6 @@ void GameManager::handelEvents() {
 				GamePlayGUI* temp = dynamic_cast<GamePlayGUI*>(mainGui);
 				if (checkFocus(e, temp->getRectOfBtnSetting())) {
 					std::cout << "Setting button clicked!" << std::endl;
-					history->write("history1.bin");
 				}
 				if (checkFocus(e, temp->getRectOfBtnUndo())) {
 					std::cout << "Undo button clicked!" << std::endl;
@@ -203,7 +202,6 @@ void GameManager::handelEvents() {
 				}
 				if (checkFocus(e, temp->getRectOfBtnQuit())) {
 					std::cout << "Quit button clicked!" << std::endl;
-					history->read("history1.bin");
 				}
 			}
 		}
