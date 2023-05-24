@@ -249,12 +249,12 @@ void GamePlayGUI::render() {
 	}
 	//pieces and check promoted pawn
 	for (int i = 0; i < Board::piecesList.size(); i++) {
-		if (Board::piecesList[i]->getType() == PieceType::Pawn) {
+		if (i >= 8 && i < 16 || i >= 24 && i < 32) {
 			Pawn* pawn = (Pawn*)Board::piecesList[i];
-			if (pawn->getPromotion()) {
+			if (Board::piecesList[i]->getType() != PieceType::Pawn) {
 				int plus = 0;
-				if (pawn->getColor() == Color::Black) plus = 16;
-				PieceType promotionType = pawn->getPromotion()->getType();
+				if (Board::piecesList[i]->getColor() == Color::Black) plus = 16;
+				PieceType promotionType = Board::piecesList[i]->getType();
 				//
 				if (promotionType == PieceType::Queen) {
 					this->piece[1 + plus]->setRectangle(this->piece[i]->getRectangle());

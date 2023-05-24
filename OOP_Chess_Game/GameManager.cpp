@@ -28,7 +28,7 @@ GameManager::GameManager(const char* title, int xPos, int yPos, int width, int h
 	mainGui = new GamePlayGUI();
 	subGui = nullptr;
 
-	opponent = Opponent::COMPUTER; // default
+	opponent = Opponent::HUMAN; // default
 	turn = 0; // start game, player1: 0 -> white; palyer2: 1->black
 	result = MatchResult::PLAYING; // The game is currently taking place
 	isRunning = true;
@@ -89,7 +89,6 @@ void GameManager::handelEvents() {
 		if (true)// move easy
 		{
 			std::pair<int, Coordinate> res = computer->playWithHardMode();
-			std::cout << "------------------ start move-----------------" << std::endl;
 			std::cout << "computer turn: " << turn << std::endl;
 			std::cout << "New postion: " << res.second.getX() << ", " << res.second.getY() << std::endl;
 			std::cout << "ID: " << res.first << std::endl;
@@ -97,24 +96,16 @@ void GameManager::handelEvents() {
 			Piece* capturedPiece = nullptr;
 			history->setInitalState(piece);
 			capturedPiece = piece->move(res.second, Board::piecesOnBoard);
-
-			// auto promote to queen
-			if (checkPromotion(piece)) {
-				Pawn* pawn = (Pawn*)piece;
-				pawn->promote(PieceType::Queen);
-			}
-
 			history->setFinalState(piece);
 			history->setCapturedPiece(capturedPiece);
 			history->updateData(turn);
-			std::cout << "initial piece: " << history->getData(turn)[0] << std::endl;
-			std::cout << "final piece: " << history->getData(turn)[1] << std::endl;
-			std::cout << "captured piece: " << history->getData(turn)[2] << std::endl;
-			turn++;
-
-
 			Board::updateBoard();
-			std::cout << "---------------- end move-------------------" << std::endl;
+			turn++;
+			// auto promote to queen
+			if (checkPromotion(piece)) {
+				promote(PieceType::Queen);
+			}
+
 			return;
 		}
 	}
@@ -137,44 +128,31 @@ void GameManager::handelEvents() {
 				if (subGui->getGUIType() == GUIType::PROMOTION_NOTICE) {
 					PromotionGUI* temp = (PromotionGUI*)subGui;
 					bool flag = false;
-					Pawn* pawn = nullptr;
-					for (int i = 0; i < 32; i++) {
-						if (checkPromotion(Board::piecesList[i])) {
-							pawn =(Pawn*) Board::piecesList[i];
-							break;
-						}
-					}
 					
 					if (checkFocus(e, temp->getRectOfBtnQueen())) {
 						std::cout << "Promote Queen!!!" << std::endl;
 						flag = true;
-						pawn->promote(PieceType::Queen);
+						promote(PieceType::Queen);
 					}
 					if (checkFocus(e, temp->getRectOfBtnRook())) {
 						std::cout << "Promote Rook!!!" << std::endl;
 						flag = true;
-						pawn->promote(PieceType::Rook);
+						promote(PieceType::Rook);
 					}
 					if (checkFocus(e, temp->getRectOfBtnKnight())) {
 						std::cout << "Promote Knight!!!" << std::endl;
 						flag = true;
-						pawn->promote(PieceType::Knight);
+						promote(PieceType::Knight);
 					}
 					if (checkFocus(e, temp->getRectOfBtnBishop())) {
 						std::cout << "Promote Bishop!!!" << std::endl;
 						flag = true;
-						pawn->promote(PieceType::Bishop);
+						promote(PieceType::Bishop);
 					}
 					if (flag) {
 						delete subGui;
 						subGui = nullptr;
 					}
-
-					std::vector<Piece*> data = history->getData(turn - 1);
-					history->setInitalState(data[0]);
-					history->setFinalState(pawn);
-					history->setCapturedPiece(nullptr);
-					history->updateData(turn -1);
 					return;
 				}
 				// RESULT_NOTICE
@@ -340,6 +318,12 @@ void GameManager::handleDragButtonOfSlider(const SDL_Event& e, Slider* slider) {
 }
 */
 
+/*
+int GameManager::getValueFromSlider(const SDL_Rect* buttonRect, const SDL_Rect* trackerRect) {
+	return (trackerRect->x - buttonRect->x) * 100 / trackerRect->w;
+}
+*/
+
 bool GameManager::checkFocus(const SDL_Event& e, const SDL_Rect& rect) const {
 	int x = e.motion.x;
 	int y = e.motion.y;
@@ -353,21 +337,50 @@ bool GameManager::checkPromotion(Piece* piece) {
 	if (piece->getType() != PieceType::Pawn) return false;
 
 	Coordinate c = piece->getPosition();
-	if ((c.getY() == 0 || c.getY() == 7) && !(dynamic_cast<Pawn*>(piece)->getPromotion())) return true;
+	if (c.getY() == 0 || c.getY() == 7) return true;
 
 	return false;
 }
 
-/*
-// TODO: try catch(maybe in main)
-void GameManager::backToMenu() {
-	delete mainGui;
-	mainGui = new MenuGUI();
-}
-*/
+void GameManager::promote(PieceType type) {
+	int index = -1;
+	for (int i = 0; i < 32; i++) {
+		if (Board::piecesList[i]->getDead() || !checkPromotion(Board::piecesList[i])) continue;
+		index = i;
+		break;
+	}
 
-int GameManager::getValueFromSlider(const SDL_Rect* buttonRect, const SDL_Rect* trackerRect) {
-	return (trackerRect->x - buttonRect->x) * 100 / trackerRect->w;
+	if (index < 0 || index >= 32) return;
+	Pawn* pawn = (Pawn*)Board::piecesList[index];
+	switch (type) {
+	case PieceType::Queen:
+		Board::piecesList[index] = new Queen(pawn->getPosition(), pawn->getColor());
+		Board::piecesList[index]->setID(pawn->getID());
+		break;
+	case PieceType::Rook:
+		Board::piecesList[index] = new Rook(pawn->getPosition(), pawn->getColor());
+		Board::piecesList[index]->setID(pawn->getID());
+		((Rook*)Board::piecesList[index])->setFirstMove(false);
+		break;
+	case PieceType::Knight:
+		Board::piecesList[index] = new Knight(pawn->getPosition(), pawn->getColor());
+		Board::piecesList[index]->setID(pawn->getID());
+		break;
+	case PieceType::Bishop:
+		Board::piecesList[index] = new Bishop(pawn->getPosition(), pawn->getColor());
+		Board::piecesList[index]->setID(pawn->getID());
+		break;
+	}
+	delete pawn;
+	pawn = nullptr;
+
+	// update history
+	std::vector<Piece*> data = history->getData(turn - 1);
+	history->setInitalState(data[0]);
+	history->setFinalState(Board::piecesList[index]);
+	history->setCapturedPiece(nullptr);
+	history->updateData(turn - 1);
+	Board::updateBoard();
 }
 
 // TODO - Carefully pointer to texture (I call slow change state)
