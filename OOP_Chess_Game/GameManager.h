@@ -65,6 +65,12 @@ public:
 
 	void redo();
 
+	void resetGame();
+
+	void saveCurrentGame(std::string path);
+
+	void loadPreviousGame(std::string path);
+
 	MatchState checkWinner();
 };
 

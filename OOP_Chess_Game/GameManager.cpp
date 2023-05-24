@@ -70,10 +70,6 @@ void GameManager::render() {
 	}
 	if (subGui) {
 		subGui->render();
-		if (subGui->getGUIType() == GUIType::RESULT_NOTICE) {
-			MatchResultGUI* temp = (MatchResultGUI*)subGui;
-			temp->renderMatchResult(checkWinner());
-		}
 	}
 	SDL_RenderPresent(Window::renderer);
 }
@@ -84,12 +80,12 @@ void GameManager::handelEvents() {
 
 	//check winner
 	MatchState matchState = checkWinner();
-	if (matchState != MatchState::IN_PLAY) {
-		subGui = new MatchResultGUI();
+	if (matchState != MatchState::IN_PLAY && !subGui) {
+		subGui = new MatchResultGUI(matchState);
 	}
 
 	// defualt computer: first => white
-	if (opponent == Opponent::COMPUTER && turn % 2 == 0 && matchState == MatchState::IN_PLAY) {
+	if (!subGui && opponent == Opponent::COMPUTER && turn % 2 == 0 && matchState == MatchState::IN_PLAY) {
 		if (true)// move easy
 		{
 			std::pair<int, Coordinate> res = computer->playWithHardMode();
@@ -135,10 +131,9 @@ void GameManager::handelEvents() {
 			if(opponent == Opponent::COMPUTER)
 				// CALL API FROM CLASS COMPUTER => CONSIDER TURN IS EVEN OR ODD; CALCULATE MOVE=> COORDINATE, INCREASE TURN, SAVE HISTORY.
 			*/
-			Coordinate c = getClickedBox(e);
-			std::cout << c.getX() << " " << c.getY() << std::endl;
 	
 			if (subGui) {
+				// PROMOTION_NOTICE
 				if (subGui->getGUIType() == GUIType::PROMOTION_NOTICE) {
 					PromotionGUI* temp = (PromotionGUI*)subGui;
 					bool flag = false;
@@ -180,7 +175,56 @@ void GameManager::handelEvents() {
 					history->setFinalState(pawn);
 					history->setCapturedPiece(nullptr);
 					history->updateData(turn -1);
+					return;
 				}
+				// RESULT_NOTICE
+				if (subGui->getGUIType() == GUIType::RESULT_NOTICE) {
+					MatchResultGUI* temp = (MatchResultGUI*)subGui;
+					if (checkFocus(e, temp->getRectOfBtnBackToMenu())) {
+						// Go to menu
+						std::cout << "Clicked menu button/ OR TO SAVE" << std::endl;
+						saveCurrentGame("history.bin");
+						// delete subGui; subGui = nullptr;
+						return;
+					}
+					if (checkFocus(e, temp->getRectOfBtnPlayAgain())) {
+						std::cout << "Clicked play again button" << std::endl;
+						resetGame();
+						delete subGui;
+						subGui = nullptr;
+						return;
+					}
+				}
+				// 
+				if (subGui->getGUIType() == GUIType::SETTINGS) {
+					SettingGUI* temp = (SettingGUI*)subGui;
+					if (checkFocus(e, temp->getRectOfBtnBackToMenu())) {
+						// Go to menu
+						std::cout << "Clicked menu button/ OR TO SAVE" << std::endl;
+						saveCurrentGame("history.bin");
+						return;
+					}
+					if (checkFocus(e, temp->getRectOfBtnResume())) {
+						std::cout << "Clicked resume button" << std::endl;
+						delete subGui;
+						subGui = nullptr;
+						return;
+					}
+					if (checkFocus(e, temp->getRectOfBtnSave())) {
+						// Go to menu
+						std::cout << "Clicked save button" << std::endl;
+						saveCurrentGame("history.bin");
+						return;
+					}
+					if (checkFocus(e, temp->getRectOfBtnVolume())) {
+						// Go to menu
+						std::cout << "Clicked volume button/ to load previous game" << std::endl;
+						loadPreviousGame("history.bin");
+						// delete subGui; subGui = nullptr;
+						return;
+					}
+				}
+
 				return;
 			}
 
@@ -191,19 +235,22 @@ void GameManager::handelEvents() {
 				GamePlayGUI* temp = dynamic_cast<GamePlayGUI*>(mainGui);
 				if (checkFocus(e, temp->getRectOfBtnSetting())) {
 					std::cout << "Setting button clicked!" << std::endl;
-					history->write("history1.bin");
+					subGui = new SettingGUI();
+					return;
 				}
 				if (checkFocus(e, temp->getRectOfBtnUndo())) {
 					std::cout << "Undo button clicked!" << std::endl;
 					undo();
+					return;
 				}
 				if (checkFocus(e, temp->getRectOfBtnRedo())) {
 					std::cout << "Redo button clicked!" << std::endl;
 					redo();
+					return;
 				}
 				if (checkFocus(e, temp->getRectOfBtnQuit())) {
 					std::cout << "Quit button clicked!" << std::endl;
-					history->read("history1.bin");
+					return;
 				}
 			}
 		}
@@ -401,6 +448,24 @@ void GameManager::redo() {
 	if (opponent == Opponent::COMPUTER && turn % 2 == 0) {
 		redo();
 	}
+}
+
+void GameManager::resetGame() {
+	turn = 0;
+	Board::resetPiecesList();
+	Board::updateBoard();
+	history->clear();
+}
+
+void GameManager::saveCurrentGame(std::string path) {
+	history->write(path);
+}
+
+void GameManager::loadPreviousGame(std::string path) {
+	history->read(path);
+	Board::resetPiecesList();
+	Board::updateBoard();
+	turn = 0;
 }
 
 MatchState GameManager::checkWinner() {
