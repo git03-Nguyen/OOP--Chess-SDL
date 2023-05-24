@@ -405,8 +405,9 @@ MatchResultGUI::MatchResultGUI(MatchState ms) {
 		break;
 	}
 	this->result = new Image({ SUBDISPLACE + 30,SUBDISPLACE + 20, 230, 80 }, temp);
-	this->btnPlayAgain = new Image({ SUBDISPLACE + 20 + PIECESIZE, SUBDISPLACE + 120, PIECESIZE, PIECESIZE }, "..\\Assets\\undo.png");
-	this->btnBackToMenu = new Image({ SUBDISPLACE + 30 + PIECESIZE * 2, SUBDISPLACE + 120, PIECESIZE, PIECESIZE }, "..\\Assets\\tomenu.png");
+	this->btnPlayAgain = new Image({ SUBDISPLACE + 28, SUBDISPLACE + 120, PIECESIZE, PIECESIZE }, "..\\Assets\\undo.png");
+	this->btnBackToMenu = new Image({ SUBDISPLACE + 28 + 27 + PIECESIZE, SUBDISPLACE + 120, PIECESIZE, PIECESIZE }, "..\\Assets\\tomenu.png");
+	this->btnSave = new Image({ SUBDISPLACE + 28 + 27 + 27 + PIECESIZE*2, SUBDISPLACE + 120, PIECESIZE, PIECESIZE }, "..\\Assets\\save.png");
 }
 
 MatchResultGUI::~MatchResultGUI() {
@@ -419,6 +420,7 @@ void MatchResultGUI::render() {
 	this->result->renderImage();
 	this->btnBackToMenu->renderImage();
 	this->btnPlayAgain->renderImage();
+	this->btnSave->renderImage();
 }
 
 GUIType MatchResultGUI::getGUIType() const {
@@ -441,12 +443,19 @@ void MatchResultGUI::destroy() {
 	this->btnBackToMenu->destroy();
 	delete this->btnBackToMenu;
 	this->btnBackToMenu = nullptr;
+	//
+	this->btnSave->destroy();
+	delete this->btnSave;
+	this->btnSave = nullptr;
 }
 SDL_Rect MatchResultGUI::getRectOfBtnBackToMenu() {
 	return this->btnBackToMenu->getRectangle();
 }
 SDL_Rect MatchResultGUI::getRectOfBtnPlayAgain() {
 	return this->btnPlayAgain->getRectangle();
+}
+SDL_Rect MatchResultGUI::getRectOfBtnSave() {
+	return this->btnSave->getRectangle();
 }
 
 
