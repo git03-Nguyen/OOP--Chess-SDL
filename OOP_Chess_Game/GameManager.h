@@ -65,6 +65,8 @@ public:
 
 	void redo();
 
+	void resetGame();
+
 	MatchState checkWinner();
 };
 
