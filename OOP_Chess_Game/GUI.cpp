@@ -378,10 +378,33 @@ void GamePlayGUI::destroy() {
 	this->background = nullptr;
 }
 MatchResultGUI::MatchResultGUI() {
+
 	this->background = new Image({ SUBDISPLACE,SUBDISPLACE,SUBSIZEX, SUBSIZEY }, "..\\Assets\\subback.png");
-	this->blackWin = new Image({ SUBDISPLACE + 30,SUBDISPLACE + 20, 230, 80 }, "..\\Assets\\BlackWin.png");
-	this->whiteWin = new Image({ SUBDISPLACE + 30,SUBDISPLACE + 20, 230, 80 }, "..\\Assets\\WhiteWin.png");
-	this->draw = new Image({ SUBDISPLACE + 40,SUBDISPLACE + 20, 210, 70 }, "..\\Assets\\Draw.png");
+	this->result = nullptr;
+	//this->blackWin = new Image({ SUBDISPLACE + 30,SUBDISPLACE + 20, 230, 80 }, "..\\Assets\\BlackWin.png");
+	//this->whiteWin = new Image({ SUBDISPLACE + 30,SUBDISPLACE + 20, 230, 80 }, "..\\Assets\\WhiteWin.png");
+	//this->draw = new Image({ SUBDISPLACE + 40,SUBDISPLACE + 20, 210, 70 }, "..\\Assets\\Draw.png");
+	this->btnPlayAgain = new Image({ SUBDISPLACE + 20 + PIECESIZE, SUBDISPLACE + 120, PIECESIZE, PIECESIZE }, "..\\Assets\\undo.png");
+	this->btnBackToMenu = new Image({ SUBDISPLACE + 30 + PIECESIZE * 2, SUBDISPLACE + 120, PIECESIZE, PIECESIZE }, "..\\Assets\\tomenu.png");
+}
+MatchResultGUI::MatchResultGUI(MatchState ms) {
+	this->background = new Image({ SUBDISPLACE,SUBDISPLACE,SUBSIZEX, SUBSIZEY }, "..\\Assets\\subback.png");
+	this->result = nullptr;
+	std::string temp = "";
+	switch (ms) {
+	case MatchState::BLACK_WIN:
+		temp = "..\\Assets\\BlackWin.png";
+		break;
+	case MatchState::WHITE_WIN:
+		temp = "..\\Assets\\WhiteWin.png";
+		break;
+	case MatchState::DRAW:
+		temp = "..\\Assets\\Draw.png";
+		break;
+	default:
+		break;
+	}
+	this->result = new Image({ SUBDISPLACE + 30,SUBDISPLACE + 20, 230, 80 }, temp);
 	this->btnPlayAgain = new Image({ SUBDISPLACE + 20 + PIECESIZE, SUBDISPLACE + 120, PIECESIZE, PIECESIZE }, "..\\Assets\\undo.png");
 	this->btnBackToMenu = new Image({ SUBDISPLACE + 30 + PIECESIZE * 2, SUBDISPLACE + 120, PIECESIZE, PIECESIZE }, "..\\Assets\\tomenu.png");
 }
@@ -393,23 +416,9 @@ MatchResultGUI::~MatchResultGUI() {
 
 void MatchResultGUI::render() {
 	this->background->renderImage();
+	this->result->renderImage();
 	this->btnBackToMenu->renderImage();
 	this->btnPlayAgain->renderImage();
-}
-
-void MatchResultGUI::renderMatchResult(MatchState ms) {
-	if (ms == MatchState::BLACK_WIN) {
-		this->blackWin->renderImage();
-		return;
-	}
-	if (ms == MatchState::WHITE_WIN) {
-		this->whiteWin->renderImage();
-		return;
-	}
-	if (ms == MatchState::DRAW) {
-		this->draw->renderImage();
-		return;
-	}
 }
 
 GUIType MatchResultGUI::getGUIType() const {
@@ -421,13 +430,9 @@ void MatchResultGUI::destroy() {
 	delete this->background;
 	this->background = nullptr;
 	//
-	this->blackWin->destroy();
-	delete this->blackWin;
-	this->blackWin = nullptr;
-	//
-	this->whiteWin->destroy();
-	delete this->whiteWin;
-	this->whiteWin = nullptr;
+	this->result->destroy();
+	delete this->result;
+	this->result = nullptr;
 	//
 	this->btnPlayAgain->destroy();
 	delete this->btnPlayAgain;
@@ -511,10 +516,15 @@ void PromotionGUI::destroy() {
 }
 
 SettingGUI::SettingGUI() {
+	this->mute = false; // set mute
+	//
 	this->symbol = new Image({ SUBDISPLACE + 110, WINDOWSIZEY - 360, 70, 70 }, "..\\Assets\\settingSymbol.png");
 	this->background = new Image({ SUBDISPLACE,SUBDISPLACE,SUBSIZEX, SUBSIZEY }, "..\\Assets\\subback.png");
 	this->btnResume = new Image({ SUBDISPLACE + 10, WINDOWSIZEY - 280, PIECESIZE, PIECESIZE }, "..\\Assets\\resume.png");
-	this->btnVolumeOption = new Image({ SUBDISPLACE + 20 + PIECESIZE, WINDOWSIZEY - 280, PIECESIZE, PIECESIZE }, "..\\Assets\\volume.png");
+	//
+	this->btnMute = new Image({ SUBDISPLACE + 20 + PIECESIZE, WINDOWSIZEY - 280, PIECESIZE, PIECESIZE }, "..\\Assets\\mute.png");
+	this->btnUnMute = new Image({ SUBDISPLACE + 20 + PIECESIZE, WINDOWSIZEY - 280, PIECESIZE, PIECESIZE }, "..\\Assets\\unmute.png");
+	//
 	this->btnSave = new Image({ SUBDISPLACE + 30 + PIECESIZE * 2, WINDOWSIZEY - 280, PIECESIZE, PIECESIZE }, "..\\Assets\\save.png");
 	this->btnBackToMenu = new Image({ SUBDISPLACE + 40 + PIECESIZE * 3, WINDOWSIZEY - 280, PIECESIZE, PIECESIZE }, "..\\Assets\\tomenu.png");
 }
@@ -525,12 +535,17 @@ SettingGUI::~SettingGUI() {
 
 
 void SettingGUI::render() {
+	this->mute = false;//set mute
+	//
 	this->background->renderImage();
 	this->symbol->renderImage();
 	this->btnResume->renderImage();
-	this->btnVolumeOption->renderImage();
 	this->btnSave->renderImage();
 	this->btnBackToMenu->renderImage();
+	//
+	if (this->mute) this->btnUnMute->renderImage();
+	else this->btnMute->renderImage();
+	//
 }
 
 GUIType SettingGUI::getGUIType() const {
@@ -559,13 +574,21 @@ void SettingGUI::destroy() {
 	this->btnBackToMenu->destroy();
 	delete this->btnBackToMenu;
 	this->btnBackToMenu = nullptr;
+	//
+	this->btnUnMute->destroy();
+	delete this->btnUnMute;
+	this->btnUnMute = nullptr;
+	//
+	this->btnMute->destroy();
+	delete this->btnMute;
+	this->btnMute = nullptr;
 }
 
 SDL_Rect SettingGUI::getRectOfBtnResume() {
 	return this->btnResume->getRectangle();
 }
-SDL_Rect SettingGUI::getRectOfBtnVolumeOption() {
-	return this->btnVolumeOption->getRectangle();
+SDL_Rect SettingGUI::getRectOfBtnVolume() {
+	return this->btnMute->getRectangle();
 }
 SDL_Rect SettingGUI::getRectOfBtnBackToMenu() {
 	return this->btnBackToMenu->getRectangle();
