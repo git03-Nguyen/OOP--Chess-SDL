@@ -28,7 +28,7 @@ GameManager::GameManager(const char* title, int xPos, int yPos, int width, int h
 	mainGui = new GamePlayGUI();
 	subGui = nullptr;
 
-	opponent = Opponent::HUMAN; // default
+	opponent = Opponent::COMPUTER; // default
 	turn = 0; // start game, player1: 0 -> white; palyer2: 1->black
 	result = MatchResult::PLAYING; // The game is currently taking place
 	isRunning = true;
@@ -89,9 +89,6 @@ void GameManager::handelEvents() {
 		if (true)// move easy
 		{
 			std::pair<int, Coordinate> res = computer->playWithHardMode();
-			std::cout << "computer turn: " << turn << std::endl;
-			std::cout << "New postion: " << res.second.getX() << ", " << res.second.getY() << std::endl;
-			std::cout << "ID: " << res.first << std::endl;
 			Piece* piece = Board::piecesList[res.first];
 			Piece* capturedPiece = nullptr;
 			history->setInitalState(piece);
@@ -160,9 +157,13 @@ void GameManager::handelEvents() {
 					MatchResultGUI* temp = (MatchResultGUI*)subGui;
 					if (checkFocus(e, temp->getRectOfBtnBackToMenu())) {
 						// Go to menu
-						std::cout << "Clicked menu button/ OR TO SAVE" << std::endl;
-						saveCurrentGame("history.bin");
+						std::cout << "Clicked menu button" << std::endl;
 						// delete subGui; subGui = nullptr;
+						return;
+					}
+					if (checkFocus(e, temp->getRectOfBtnSave())) {
+						std::cout << "Clicked save button" << std::endl;
+						saveCurrentGame("history.bin");
 						return;
 					}
 					if (checkFocus(e, temp->getRectOfBtnPlayAgain())) {
@@ -178,8 +179,7 @@ void GameManager::handelEvents() {
 					SettingGUI* temp = (SettingGUI*)subGui;
 					if (checkFocus(e, temp->getRectOfBtnBackToMenu())) {
 						// Go to menu
-						std::cout << "Clicked menu button/ OR TO SAVE" << std::endl;
-						saveCurrentGame("history.bin");
+						std::cout << "Clicked menu button" << std::endl;
 						return;
 					}
 					if (checkFocus(e, temp->getRectOfBtnResume())) {
@@ -202,7 +202,6 @@ void GameManager::handelEvents() {
 						return;
 					}
 				}
-
 				return;
 			}
 
