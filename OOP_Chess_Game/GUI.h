@@ -149,6 +149,7 @@ private:
 	Image* result;
 	Image* btnPlayAgain;
 	Image* btnBackToMenu;
+	Image* btnSave;
 public:
 	MatchResultGUI();
 	MatchResultGUI(MatchState ms);
@@ -160,6 +161,7 @@ public:
 
 	SDL_Rect getRectOfBtnPlayAgain();
 	SDL_Rect getRectOfBtnBackToMenu();
+	SDL_Rect getRectOfBtnSave();
 };
 
 class PromotionGUI : public GUI {
@@ -194,7 +196,6 @@ private:
 	Image* btnBackToMenu;
 	Image* btnSave;
 	//
-
 	bool mute;
 public:
 	SettingGUI();
