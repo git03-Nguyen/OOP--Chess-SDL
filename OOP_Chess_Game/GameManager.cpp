@@ -28,7 +28,7 @@ GameManager::GameManager(const char* title, int xPos, int yPos, int width, int h
 	mainGui = new GamePlayGUI();
 	subGui = nullptr;
 
-	opponent = Opponent::HUMAN; // default
+	opponent = Opponent::COMPUTER; // default
 	turn = 0; // start game, player1: 0 -> white; palyer2: 1->black
 	result = MatchResult::PLAYING; // The game is currently taking place
 	isRunning = true;
@@ -85,7 +85,7 @@ void GameManager::handelEvents() {
 	}
 
 	// defualt computer: first => white
-	if (opponent == Opponent::COMPUTER && turn % 2 == 0 && matchState == MatchState::IN_PLAY) {
+	if (!subGui && opponent == Opponent::COMPUTER && turn % 2 == 0 && matchState == MatchState::IN_PLAY) {
 		if (true)// move easy
 		{
 			std::pair<int, Coordinate> res = computer->playWithHardMode();
@@ -182,7 +182,8 @@ void GameManager::handelEvents() {
 					MatchResultGUI* temp = (MatchResultGUI*)subGui;
 					if (checkFocus(e, temp->getRectOfBtnBackToMenu())) {
 						// Go to menu
-						std::cout << "Clicked menu button" << std::endl;
+						std::cout << "Clicked menu button/ OR TO SAVE" << std::endl;
+						saveCurrentGame("history.bin");
 						// delete subGui; subGui = nullptr;
 						return;
 					}
@@ -199,8 +200,8 @@ void GameManager::handelEvents() {
 					SettingGUI* temp = (SettingGUI*)subGui;
 					if (checkFocus(e, temp->getRectOfBtnBackToMenu())) {
 						// Go to menu
-						std::cout << "Clicked menu button" << std::endl;
-						// delete subGui; subGui = nullptr;
+						std::cout << "Clicked menu button/ OR TO SAVE" << std::endl;
+						saveCurrentGame("history.bin");
 						return;
 					}
 					if (checkFocus(e, temp->getRectOfBtnResume())) {
@@ -212,12 +213,13 @@ void GameManager::handelEvents() {
 					if (checkFocus(e, temp->getRectOfBtnSave())) {
 						// Go to menu
 						std::cout << "Clicked save button" << std::endl;
-						history->write("history.bin");
+						saveCurrentGame("history.bin");
 						return;
 					}
 					if (checkFocus(e, temp->getRectOfBtnVolume())) {
 						// Go to menu
-						std::cout << "Clicked volume button" << std::endl;
+						std::cout << "Clicked volume button/ to load previous game" << std::endl;
+						loadPreviousGame("history.bin");
 						// delete subGui; subGui = nullptr;
 						return;
 					}
@@ -453,6 +455,17 @@ void GameManager::resetGame() {
 	Board::resetPiecesList();
 	Board::updateBoard();
 	history->clear();
+}
+
+void GameManager::saveCurrentGame(std::string path) {
+	history->write(path);
+}
+
+void GameManager::loadPreviousGame(std::string path) {
+	history->read(path);
+	Board::resetPiecesList();
+	Board::updateBoard();
+	turn = 0;
 }
 
 MatchState GameManager::checkWinner() {
