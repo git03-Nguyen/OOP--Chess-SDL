@@ -28,42 +28,109 @@ GUIType GUI::getGUIType() const {
 	return GUIType();
 }
 // 
-//GUIType MenuGUI::getGUIType() const {
-//	return GUIType::MENU;
-//}
-//
-//MenuGUI::MenuGUI() {
-//}
-//
-//MenuGUI::~MenuGUI() {
-//}
-//
-//void MenuGUI::init() {
-//}
-//
-//void MenuGUI::render() {
-//}
-//
-//SDL_Rect MenuGUI::getRectOfBtnVsCom() {
-//	return SDL_Rect();
-//}
-//
-//SDL_Rect MenuGUI::getRectOfBtnVsPlayer() {
-//	return SDL_Rect();
-//}
-//
-//SDL_Rect MenuGUI::getRectOfBtnVolumeOption() {
-//	return SDL_Rect();
-//}
-//
-//SDL_Rect MenuGUI::getRectOfBtnReplayRecentGame() {
-//	return SDL_Rect();
-//}
-//
-//SDL_Rect MenuGUI::getRectOfBtnExit() {
-//	return SDL_Rect();
-//}
-//
+GUIType MenuGUI::getGUIType() const {
+	return GUIType::MENU;
+}
+
+MenuGUI::MenuGUI() {
+	this->mute = false;
+	this->background = new Image({ 0,0,640,560 }, "..\\Assets\\menubackgroung.png");
+	//column1
+	this->btnContinueSavedGame = new Image({ 80,240,200,60 }, "..\\Assets\\menubackgroung.png");
+	this->btnVsComputerEasy = new Image({ 80,320,200,60 }, "..\\Assets\\computereasy.png");
+	this->btnVsComputerHard = new Image({ 80,400,200,60 }, "..\\Assets\\computerhard.png");
+	//comlumn2
+	this->btnVsPlayer = new Image({ 360, 240, 200, 60 }, "..\\Assets\\pvp.png");
+	this->btnReplayRecentGame = new Image({ 360, 320, 200, 60 }, "..\\Assets\\replay.png");
+	this->btnExit = new Image({ 360, 400, 200, 60 }, "..\\Assets\\exit.png");
+	//
+	this->btnMute = new Image({ 280, 480, 80, 80 }, "..\\Assets\\mute.png");
+	this->btnUnMute = new Image({ 280, 480, 80, 80 }, "..\\Assets\\unmute.png");
+}
+
+MenuGUI::~MenuGUI() {
+	this->destroy();
+}
+void MenuGUI::destroy() {
+	this->background->destroy();
+	delete this->background;
+	this->background = nullptr;
+	//column1
+	this->btnContinueSavedGame->destroy();
+	delete this->btnContinueSavedGame;
+	this->btnContinueSavedGame = nullptr;
+	//
+	this->btnVsComputerEasy->destroy();
+	delete this->btnVsComputerEasy;
+	this->btnVsComputerEasy = nullptr;
+	//
+	this->btnVsComputerHard->destroy();
+	delete this->btnVsComputerHard;
+	this->btnVsComputerHard = nullptr;
+	//comlumn2
+	this->btnVsPlayer->destroy();
+	delete this->btnVsPlayer;
+	this->btnVsPlayer = nullptr;
+	//
+	this->btnReplayRecentGame->destroy();
+	delete this->btnReplayRecentGame;
+	this->btnReplayRecentGame = nullptr;
+	//
+	this->btnExit->destroy();
+	delete this->btnExit;
+	this->btnExit = nullptr;
+	//
+	this->btnMute->destroy();
+	delete this->btnMute;
+	this->btnMute = nullptr;
+	//
+	this->btnUnMute->destroy();
+	delete this->btnUnMute;
+	this->btnUnMute = nullptr;
+}
+void MenuGUI::render() {
+	this->background->renderImage();
+	this->btnContinueSavedGame->renderImage();
+	this->btnVsComputerEasy->renderImage();
+	this->btnVsComputerHard->renderImage();
+	//comlumn2
+	this->btnVsPlayer->renderImage();
+	this->btnReplayRecentGame->renderImage();
+	this->btnExit->renderImage();
+	//
+	this->btnMute->renderImage();
+	this->btnUnMute->renderImage();
+}
+
+SDL_Rect MenuGUI::getRectOfBtnVsComputerEasy() {
+	return this->btnVsComputerEasy->getRectangle();
+}
+
+SDL_Rect MenuGUI::getRectOfBtnVsComputerHard() {
+	return this->btnVsComputerHard->getRectangle();
+}
+
+SDL_Rect MenuGUI::getRectOfBtnVsPlayer() {
+	return this->btnVsPlayer->getRectangle();
+}
+
+SDL_Rect MenuGUI::getRectOfBtnVolume() {
+	return this->btnMute->getRectangle();
+}
+
+SDL_Rect MenuGUI::getRectOfBtnReplayRecentGame() {
+	return this->btnReplayRecentGame->getRectangle();
+}
+
+SDL_Rect MenuGUI::getRectOfBtnExit() {
+	return this->btnExit->getRectangle();
+}
+
+SDL_Rect MenuGUI::getRectOfBtnContinueSavedGame() {
+	return this->btnContinueSavedGame->getRectangle();
+}
+
+
 //ModeOptionGUI::ModeOptionGUI() {
 //}
 //
@@ -386,6 +453,7 @@ MatchResultGUI::MatchResultGUI() {
 	//this->draw = new Image({ SUBDISPLACE + 40,SUBDISPLACE + 20, 210, 70 }, "..\\Assets\\Draw.png");
 	this->btnPlayAgain = new Image({ SUBDISPLACE + 20 + PIECESIZE, SUBDISPLACE + 120, PIECESIZE, PIECESIZE }, "..\\Assets\\undo.png");
 	this->btnBackToMenu = new Image({ SUBDISPLACE + 30 + PIECESIZE * 2, SUBDISPLACE + 120, PIECESIZE, PIECESIZE }, "..\\Assets\\tomenu.png");
+	this->btnSave = new Image({ SUBDISPLACE + 28 + 27 + 27 + PIECESIZE * 2, SUBDISPLACE + 120, PIECESIZE, PIECESIZE }, "..\\Assets\\save.png");
 }
 MatchResultGUI::MatchResultGUI(MatchState ms) {
 	this->background = new Image({ SUBDISPLACE,SUBDISPLACE,SUBSIZEX, SUBSIZEY }, "..\\Assets\\subback.png");
