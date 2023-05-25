@@ -34,9 +34,9 @@ GUIType MenuGUI::getGUIType() const {
 
 MenuGUI::MenuGUI() {
 	this->mute = false;
-	this->background = new Image({ 0,0,640,560 }, "..\\Assets\\menubackgroung.png");
+	this->background = new Image({ 0,0,640,560 }, "..\\Assets\\menubackground.png");
 	//column1
-	this->btnContinueSavedGame = new Image({ 80,240,200,60 }, "..\\Assets\\menubackgroung.png");
+	this->btnContinueSavedGame = new Image({ 80,240,200,60 }, "..\\Assets\\continue.png");
 	this->btnVsComputerEasy = new Image({ 80,320,200,60 }, "..\\Assets\\computereasy.png");
 	this->btnVsComputerHard = new Image({ 80,400,200,60 }, "..\\Assets\\computerhard.png");
 	//comlumn2
@@ -655,6 +655,7 @@ void SettingGUI::destroy() {
 	this->btnUnMute->destroy();
 	delete this->btnUnMute;
 	this->btnUnMute = nullptr;
+
 	//
 	this->btnMute->destroy();
 	delete this->btnMute;

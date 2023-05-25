@@ -89,6 +89,7 @@
 //}
 //Button::Button(const SDL_Rect& rect, const std::string& imagePath) {
 //	this->rect = rect;
+
 //	this->imagePath = imagePath;
 //}
 //Button::~Button() {
