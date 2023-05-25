@@ -98,8 +98,8 @@ void MenuGUI::render() {
 	this->btnReplayRecentGame->renderImage();
 	this->btnExit->renderImage();
 	//
-	this->btnMute->renderImage();
-	this->btnUnMute->renderImage();
+	if (this->mute) this->btnUnMute->renderImage();
+	else this->btnMute->renderImage();
 }
 
 SDL_Rect MenuGUI::getRectOfBtnVsComputerEasy() {
