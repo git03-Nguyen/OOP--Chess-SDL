@@ -22,7 +22,7 @@ GameManager::GameManager(const char* title, int xPos, int yPos, int width, int h
 	Window::SCREEN_WIDTH = width;
 
 	soundManager = new SoundManager();
-	board = new Board();
+	board = Board::getInstance();
 	computer = new Computer();
 	history = new History();
 	mainGui = new GamePlayGUI();
@@ -36,7 +36,8 @@ GameManager::GameManager(const char* title, int xPos, int yPos, int width, int h
 }
 
 GameManager::~GameManager() {
-	delete board, soundManager, computer, history, mainGui, subGui;
+	delete soundManager, computer, history, mainGui, subGui;
+	Board::removeInstance();
 	board = nullptr; soundManager = nullptr; computer = nullptr;  history = nullptr; mainGui = nullptr; subGui = nullptr;
 	SDL_DestroyRenderer(Window::renderer);
 	SDL_DestroyWindow(Window::window);
@@ -379,6 +380,7 @@ void GameManager::promote(PieceType type) {
 	history->setFinalState(Board::piecesList[index]);
 	history->setCapturedPiece(nullptr);
 	history->updateData(turn - 1);
+	// update board
 	Board::updateBoard();
 }
 
