@@ -158,7 +158,6 @@ public:
 
 class Pawn: public Piece {
 private:
-	Piece* promotion;
 	bool firstMove;
 	bool enableEnPassantCaptured;
 public:
@@ -167,8 +166,6 @@ public:
 	Pawn(const Coordinate& position, Color color);
 	virtual ~Pawn();
 
-	Piece* getPromotion() const;
-	void setPromotion(Piece* piece);
 	bool getFirstMove();
 	void setFirstMove(bool firstMove);
 	void setEnableEnPassantCaptured(bool able);
@@ -176,7 +173,6 @@ public:
 	Piece* move(const Coordinate& c, std::vector<std::vector<Piece*>>);
 	std::vector<std::vector<Coordinate>> getPossibleMoves(std::vector<std::vector<Piece*>>);
 	Piece* clone() const;
-	void promote(PieceType type);
 	void write(std::fstream& os);
 	void read(std::fstream& is);
 };

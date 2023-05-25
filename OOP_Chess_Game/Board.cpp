@@ -13,6 +13,12 @@ Board* Board::getInstance() {
     }
     return _instance;
 }
+void Board::removeInstance() {
+    if (_instance) {
+        delete _instance;
+        _instance = nullptr;
+    }
+}
 Board::Board() {
     resetPiecesList();
 
@@ -38,7 +44,6 @@ Board::~Board() {
         }   
     }
     piecesList.clear();
-    delete _instance;
 }
 void Board::updateBoard() {
     for (auto& vpPieces : piecesOnBoard) {

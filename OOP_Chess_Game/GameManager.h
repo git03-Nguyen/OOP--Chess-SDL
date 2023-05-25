@@ -57,7 +57,7 @@ public:
 
 	bool checkPromotion(Piece* piece);
 
-	void backToMenu();
+	void promote(PieceType type);
 
 	int getValueFromSlider(const SDL_Rect* buttonRect, const SDL_Rect* trackerRect);
 
