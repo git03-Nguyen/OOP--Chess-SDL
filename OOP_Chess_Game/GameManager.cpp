@@ -25,7 +25,7 @@ GameManager::GameManager(const char* title, int xPos, int yPos, int width, int h
 	board = Board::getInstance();
 	computer = new Computer();
 	history = new History();
-	mainGui = new GamePlayGUI();
+	mainGui = new MenuGUI();
 	subGui = nullptr;
 
 	opponent = Opponent::COMPUTER; // default
