@@ -35,34 +35,35 @@ public:
 	void deactivate();
 };
 //
-//class MenuGUI : public GUI {
-//private:
-//	static Button btnVsCom;
-//	static Button btnVsPlayer;
-//	static Button btnVolumeOption;
-//	static Button btnReplayRecentGame;
-//	static Button btnExit;
-//public:
-//	MenuGUI();
-//	virtual ~MenuGUI();
-//
-//	void init();
-//	void render();
-//	GUIType getGUIType() const;
-//
-//	static SDL_Rect getRectOfBtnVsCom();
-//	static SDL_Rect getRectOfBtnVsPlayer();
-//	static SDL_Rect getRectOfBtnVolumeOption();
-//	static SDL_Rect getRectOfBtnReplayRecentGame();
-//	static SDL_Rect getRectOfBtnExit();
-//};
+class MenuGUI : public GUI {
+protected:
+	bool mute;
+	Image* btnContinueSavedGame;
+	Image* btnVsComputerEasy;
+	Image* btnVsComputerHard;
+	Image* btnVsPlayer;
+	Image* btnReplayRecentGame;
+	Image* btnExit;
+	//
+	Image* btnMute;
+	Image* btnUnMute;
+public:
+	MenuGUI();
+	~MenuGUI();
 
-// TODO: use full parameter constructor
-//Button MenuGUI::btnVsCom;
-//Button MenuGUI::btnVsPlayer;
-//Button MenuGUI::btnVolumeOption;
-//Button MenuGUI::btnReplayRecentGame;
-//Button MenuGUI::btnExit;
+	void render();
+	GUIType getGUIType() const;
+
+	SDL_Rect getRectOfBtnContinueSavedGame();
+	SDL_Rect getRectOfBtnVsPlayer();
+	SDL_Rect getRectOfBtnVsComputerEasy();
+	SDL_Rect getRectOfBtnVsComputerHard();
+	SDL_Rect getRectOfBtnVolume();
+	SDL_Rect getRectOfBtnReplayRecentGame();
+	SDL_Rect getRectOfBtnExit();
+
+	void destroy();
+};
 
 //class ModeOptionGUI : public GUI {
 //private:
@@ -163,7 +164,7 @@ public:
 	SDL_Rect getRectOfBtnBackToMenu();
 	SDL_Rect getRectOfBtnSave();
 };
-
+////////////////
 class PromotionGUI : public GUI {
 private:
 	Image* btnQueen;
