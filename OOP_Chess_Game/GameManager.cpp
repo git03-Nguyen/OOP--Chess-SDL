@@ -80,35 +80,37 @@ void GameManager::handelEvents() {
 	SDL_Event e;
 
 	//check winner
-	MatchState matchState = checkWinner();
-	if (matchState != MatchState::IN_PLAY && !subGui) {
-		subGui = new MatchResultGUI(matchState);
-	}
-
-	// defualt computer: first => white
-	if (!subGui && state == GamePlayGUIState::PLAY && (opponent == Opponent::HARD_COMPUTER || opponent == Opponent::EASY_COMPUTER) && turn % 2 == 0 && matchState == MatchState::IN_PLAY) {
-		std::pair<int, Coordinate> res = (opponent == Opponent::HARD_COMPUTER) ? computer->playWithHardMode() : computer->playWithEasyMode();
-		Piece* piece = Board::piecesList[res.first];
-		Piece* capturedPiece = nullptr;
-		history->setInitalState(piece);
-		capturedPiece = piece->move(res.second, Board::piecesOnBoard);
-		history->setFinalState(piece);
-		history->setCapturedPiece(capturedPiece);
-		history->updateData(turn);
-		Board::updateBoard();
-		turn++;
-		// auto promote to queen
-		if (checkPromotion(piece)) {
-			promote(PieceType::Queen);
+	if (mainGui->getGUIType() == GUIType::GAME_PLAY){
+		MatchState matchState = checkWinner();
+		if (matchState != MatchState::IN_PLAY && !subGui) {
+			subGui = new MatchResultGUI(matchState);
 		}
-	}
 
-	if (mainGui->getGUIType() == GUIType::GAME_PLAY && state == GamePlayGUIState::DISPLAY) {
-		if (cnt >= 60) {
-			redo();
-			cnt = 0;
+		// defualt computer: first => white
+		if (!subGui && state == GamePlayGUIState::PLAY && (opponent == Opponent::HARD_COMPUTER || opponent == Opponent::EASY_COMPUTER) && turn % 2 == 0 && matchState == MatchState::IN_PLAY) {
+			std::pair<int, Coordinate> res = (opponent == Opponent::HARD_COMPUTER) ? computer->playWithHardMode() : computer->playWithEasyMode();
+			Piece* piece = Board::piecesList[res.first];
+			Piece* capturedPiece = nullptr;
+			history->setInitalState(piece);
+			capturedPiece = piece->move(res.second, Board::piecesOnBoard);
+			history->setFinalState(piece);
+			history->setCapturedPiece(capturedPiece);
+			history->updateData(turn);
+			Board::updateBoard();
+			turn++;
+			// auto promote to queen
+			if (checkPromotion(piece)) {
+				promote(PieceType::Queen);
+			}
 		}
-		cnt++;
+
+		if (state == GamePlayGUIState::DISPLAY) {
+			if (cnt >= 60) {
+				redo();
+				cnt = 0;
+			}
+			cnt++;
+		}
 	}
 
 	while (SDL_PollEvent(&e)) {
@@ -165,6 +167,7 @@ void GameManager::handelEvents() {
 						subGui = nullptr;
 						delete mainGui;
 						mainGui = new MenuGUI();
+						resetGame();
 						return;
 					}
 					if (checkFocus(e, temp->getRectOfBtnSave())) {
@@ -191,6 +194,7 @@ void GameManager::handelEvents() {
 						subGui = nullptr;
 						delete mainGui;
 						mainGui = new MenuGUI();
+						resetGame();
 						return;
 					}
 					if (checkFocus(e, temp->getRectOfBtnResume())) {
