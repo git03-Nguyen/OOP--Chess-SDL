@@ -25,10 +25,10 @@ GameManager::GameManager(const char* title, int xPos, int yPos, int width, int h
 	board = Board::getInstance();
 	computer = new Computer();
 	history = new History();
-	mainGui = new GamePlayGUI();
+	mainGui = new MenuGUI();
 	subGui = nullptr;
 
-	opponent = Opponent::COMPUTER; // default
+	opponent = Opponent::HUMAN; // default
 	turn = 0; // start game, player1: 0 -> white; palyer2: 1->black
 	result = MatchResult::PLAYING; // The game is currently taking place
 	isRunning = true;
