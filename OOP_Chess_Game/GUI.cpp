@@ -655,6 +655,7 @@ void SettingGUI::destroy() {
 	this->btnUnMute->destroy();
 	delete this->btnUnMute;
 	this->btnUnMute = nullptr;
+
 	//
 	this->btnMute->destroy();
 	delete this->btnMute;
