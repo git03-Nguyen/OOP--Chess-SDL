@@ -47,8 +47,6 @@ public:
 
 	Coordinate getClickedBox(const SDL_Event& e) const;
 
-	MatchResult checkMatchStatus() const;
-
 	void handleClickedPiece(const SDL_Event& e);
 
 	void handleClickedHightlightBox(const SDL_Event& e);
@@ -67,7 +65,6 @@ public:
 
 	void redo();
 
-	void checkWinner();
+	MatchState checkWinner();
 };
-
 

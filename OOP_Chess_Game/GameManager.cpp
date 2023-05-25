@@ -28,7 +28,7 @@ GameManager::GameManager(const char* title, int xPos, int yPos, int width, int h
 	mainGui = new GamePlayGUI();
 	subGui = nullptr;
 
-	opponent = Opponent::HUMAN; // default
+	opponent = Opponent::COMPUTER; // default
 	turn = 0; // start game, player1: 0 -> white; palyer2: 1->black
 	result = MatchResult::PLAYING; // The game is currently taking place
 	isRunning = true;
@@ -54,7 +54,7 @@ void GameManager::gameLoop(int fps) {
 		handelEvents(); // not here
 		render();
 		frameTime = SDL_GetTicks() - frameStart;
-		std::cout << "FrameTime: " << frameTime << std::endl;
+		//std::cout << "FrameTime: " << frameTime << std::endl;
 		if (frameDelay > frameTime) {
 			SDL_Delay(frameDelay - frameTime);
 		}
@@ -70,6 +70,10 @@ void GameManager::render() {
 	}
 	if (subGui) {
 		subGui->render();
+		if (subGui->getGUIType() == GUIType::RESULT_NOTICE) {
+			MatchResultGUI* temp = (MatchResultGUI*)subGui;
+			temp->renderMatchResult(checkWinner());
+		}
 	}
 	SDL_RenderPresent(Window::renderer);
 }
@@ -78,21 +82,46 @@ void GameManager::render() {
 void GameManager::handelEvents() {
 	SDL_Event e;
 
-	//// 1 loop => perform 1 event
-	//while (SDL_WaitEvent(&e)) { //=> Khac biet giua SDL_PollEvent va SDL_WaitEvent
-	//	switch (e.type) {
-	//	case SDL_QUIT:
-	//		isRunning = false;
-	//		return;
-	//	
-	//	default:
-	//		break;
-	//	}
-
-	//}
-
 	//check winner
-	checkWinner();
+	MatchState matchState = checkWinner();
+	if (matchState != MatchState::IN_PLAY) {
+		subGui = new MatchResultGUI();
+	}
+
+	// defualt computer: first => white
+	if (opponent == Opponent::COMPUTER && turn % 2 == 0 && matchState == MatchState::IN_PLAY) {
+		if (true)// move easy
+		{
+			std::pair<int, Coordinate> res = computer->playWithHardMode();
+			std::cout << "------------------ start move-----------------" << std::endl;
+			std::cout << "computer turn: " << turn << std::endl;
+			std::cout << "New postion: " << res.second.getX() << ", " << res.second.getY() << std::endl;
+			std::cout << "ID: " << res.first << std::endl;
+			Piece* piece = Board::piecesList[res.first];
+			Piece* capturedPiece = nullptr;
+			history->setInitalState(piece);
+			capturedPiece = piece->move(res.second, Board::piecesOnBoard);
+
+			// auto promote to queen
+			if (checkPromotion(piece)) {
+				Pawn* pawn = (Pawn*)piece;
+				pawn->promote(PieceType::Queen);
+			}
+
+			history->setFinalState(piece);
+			history->setCapturedPiece(capturedPiece);
+			history->updateData(turn);
+			std::cout << "initial piece: " << history->getData(turn)[0] << std::endl;
+			std::cout << "final piece: " << history->getData(turn)[1] << std::endl;
+			std::cout << "captured piece: " << history->getData(turn)[2] << std::endl;
+			turn++;
+
+
+			Board::updateBoard();
+			std::cout << "---------------- end move-------------------" << std::endl;
+			return;
+		}
+	}
 
 	while (SDL_PollEvent(&e)) {
 		switch (e.type) {
@@ -109,9 +138,6 @@ void GameManager::handelEvents() {
 			Coordinate c = getClickedBox(e);
 			std::cout << c.getX() << " " << c.getY() << std::endl;
 
-			handleClickedPiece(e);
-			handleClickedHightlightBox(e);
-	
 			if (subGui) {
 				if (subGui->getGUIType() == GUIType::PROMOTION_NOTICE) {
 					PromotionGUI* temp = (PromotionGUI*)subGui;
@@ -119,11 +145,11 @@ void GameManager::handelEvents() {
 					Pawn* pawn = nullptr;
 					for (int i = 0; i < 32; i++) {
 						if (checkPromotion(Board::piecesList[i])) {
-							pawn =(Pawn*) Board::piecesList[i];
+							pawn = (Pawn*)Board::piecesList[i];
 							break;
 						}
 					}
-					
+
 					if (checkFocus(e, temp->getRectOfBtnQueen())) {
 						std::cout << "Promote Queen!!!" << std::endl;
 						flag = true;
@@ -148,11 +174,20 @@ void GameManager::handelEvents() {
 						delete subGui;
 						subGui = nullptr;
 					}
+
+					std::vector<Piece*> data = history->getData(turn - 1);
+					history->setInitalState(data[0]);
+					history->setFinalState(pawn);
+					history->setCapturedPiece(nullptr);
+					history->updateData(turn - 1);
 				}
 				return;
 			}
 
 			if (mainGui->getGUIType() == GUIType::GAME_PLAY) {
+				handleClickedPiece(e);
+				handleClickedHightlightBox(e);
+
 				GamePlayGUI* temp = dynamic_cast<GamePlayGUI*>(mainGui);
 				if (checkFocus(e, temp->getRectOfBtnSetting())) {
 					std::cout << "Setting button clicked!" << std::endl;
@@ -173,191 +208,6 @@ void GameManager::handelEvents() {
 			}
 		}
 	}
-
-	/*while (SDL_PollEvent(&e)) {
-	//	switch (e.type) {
-	//	case SDL_QUIT:
-	//		isRunning = false;
-	//		break;
-	//	case SDL_MOUSEBUTTONDOWN:
-	//		handleClickedPiece(e);
-	//		handleClickedHightlightBox(e);
-
-	//		if (gui->getGUIType() == GUIType::MENU) {
-	//			// TODO: add more handles
-
-	//			if (checkFocus(e, MenuGUI::getRectOfBtnVsCom())) {
-	//				opponent = Opponent::COMPUTER;
-	//				delete gui;
-	//				gui = new ModeOptionGUI();
-	//				return;
-	//			}
-
-	//			if (checkFocus(e, MenuGUI::getRectOfBtnVsPlayer())) {
-	//				opponent = Opponent::HUMAN;
-	//				delete gui;
-	//				gui = new GamePlayGUI();
-	//				Board::resetPieces();
-	//				return;
-	//			}
-
-	//			if (checkFocus(e, MenuGUI::getRectOfBtnVolumeOption())) {
-	//				delete gui;
-	//				gui = new VolumeOptionGUI();
-	//				return;
-	//			}
-
-	//			if (checkFocus(e, MenuGUI::getRectOfBtnReplayRecentGame())) {
-	//				delete gui;
-	//				gui = new ReplayGameGUI();
-	//				return;
-	//			}
-
-	//			if (checkFocus(e, MenuGUI::getRectOfBtnExit())) {
-	//				isRunning = false;
-	//				return;
-	//			}
-	//		}
-
-	//		if (gui->getGUIType() == GUIType::MODE_OPTION) {
-	//			if (checkFocus(e, ModeOptionGUI::getRectOfBtnEasy())) {
-	//				computer->setMode(Mode::EASY);
-	//				delete gui;
-	//				gui = new GamePlayGUI();
-	//				Board::resetPieces();
-	//				return;
-	//			}
-
-	//			if (checkFocus(e, ModeOptionGUI::getRectOfBtnHard())) {
-	//				computer->setMode(Mode::HARD);
-	//				delete gui;
-	//				gui = new GamePlayGUI();
-	//				Board::resetPieces();
-	//				return;
-	//			}
-
-	//			if (checkFocus(e, ModeOptionGUI::getRectOfBtnBackToMenu())) {
-	//				backToMenu();
-	//				return;
-	//			}
-	//		}
-
-	//		if (gui->getGUIType() == GUIType::VOLUME_OPTION) {
-	//			Slider* sliderThemeMusic = VolumeOptionGUI::getSliderThemeMusic();
-	//			Slider* sliderEventMusic = VolumeOptionGUI::getSliderEventMusic();
-
-	//			if (checkFocus(e, sliderThemeMusic->getButtonRect())) {
-	//				handleDragButtonOfSlider(e, sliderThemeMusic);
-	//				soundManager->setThemeMusicVolume(sliderThemeMusic->getValueFromSlider());
-	//				return;
-	//			}
-
-	//			if (checkFocus(e, sliderEventMusic->getButtonRect())) {
-	//				handleDragButtonOfSlider(e, sliderEventMusic);
-	//				soundManager->setEventMusicVolume(sliderEventMusic->getValueFromSlider());
-	//				return;
-	//			}
-
-	//			if (checkFocus(e, VolumeOptionGUI::getRectOfBtnBackToMenu())) {
-	//				backToMenu();
-	//				return;
-	//			}
-	//		}
-
-	//		if (gui->getGUIType() == GUIType::REPLAY_RECENT_GAME) {
-
-	//		}
-
-	//		if (gui->getGUIType() == GUIType::GAME_PLAY) {
-	//			if (checkFocus(e, GamePlayGUI::getRectOfBtnSetting())) {
-	//				delete gui;
-	//				gui = new SettingGUI();
-	//				return;
-	//			}
-
-	//			if (checkFocus(e, GamePlayGUI::getRectOfBtnUndo())) {
-	//				undo();
-	//				return;
-	//			}
-
-	//			if (checkFocus(e, GamePlayGUI::getRectOfBtnRedo())) {
-	//				redo();
-	//				return;
-	//			}
-	//		}
-
-	//		if (gui->getGUIType() == GUIType::RESULT_NOTICE) {
-	//			if (checkFocus(e, MatchResultGUI::getRectOfBtnPlayAgain())) {
-	//				delete gui;
-	//				gui = new GamePlayGUI();
-	//				Board::resetPieces();
-	//				return;
-	//			}
-
-	//			if (checkFocus(e, MatchResultGUI::getRectOfBtnBackToMenu())) {
-	//				backToMenu();
-	//				return;
-	//			}
-	//		}
-
-	//		if (gui->getGUIType() == GUIType::PROMOTION_NOTICE) {
-	//			Pawn* pawn = dynamic_cast<Pawn*>(Board::pieces[dynamic_cast<PromotionNoticeGUI*>(gui)->getIdOfPromotionPiece()]);
-
-	//			if (checkFocus(e, PromotionNoticeGUI::getRectOfBtnQueen()) && pawn) {
-	//				// TODO: Promote Queen
-	//				delete gui;
-	//				gui = new GamePlayGUI();
-	//				return;
-	//			}
-
-	//			if (checkFocus(e, PromotionNoticeGUI::getRectOfBtnBishop()) && pawn) {
-	//				// TODO: Promote Bishop
-	//				delete gui;
-	//				gui = new GamePlayGUI();
-	//				return;
-	//			}
-
-	//			if (checkFocus(e, PromotionNoticeGUI::getRectOfBtnKnight()) && pawn) {
-	//				// TODO: Promote Knight
-	//				delete gui;
-	//				gui = new GamePlayGUI();
-	//				return;
-	//			}
-
-	//			if (checkFocus(e, PromotionNoticeGUI::getRectOfBtnRook()) && pawn) {
-	//				// TODO: Promote Rook
-	//				delete gui;
-	//				gui = new GamePlayGUI();
-	//				return;
-	//			}
-	//		}
-
-	//		if (gui->getGUIType() == GUIType::SETTINGS) {
-	//			if (checkFocus(e, SettingGUI::getRectOfBtnContinue())) {
-	//				delete gui;
-	//				gui = new GamePlayGUI();
-	//				return;
-	//			}
-
-	//			if (checkFocus(e, SettingGUI::getRectOfBtnVolumeOption())) {
-	//				//TODO:
-	//			}
-
-	//			if (checkFocus(e, SettingGUI::getRectOfBtnBackToMenu())) {
-	//				backToMenu();
-	//				return;
-	//			}
-	//		}
-
-	//		// TODO:
-	//		break;
-	//	case SDL_KEYDOWN:
-	//		// TODO:
-	//		break;
-	//	default:
-	//		break;
-	//	}
-	//}*/
 }
 
 Coordinate GameManager::getClickedBox(const SDL_Event& e) const {
@@ -379,30 +229,17 @@ Coordinate GameManager::getClickedBox(const SDL_Event& e) const {
 	return res;
 }
 
-// TODO: return enum; unfinished game, win game, lose game and draw game
-MatchResult GameManager::checkMatchStatus() const {
-	/*if (board->pieces[0]->getDead()) return MatchResult::PLAYER2_WIN;
-
-	if (board->pieces[16]->getDead()) return MatchResult::PLAYER1_WIN;
-	*/
-	return MatchResult::PLAYING;
-}
-
 // TODO: (current default, white -> first: turn even, black: second -> turn odd;) make it flexible; add music;
 void GameManager::handleClickedPiece(const SDL_Event& e) {
 	Coordinate c = getClickedBox(e);
 	if (c.getX() < 0 && c.getY() < 0) return;
-
 	Piece* piece = Board::getPieceAt(c);
 	if (!piece) return;
-	std::cout << "Turn:" << turn << std::endl;
 	if (piece->getColor() == Color::White && turn % 2 == 1 || piece->getColor() == Color::Black && turn % 2 == 0) return;
 
 	for (int i = 0; i < 32; i++) Board::piecesList[i]->setChosen(false);
 
 	piece->setChosen(true);
-	std::cout << "here" << std::endl;
-	if (piece->getType() == PieceType::Pawn) std::cout << "right" << std::endl;
 }
 
 //TODO: add music
@@ -513,6 +350,17 @@ void GameManager::undo() {
 	}
 	for (auto& e : Board::piecesList) e->setChosen(false);
 	Board::updateBoard();
+
+	std::cout << "------------------ start redo -----------------" << std::endl;
+	std::cout << turn << std::endl;
+	std::cout << "initial piece: " << history->getData(turn)[0] << std::endl;
+	std::cout << "final piece: " << history->getData(turn)[1] << std::endl;
+	std::cout << "captured piece: " << history->getData(turn)[2] << std::endl;
+	std::cout << "------------------ end redo -----------------" << std::endl;
+
+	if (opponent == Opponent::COMPUTER && turn % 2 == 0) {
+		undo();
+	}
 }
 
 // TODO - Carefully pointer to texture (I call quick change state)
@@ -539,12 +387,23 @@ void GameManager::redo() {
 		}
 	}
 
+	std::cout << "------------------ start undo -----------------" << std::endl;
+	std::cout << turn << std::endl;
+	std::cout << "initial piece: " << history->getData(turn)[0] << std::endl;
+	std::cout << "final piece: " << history->getData(turn)[1] << std::endl;
+	std::cout << "captured piece: " << history->getData(turn)[2] << std::endl;
+	std::cout << "------------------ end undo -----------------" << std::endl;
+
 	turn++;
 	for (auto& e : Board::piecesList) e->setChosen(false);
 	Board::updateBoard();
+
+	if (opponent == Opponent::COMPUTER && turn % 2 == 0) {
+		redo();
+	}
 }
 
-void GameManager::checkWinner() {
+MatchState GameManager::checkWinner() {
 	if (turn % 2 == 0) {
 		// this is turn of white pieces	
 		King* king = (King*)(Board::piecesList[0]);
@@ -558,11 +417,11 @@ void GameManager::checkWinner() {
 			cnt += temp[0].size() + temp[1].size();
 			Board::piecesList[i]->setChosen(pieceChosen);
 		}
-		
+
 		king->setChosen(true);
 		if (cnt == 0) {
-			if (king->checkmate(king->getPosition(), Board::piecesOnBoard)) std::cout << "Black winner!!!" << std::endl;
-			else std::cout << "Draw!!!" << std::endl;
+			if (king->checkmate(king->getPosition(), Board::piecesOnBoard)) return MatchState::BLACK_WIN;
+			else return MatchState::DRAW;
 		}
 		king->setChosen(kingChosen);
 	}
@@ -582,10 +441,11 @@ void GameManager::checkWinner() {
 
 		king->setChosen(true);
 		if (cnt == 0) {
-			if (king->checkmate(king->getPosition(), Board::piecesOnBoard)) std::cout << "Black winner!!!" << std::endl;
-			else std::cout << "White!!!" << std::endl;
+			if (king->checkmate(king->getPosition(), Board::piecesOnBoard)) return MatchState::WHITE_WIN;
+			else return MatchState::DRAW;
 		}
 		king->setChosen(kingChosen);
 	}
-}
 
+	return MatchState::IN_PLAY;
+}
