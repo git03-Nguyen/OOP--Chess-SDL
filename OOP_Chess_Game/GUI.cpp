@@ -36,11 +36,11 @@ MenuGUI::MenuGUI() {
 	this->mute = false;
 	this->background = new Image({ 0,0,640,560 }, "..\\Assets\\menubackground.png");
 	//column1
-	this->btnContinueSavedGame = new Image({ 80,240,200,60 }, "..\\Assets\\continue.png");
+	this->btnVsPlayer = new Image({ 80, 240, 200, 60 }, "..\\Assets\\pvp.png");
 	this->btnVsComputerEasy = new Image({ 80,320,200,60 }, "..\\Assets\\computereasy.png");
 	this->btnVsComputerHard = new Image({ 80,400,200,60 }, "..\\Assets\\computerhard.png");
 	//comlumn2
-	this->btnVsPlayer = new Image({ 360, 240, 200, 60 }, "..\\Assets\\pvp.png");
+	this->btnContinueSavedGame = new Image({ 360,240,200,60 }, "..\\Assets\\continue.png");
 	this->btnReplayRecentGame = new Image({ 360, 320, 200, 60 }, "..\\Assets\\replay.png");
 	this->btnExit = new Image({ 360, 400, 200, 60 }, "..\\Assets\\exit.png");
 	//
