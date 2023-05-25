@@ -24,11 +24,9 @@ void History::write(std::string path) const {
     enum PieceType type;
     bool isNull;
     Piece* piece = nullptr;
-    Piece* promotion = nullptr;
     for (int i = 0; i < size; i++) {
         for (int j = 0; j < 3; j++) {
-            if (promotion) piece = promotion;
-            else piece = this->history[i][j];
+            piece = this->history[i][j];
 
             if (!piece) {
                 isNull = true;
@@ -43,16 +41,6 @@ void History::write(std::string path) const {
             type = piece->getType();
             os.write((char*)&type, sizeof(type));
             piece->write(os);
-
-            if (piece->getType() == PieceType::Pawn) {
-                Pawn* pawn = (Pawn*)piece;
-                promotion = pawn->getPromotion();
-                if (promotion) {
-                    j--;
-                    continue;
-                }
-            }
-            if (promotion) promotion = nullptr;
         }
     }
     os.close();
@@ -70,8 +58,6 @@ void History::read(std::string path) {
     bool isNull;
     PieceType type;
     Piece* piece = nullptr;
-    Piece* promotion = nullptr;
-    Pawn* tempPawn = nullptr;
     is.read((char*)&size, sizeof(size));
     history.resize(size);
     for (int i = 0; i < size; i++) {
@@ -118,31 +104,15 @@ void History::read(std::string path) {
                     Pawn* pawn = new Pawn();
                     pawn->read(is);
                     piece = pawn;
-                    promotion = pawn->getPromotion();
-                    if (promotion) {
-                        j--;
-                        tempPawn = pawn;
-                        continue;
-                    }
                     break;
                 }
             }
-            
-            //push to history
-            if (promotion) {
-                tempPawn->setPromotion(piece);
-                history[i].push_back(tempPawn);
-                promotion = nullptr;
-                tempPawn = nullptr;
-            }
-            else {
-                history[i].push_back(piece);
-            }
+          
+            history[i].push_back(piece);
         }
     }
     is.close();
 } 
-
 
 void History::setInitalState(const Piece* initialState) {
     if (!initialState) {
@@ -172,21 +142,6 @@ void History::setCapturedPiece(const Piece* capturedPiece) {
 }
 
 void History::updateData(int turn) {
-    // bug logic
-    /*
-    if (turn < history.size()) {
-        for (int i = 0; i < 3; i++) {
-            if (history[turn][i]) {
-                delete history[turn][i];
-                history[turn][i] = nullptr;
-            }
-        }
-        history[turn] = std::vector<Piece*>{ initialState, finalState, capturedPiece };
-    }
-    else history.push_back(std::vector<Piece*>{ initialState, finalState, capturedPiece });
-    */
-    
-    // fix bug
     for (int i = turn; i < history.size(); i++) {
         for (int j = 0; j < 3; j++) {
             if (history[i][j]) {

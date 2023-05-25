@@ -999,16 +999,11 @@ void Knight::read(std::fstream& is) {
 
 //---------------------------------------------------------------------------
 Pawn::Pawn() {
-	promotion = nullptr;
 	firstMove = true;
 	enableEnPassantCaptured = false;
 }
 Pawn::Pawn(const Pawn& pawn) : Piece(pawn) {
 	this->type = PieceType::Pawn;
-	// TODO - Check again
-	if (pawn.promotion) this->promotion = pawn.promotion->clone();
-	else this->promotion = nullptr;
-
 	this->firstMove = pawn.firstMove;
 	this->enableEnPassantCaptured = pawn.enableEnPassantCaptured;
 }
@@ -1016,19 +1011,10 @@ Pawn::Pawn(const Coordinate& position, Color color) : Piece(position, color) {
 	this->type = PieceType::Pawn;
 	this->dead = false;
 	this->chosen = false;
-	promotion = nullptr;
 	firstMove = true;
 	enableEnPassantCaptured = false;
 }
 Pawn::~Pawn() {
-	delete promotion;
-}
-
-Piece* Pawn::getPromotion() const {
-	return this->promotion;
-}
-void Pawn::setPromotion(Piece* piece) {
-	this->promotion = piece;
 }
 void Pawn::setFirstMove(bool firstMove) {
 	this->firstMove = firstMove;
@@ -1043,13 +1029,6 @@ bool Pawn::getFirstMove() {
 	return this->firstMove;
 }
 Piece* Pawn::move(const Coordinate& c, std::vector<std::vector<Piece*>> board) {
-	if (this->promotion) {
-		Piece* piece = this->promotion->move(c, board);
-		this->position = this->promotion->getPosition();
-
-		return piece;
-	}
-
 	if (this->getFirstMove()) {
 		this->updatePawnState(board);
 		if (!board[c.getX()][c.getY()]) {
@@ -1128,10 +1107,6 @@ Piece* Pawn::move(const Coordinate& c, std::vector<std::vector<Piece*>> board) {
 	return nullptr;
 }
 std::vector<std::vector<Coordinate>> Pawn::getPossibleMoves(std::vector<std::vector<Piece*>> board) {
-	if (this->promotion) {
-		return this->promotion->getPossibleMoves(board);
-	}
-
 	std::vector<Coordinate> moves;
 	std::vector<std::vector<Coordinate>> result;
 	result.resize(2);
@@ -1282,108 +1257,16 @@ std::vector<std::vector<Coordinate>> Pawn::getPossibleMoves(std::vector<std::vec
 
 	return result;
 }
-
 Piece* Pawn::clone() const{
 	return new Pawn(*this);
 }
-void Pawn::promote(PieceType type) {
-/*
-	if (newPiece->getType() == PieceType::Pawn) {
-		if (newPiece->getColor() == Color::White) {
-			if (newPiece->getPosition().getY() == 7) {
-				if (type == PieceType::Queen) {
-					Coordinate positionTmp = newPiece->getPosition();
-					Color colorTmp = newPiece->getColor();
-					delete newPiece;
-					newPiece = new Queen(positionTmp, colorTmp);
-				}
-				else if (type == PieceType::Rook) {
-					Coordinate positionTmp = newPiece->getPosition();
-					Color colorTmp = newPiece->getColor();
-					delete newPiece;
-					newPiece = new Rook(positionTmp, colorTmp);
-				}
-				else if (type == PieceType::Knight) {
-					Coordinate positionTmp = newPiece->getPosition();
-					Color colorTmp = newPiece->getColor();
-					delete newPiece;
-					newPiece = new Knight(positionTmp, colorTmp);
-				}
-				else if (type == PieceType::Bishop) {
-					Coordinate positionTmp = newPiece->getPosition();
-					Color colorTmp = newPiece->getColor();
-					delete newPiece;
-					newPiece = new Bishop(positionTmp, colorTmp);
-				}
-			}
-		}
-		else {
-			if (newPiece->getPosition().getY() == 0) {
-				if (type == PieceType::Queen) {
-					Coordinate positionTmp = newPiece->getPosition();
-					Color colorTmp = newPiece->getColor();
-					delete newPiece;
-					newPiece = new Queen(positionTmp, colorTmp);
-				}
-				else if (type == PieceType::Rook) {
-					Coordinate positionTmp = newPiece->getPosition();
-					Color colorTmp = newPiece->getColor();
-					delete newPiece;
-					newPiece = new Rook(positionTmp, colorTmp);
-				}
-				else if (type == PieceType::Knight) {
-					Coordinate positionTmp = newPiece->getPosition();
-					Color colorTmp = newPiece->getColor();
-					delete newPiece;
-					newPiece = new Knight(positionTmp, colorTmp);
-				}
-				else if (type == PieceType::Bishop) {
-					Coordinate positionTmp = newPiece->getPosition();
-					Color colorTmp = newPiece->getColor();
-					delete newPiece;
-					newPiece = new Bishop(positionTmp, colorTmp);
-				}
-			}
-		}
-	}
-*/
-	switch (type) {
-		case PieceType::Queen: {
-			Queen* queen = new Queen(this->position, this->color);
-			queen->setID(this->id);
-			this->promotion = (Piece*) queen;
-			break;
-		}
-		case PieceType::Rook: {
-			Rook* rook = new Rook(this->position, this->color);
-			rook->setID(this->id);
-			rook->setFirstMove(false);
-			this->promotion = (Piece*)rook;
-			break;
-		}
-		case PieceType::Knight: {
-			Knight* knight = new Knight(this->position, this->color);
-			knight->setID(this->id);
-			this->promotion = (Piece*)knight;
-			break;
-		}
-		case PieceType::Bishop: {
-			Bishop* bishop = new Bishop(this->position, this->color);
-			bishop->setID(this->id);
-			this->promotion = (Piece*)bishop;
-			break;
-		}
-	}
-}
 void Pawn::write(std::fstream& os) {
 	Piece::write(os);
-	os.write((char*)&promotion, sizeof(promotion));
 	os.write((char*)&firstMove, sizeof(firstMove));
 	os.write((char*)&enableEnPassantCaptured, sizeof(enableEnPassantCaptured));
 }
 void Pawn::read(std::fstream& is) {
 	Piece::read(is);
-	is.read((char*)&promotion, sizeof(promotion));
 	is.read((char*)&firstMove, sizeof(firstMove));
 	is.read((char*)&enableEnPassantCaptured, sizeof(enableEnPassantCaptured));
 }

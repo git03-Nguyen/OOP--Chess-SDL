@@ -26,7 +26,7 @@ std::pair<int, Coordinate> Computer::playWithEasyMode()
             tempMoves.clear();
         }
     }
-
+    
     if (enableMovingPieces.size() == 0) throw std::string("Don't have any moves\n!!!");
 
     // random piece;
@@ -34,7 +34,7 @@ std::pair<int, Coordinate> Computer::playWithEasyMode()
     // random move for piece;
     int moveIdx = rand() % moves[pieceIdx].size();
 
-
+  
     return std::pair<int, Coordinate>(enableMovingPieces[pieceIdx], moves[pieceIdx][moveIdx]);
 }
 
@@ -49,7 +49,7 @@ std::pair<int, Coordinate> Computer::evadeEaten() {
         moves.insert(moves.end(), temp.begin(), temp.end());
     }
 
-    for (int i = 0; i < 8; i++) {
+    for (int i = 0;i < 8;i++) {
         Piece* piece = Board::piecesList[i];
         for (auto u1 : moves) {
             if (u1 == piece->getPosition()) {
@@ -61,7 +61,7 @@ std::pair<int, Coordinate> Computer::evadeEaten() {
     return std::pair<int, Coordinate>(-1, Coordinate(-1, -1));
 }
 
-std::pair<int, Coordinate> Computer::getNonEatenMove(int idx) {
+std::pair<int,Coordinate> Computer::getNonEatenMove(int idx) {
     std::vector<Coordinate> movesOfPiece;
     Piece* chosenPiece = Board::piecesList[idx];
     chosenPiece->setChosen(true);
@@ -70,7 +70,7 @@ std::pair<int, Coordinate> Computer::getNonEatenMove(int idx) {
 
     for (auto u : movesOfPiece) {
         std::vector<Coordinate> moves;
-        Piece* buffer = Board::piecesOnBoard[u.getX()][u.getY()];
+        Piece* buffer = Board::piecesOnBoard[u.getX()][u.getY()] ;
         Board::piecesOnBoard[chosenPiece->getPosition().getX()][chosenPiece->getPosition().getY()] = nullptr;
         Board::piecesOnBoard[u.getX()][u.getY()] = chosenPiece;
 
@@ -92,10 +92,10 @@ std::pair<int, Coordinate> Computer::getNonEatenMove(int idx) {
             if (u == moves[i]) flag = false;
         }
 
-        if (flag) return  std::pair<int, Coordinate>(idx, u);
+        if(flag) return  std::pair<int, Coordinate>(idx, u);
     }
 
-    return std::pair<int, Coordinate>(-1, Coordinate(-1, -1));
+    return std::pair<int, Coordinate>(-1, Coordinate(-1,-1));  
 }
 
 std::pair<int, Coordinate> Computer::playWithHardMode() {
@@ -118,8 +118,8 @@ std::pair<int, Coordinate> Computer::playWithHardMode() {
 
     if (enableMovingPieces.size() == 0) throw std::string("Don't have any moves\n!!!");
 
-    std::vector<PieceType> type{ PieceType::King,PieceType::Queen,PieceType::Rook,PieceType::Bishop,PieceType::Knight, PieceType::Pawn };
-
+    std::vector<PieceType> type{ PieceType::King,PieceType::Queen,PieceType::Rook,PieceType::Bishop,PieceType::Knight, PieceType::Pawn};
+    
     //eating move
     for (auto e : type) {
         for (int i = 0; i < moves.size(); i++) {
@@ -133,18 +133,18 @@ std::pair<int, Coordinate> Computer::playWithHardMode() {
     }
 
     std::pair<int, Coordinate> res;
-
+    
     // evading move
     res = evadeEaten();
     if (res.first >= 0) return res;
-
+  
     //  non-eaten move
-    for (int i = 0; i < 7; i++) {
+    for (int i = 0; i < 7; i ++) {
         int pieceIdx = rand() % enableMovingPieces.size();
         res = getNonEatenMove(enableMovingPieces[pieceIdx]);
         if (res.first >= 0) return res;
     }
-
+    
     // random piece;
     int pieceIdx = rand() % enableMovingPieces.size();
     // random move for piece;

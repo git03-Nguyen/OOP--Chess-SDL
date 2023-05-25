@@ -22,21 +22,22 @@ GameManager::GameManager(const char* title, int xPos, int yPos, int width, int h
 	Window::SCREEN_WIDTH = width;
 
 	soundManager = new SoundManager();
-	board = new Board();
+	board = Board::getInstance();
 	computer = new Computer();
 	history = new History();
-	mainGui = new GamePlayGUI();
+	mainGui = new MenuGUI();
 	subGui = nullptr;
 
-	opponent = Opponent::COMPUTER; // default
-	turn = 0; // start game, player1: 0 -> white; palyer2: 1->black
-	result = MatchResult::PLAYING; // The game is currently taking place
 	isRunning = true;
-
+	opponent = Opponent::HUMAN; // default
+	turn = 0; // start game, player1: 0 -> white; palyer2: 1->black
+	state = GamePlayGUIState::PLAY; // default;
+	cnt = 0;
 }
 
 GameManager::~GameManager() {
-	delete board, soundManager, computer, history, mainGui, subGui;
+	delete soundManager, computer, history, mainGui, subGui;
+	Board::removeInstance();
 	board = nullptr; soundManager = nullptr; computer = nullptr;  history = nullptr; mainGui = nullptr; subGui = nullptr;
 	SDL_DestroyRenderer(Window::renderer);
 	SDL_DestroyWindow(Window::window);
@@ -83,30 +84,38 @@ void GameManager::handelEvents() {
 	SDL_Event e;
 
 	//check winner
-	MatchState matchState = checkWinner();
-	if (matchState != MatchState::IN_PLAY) {
-		subGui = new MatchResultGUI();
-	}
+	if (mainGui->getGUIType() == GUIType::GAME_PLAY){
+		MatchState matchState = checkWinner();
+		if (matchState != MatchState::IN_PLAY && !subGui) {
+			subGui = new MatchResultGUI(matchState);
+		}
 
-	// defualt computer: first => white
-	if (opponent == Opponent::COMPUTER && turn % 2 == 0 && matchState == MatchState::IN_PLAY) {
-		if (true)// move easy
-		{
-			std::pair<int, Coordinate> res = computer->playWithHardMode();
-			std::cout << "------------------ start move-----------------" << std::endl;
-			std::cout << "computer turn: " << turn << std::endl;
-			std::cout << "New postion: " << res.second.getX() << ", " << res.second.getY() << std::endl;
-			std::cout << "ID: " << res.first << std::endl;
+		// defualt computer: first => white
+		if (!subGui && state == GamePlayGUIState::PLAY && (opponent == Opponent::HARD_COMPUTER || opponent == Opponent::EASY_COMPUTER) && turn % 2 == 0 && matchState == MatchState::IN_PLAY) {
+			std::pair<int, Coordinate> res = (opponent == Opponent::HARD_COMPUTER) ? computer->playWithHardMode() : computer->playWithEasyMode();
 			Piece* piece = Board::piecesList[res.first];
 			Piece* capturedPiece = nullptr;
 			history->setInitalState(piece);
 			capturedPiece = piece->move(res.second, Board::piecesOnBoard);
-
+			history->setFinalState(piece);
+			history->setCapturedPiece(capturedPiece);
+			history->updateData(turn);
+			Board::updateBoard();
+			turn++;
 			// auto promote to queen
 			if (checkPromotion(piece)) {
-				Pawn* pawn = (Pawn*)piece;
-				pawn->promote(PieceType::Queen);
+				promote(PieceType::Queen);
 			}
+		}
+
+		if (state == GamePlayGUIState::DISPLAY) {
+			if (cnt >= 60) {
+				redo();
+				cnt = 0;
+			}
+			cnt++;
+		}
+	}
 
 			history->setFinalState(piece);
 			history->setCapturedPiece(capturedPiece);
@@ -135,77 +144,191 @@ void GameManager::handelEvents() {
 			if(opponent == Opponent::COMPUTER)
 				// CALL API FROM CLASS COMPUTER => CONSIDER TURN IS EVEN OR ODD; CALCULATE MOVE=> COORDINATE, INCREASE TURN, SAVE HISTORY.
 			*/
-			Coordinate c = getClickedBox(e);
-			std::cout << c.getX() << " " << c.getY() << std::endl;
-
+			
 			if (subGui) {
+				// PROMOTION_NOTICE
 				if (subGui->getGUIType() == GUIType::PROMOTION_NOTICE) {
 					PromotionGUI* temp = (PromotionGUI*)subGui;
 					bool flag = false;
-					Pawn* pawn = nullptr;
-					for (int i = 0; i < 32; i++) {
-						if (checkPromotion(Board::piecesList[i])) {
-							pawn = (Pawn*)Board::piecesList[i];
-							break;
-						}
-					}
 
 					if (checkFocus(e, temp->getRectOfBtnQueen())) {
 						std::cout << "Promote Queen!!!" << std::endl;
 						flag = true;
-						pawn->promote(PieceType::Queen);
+						promote(PieceType::Queen);
 					}
 					if (checkFocus(e, temp->getRectOfBtnRook())) {
 						std::cout << "Promote Rook!!!" << std::endl;
 						flag = true;
-						pawn->promote(PieceType::Rook);
+						promote(PieceType::Rook);
 					}
 					if (checkFocus(e, temp->getRectOfBtnKnight())) {
 						std::cout << "Promote Knight!!!" << std::endl;
 						flag = true;
-						pawn->promote(PieceType::Knight);
+						promote(PieceType::Knight);
 					}
 					if (checkFocus(e, temp->getRectOfBtnBishop())) {
 						std::cout << "Promote Bishop!!!" << std::endl;
 						flag = true;
-						pawn->promote(PieceType::Bishop);
+						promote(PieceType::Bishop);
 					}
 					if (flag) {
 						delete subGui;
 						subGui = nullptr;
 					}
+					return;
+				}
+				// RESULT_NOTICE
+				if (subGui->getGUIType() == GUIType::RESULT_NOTICE) {
+					MatchResultGUI* temp = (MatchResultGUI*)subGui;
+					if (checkFocus(e, temp->getRectOfBtnBackToMenu())) {
+						std::cout << "Clicked menu button" << std::endl;
+						delete subGui; 
+						subGui = nullptr;
+						delete mainGui;
+						mainGui = new MenuGUI();
+						resetGame();
+						return;
+					}
+					if (checkFocus(e, temp->getRectOfBtnSave())) {
+						std::cout << "Clicked save button" << std::endl;
+						saveCurrentGame("history.bin");
+						return;
+					}
+					if (checkFocus(e, temp->getRectOfBtnPlayAgain())) {
+						std::cout << "Clicked play again button" << std::endl;
+						resetGame();
+						state = GamePlayGUIState::PLAY;
+						delete subGui;
+						subGui = nullptr;
+						return;
+					}
+				}
+				// 
+				if (subGui->getGUIType() == GUIType::SETTINGS) {
+					SettingGUI* temp = (SettingGUI*)subGui;
+					if (checkFocus(e, temp->getRectOfBtnBackToMenu())) {
+						// Go to menu
+						std::cout << "Clicked menu button" << std::endl;
+						delete subGui;
+						subGui = nullptr;
+						delete mainGui;
+						mainGui = new MenuGUI();
+						resetGame();
+						return;
+					}
+					if (checkFocus(e, temp->getRectOfBtnResume())) {
+						std::cout << "Clicked resume button" << std::endl;
+						delete subGui;
+						subGui = nullptr;
+						return;
+					}
+					if (checkFocus(e, temp->getRectOfBtnSave())) {
+						// Go to menu
+						std::cout << "Clicked save button" << std::endl;
+						saveCurrentGame("history.bin");
+						return;
+					}
+					if (checkFocus(e, temp->getRectOfBtnVolume())) {
+						// Go to menu
+						std::cout << "Clicked volume button/ to load previous game" << std::endl;
+						loadPreviousGame("history.bin");
+						// delete subGui; subGui = nullptr;
+						return;
+					}
+				}
+				return;
+			}
 
-					std::vector<Piece*> data = history->getData(turn - 1);
-					history->setInitalState(data[0]);
-					history->setFinalState(pawn);
-					history->setCapturedPiece(nullptr);
-					history->updateData(turn - 1);
+			if (mainGui->getGUIType() == GUIType::MENU) {
+				MenuGUI* temp = (MenuGUI*)mainGui;
+				if (checkFocus(e, temp->getRectOfBtnVsPlayer())) {
+					std::cout << "Clicked 2_player button!" << std::endl;
+					delete mainGui;
+					mainGui = new GamePlayGUI();
+					opponent = Opponent::HUMAN;
+					state = GamePlayGUIState::PLAY;
+					resetGame();
+					return;
+				}
+				if (checkFocus(e, temp->getRectOfBtnVsComputerEasy())) {
+					std::cout << "Clicked vs_easy_computer button!" << std::endl;
+					delete mainGui;
+					mainGui = new GamePlayGUI();
+					opponent = Opponent::EASY_COMPUTER;
+					state = GamePlayGUIState::PLAY;
+					resetGame();
+					return;
+				}
+				if (checkFocus(e, temp->getRectOfBtnVsComputerHard())) {
+					std::cout << "Clicked vs_hard_computer button!" << std::endl;
+					delete mainGui;
+					mainGui = new GamePlayGUI();
+					opponent = Opponent::HARD_COMPUTER;
+					state = GamePlayGUIState::PLAY;
+					resetGame();
+					return;
+				}
+				if (checkFocus(e, temp->getRectOfBtnContinueSavedGame())) {
+					std::cout << "Clicked continue_saved_game button!" << std::endl;
+					delete mainGui;
+					mainGui = new GamePlayGUI();
+					opponent = Opponent::HUMAN;
+					state = GamePlayGUIState::PLAY;
+					resetGame();
+					history->read("history.bin");
+					recoverGameFromHistory();
+					return;
+				}
+				if (checkFocus(e, temp->getRectOfBtnReplayRecentGame())) {
+					std::cout << "Clicked replay_recent_game button!" << std::endl;
+					delete mainGui;
+					mainGui = new GamePlayGUI();
+					opponent = Opponent::HUMAN;
+					state = GamePlayGUIState::DISPLAY;
+					resetGame();
+					history->read("history.bin");
+					cnt = 0;
+					return;
+				}
+				if (checkFocus(e, temp->getRectOfBtnVolume())) {
+					std::cout << "Clicked volume button!" << std::endl;
+					return;
+				}
+				if (checkFocus(e, temp->getRectOfBtnExit())) {
+					std::cout << "Clicked exit button!" << std::endl;
+					isRunning = false;
+					return;
 				}
 				return;
 			}
 
 			if (mainGui->getGUIType() == GUIType::GAME_PLAY) {
+
+				GamePlayGUI* temp = (GamePlayGUI*)mainGui;
+				if (checkFocus(e, temp->getRectOfBtnSetting())) {
+					std::cout << "Setting button clicked!" << std::endl;
+					subGui = new SettingGUI();
+					return;
+				}
+
+				if (state == GamePlayGUIState::DISPLAY) return;
+
 				handleClickedPiece(e);
 				handleClickedHightlightBox(e);
 
-				GamePlayGUI* temp = dynamic_cast<GamePlayGUI*>(mainGui);
-				if (checkFocus(e, temp->getRectOfBtnSetting())) {
-					std::cout << "Setting button clicked!" << std::endl;
-					history->write("history1.bin");
-				}
 				if (checkFocus(e, temp->getRectOfBtnUndo())) {
 					std::cout << "Undo button clicked!" << std::endl;
 					undo();
+					return;
 				}
 				if (checkFocus(e, temp->getRectOfBtnRedo())) {
 					std::cout << "Redo button clicked!" << std::endl;
 					redo();
+					return;
 				}
-				if (checkFocus(e, temp->getRectOfBtnQuit())) {
-					std::cout << "Quit button clicked!" << std::endl;
-					history->read("history1.bin");
-				}
+				return;
 			}
+
 		}
 	}
 }
@@ -293,6 +416,12 @@ void GameManager::handleDragButtonOfSlider(const SDL_Event& e, Slider* slider) {
 }
 */
 
+/*
+int GameManager::getValueFromSlider(const SDL_Rect* buttonRect, const SDL_Rect* trackerRect) {
+	return (trackerRect->x - buttonRect->x) * 100 / trackerRect->w;
+}
+*/
+
 bool GameManager::checkFocus(const SDL_Event& e, const SDL_Rect& rect) const {
 	int x = e.motion.x;
 	int y = e.motion.y;
@@ -306,21 +435,51 @@ bool GameManager::checkPromotion(Piece* piece) {
 	if (piece->getType() != PieceType::Pawn) return false;
 
 	Coordinate c = piece->getPosition();
-	if ((c.getY() == 0 || c.getY() == 7) && !(dynamic_cast<Pawn*>(piece)->getPromotion())) return true;
+	if (c.getY() == 0 || c.getY() == 7) return true;
 
 	return false;
 }
 
-/*
-// TODO: try catch(maybe in main)
-void GameManager::backToMenu() {
-	delete mainGui;
-	mainGui = new MenuGUI();
-}
-*/
+void GameManager::promote(PieceType type) {
+	int index = -1;
+	for (int i = 0; i < 32; i++) {
+		if (Board::piecesList[i]->getDead() || !checkPromotion(Board::piecesList[i])) continue;
+		index = i;
+		break;
+	}
 
-int GameManager::getValueFromSlider(const SDL_Rect* buttonRect, const SDL_Rect* trackerRect) {
-	return (trackerRect->x - buttonRect->x) * 100 / trackerRect->w;
+	if (index < 0 || index >= 32) return;
+	Pawn* pawn = (Pawn*)Board::piecesList[index];
+	switch (type) {
+	case PieceType::Queen:
+		Board::piecesList[index] = new Queen(pawn->getPosition(), pawn->getColor());
+		Board::piecesList[index]->setID(pawn->getID());
+		break;
+	case PieceType::Rook:
+		Board::piecesList[index] = new Rook(pawn->getPosition(), pawn->getColor());
+		Board::piecesList[index]->setID(pawn->getID());
+		((Rook*)Board::piecesList[index])->setFirstMove(false);
+		break;
+	case PieceType::Knight:
+		Board::piecesList[index] = new Knight(pawn->getPosition(), pawn->getColor());
+		Board::piecesList[index]->setID(pawn->getID());
+		break;
+	case PieceType::Bishop:
+		Board::piecesList[index] = new Bishop(pawn->getPosition(), pawn->getColor());
+		Board::piecesList[index]->setID(pawn->getID());
+		break;
+	}
+	delete pawn;
+	pawn = nullptr;
+
+	// update history
+	std::vector<Piece*> data = history->getData(turn - 1);
+	history->setInitalState(data[0]);
+	history->setFinalState(Board::piecesList[index]);
+	history->setCapturedPiece(nullptr);
+	history->updateData(turn - 1);
+	// update board
+	Board::updateBoard();
 }
 
 // TODO - Carefully pointer to texture (I call slow change state)
@@ -358,7 +517,7 @@ void GameManager::undo() {
 	std::cout << "captured piece: " << history->getData(turn)[2] << std::endl;
 	std::cout << "------------------ end redo -----------------" << std::endl;
 
-	if (opponent == Opponent::COMPUTER && turn % 2 == 0) {
+	if ((opponent == Opponent::EASY_COMPUTER|| opponent == Opponent::HARD_COMPUTER) && turn % 2 == 0) {
 		undo();
 	}
 }
@@ -398,9 +557,27 @@ void GameManager::redo() {
 	for (auto& e : Board::piecesList) e->setChosen(false);
 	Board::updateBoard();
 
-	if (opponent == Opponent::COMPUTER && turn % 2 == 0) {
+	if ((opponent == Opponent::EASY_COMPUTER || opponent == Opponent::HARD_COMPUTER) && turn % 2 == 0) {
 		redo();
 	}
+}
+
+void GameManager::resetGame() {
+	turn = 0;
+	Board::resetPiecesList();
+	Board::updateBoard();
+	history->clear();
+}
+
+void GameManager::saveCurrentGame(std::string path) {
+	history->write(path);
+}
+
+void GameManager::loadPreviousGame(std::string path) {
+	history->read(path);
+	Board::resetPiecesList();
+	Board::updateBoard();
+	turn = 0;
 }
 
 MatchState GameManager::checkWinner() {
@@ -448,4 +625,14 @@ MatchState GameManager::checkWinner() {
 	}
 
 	return MatchState::IN_PLAY;
+}
+
+void GameManager::recoverGameFromHistory() {
+	Board::resetPiecesList();
+	Board::updateBoard();
+	turn = 0;
+	
+	for (int i = 0; i < history->getLengthData(); i++) {
+		redo();
+	}
 }
