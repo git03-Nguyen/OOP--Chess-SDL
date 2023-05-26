@@ -457,7 +457,7 @@ void GameManager::promote(PieceType type) {
 	std::vector<Piece*> data = history->getData(turn - 1);
 	history->setInitalState(data[0]);
 	history->setFinalState(Board::piecesList[index]);
-	history->setCapturedPiece(nullptr);
+	history->setCapturedPiece(data[2]);
 	history->updateData(turn - 1);
 	// update board
 	Board::updateBoard();
