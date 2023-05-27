@@ -175,6 +175,9 @@
     <Image Include="..\Assets\Pieces\RookBlack.png" />
     <Image Include="..\Assets\Pieces\RookWhite.png" />
   </ItemGroup>
+  <ItemGroup>
+    <None Include="ClassDiagram.cd" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

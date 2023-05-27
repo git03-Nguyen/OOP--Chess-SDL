@@ -71,10 +71,6 @@ void GameManager::render() {
 	}
 	if (subGui) {
 		subGui->render();
-		if (subGui->getGUIType() == GUIType::RESULT_NOTICE) {
-			MatchResultGUI* temp = (MatchResultGUI*)subGui;
-			temp->renderMatchResult(checkWinner());
-		}
 	}
 	SDL_RenderPresent(Window::renderer);
 }
@@ -84,7 +80,7 @@ void GameManager::handelEvents() {
 	SDL_Event e;
 
 	//check winner
-	if (mainGui->getGUIType() == GUIType::GAME_PLAY){
+	if (mainGui->getGUIType() == GUIType::GAME_PLAY) {
 		MatchState matchState = checkWinner();
 		if (matchState != MatchState::IN_PLAY && !subGui) {
 			subGui = new MatchResultGUI(matchState);
@@ -117,21 +113,6 @@ void GameManager::handelEvents() {
 		}
 	}
 
-			history->setFinalState(piece);
-			history->setCapturedPiece(capturedPiece);
-			history->updateData(turn);
-			std::cout << "initial piece: " << history->getData(turn)[0] << std::endl;
-			std::cout << "final piece: " << history->getData(turn)[1] << std::endl;
-			std::cout << "captured piece: " << history->getData(turn)[2] << std::endl;
-			turn++;
-
-
-			Board::updateBoard();
-			std::cout << "---------------- end move-------------------" << std::endl;
-			return;
-		}
-	}
-
 	while (SDL_PollEvent(&e)) {
 		switch (e.type) {
 		case SDL_QUIT:
@@ -144,7 +125,7 @@ void GameManager::handelEvents() {
 			if(opponent == Opponent::COMPUTER)
 				// CALL API FROM CLASS COMPUTER => CONSIDER TURN IS EVEN OR ODD; CALCULATE MOVE=> COORDINATE, INCREASE TURN, SAVE HISTORY.
 			*/
-			
+
 			if (subGui) {
 				// PROMOTION_NOTICE
 				if (subGui->getGUIType() == GUIType::PROMOTION_NOTICE) {
@@ -182,7 +163,7 @@ void GameManager::handelEvents() {
 					MatchResultGUI* temp = (MatchResultGUI*)subGui;
 					if (checkFocus(e, temp->getRectOfBtnBackToMenu())) {
 						std::cout << "Clicked menu button" << std::endl;
-						delete subGui; 
+						delete subGui;
 						subGui = nullptr;
 						delete mainGui;
 						mainGui = new MenuGUI();
@@ -517,7 +498,7 @@ void GameManager::undo() {
 	std::cout << "captured piece: " << history->getData(turn)[2] << std::endl;
 	std::cout << "------------------ end redo -----------------" << std::endl;
 
-	if ((opponent == Opponent::EASY_COMPUTER|| opponent == Opponent::HARD_COMPUTER) && turn % 2 == 0) {
+	if ((opponent == Opponent::EASY_COMPUTER || opponent == Opponent::HARD_COMPUTER) && turn % 2 == 0) {
 		undo();
 	}
 }
@@ -631,7 +612,7 @@ void GameManager::recoverGameFromHistory() {
 	Board::resetPiecesList();
 	Board::updateBoard();
 	turn = 0;
-	
+
 	for (int i = 0; i < history->getLengthData(); i++) {
 		redo();
 	}
