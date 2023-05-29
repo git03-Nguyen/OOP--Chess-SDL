@@ -35,6 +35,7 @@ public:
 	int getThemeMusicVolume() const;
 	int getEventMusicVolume() const;
 
+
 	void playWinSound();
 	void playMainMenuMusic();
 	void playPvPMusic();
