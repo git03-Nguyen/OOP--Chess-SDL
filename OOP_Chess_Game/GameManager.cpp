@@ -361,8 +361,7 @@ Coordinate GameManager::getClickedBox(const SDL_Event& e) const {
 }
 
 // TODO: (current default, white -> first: turn even, black: second -> turn odd;) make it flexible; add music;
-void GameManager::handleClickedPiece(const SDL_Event& e) {
-	
+void GameManager::handleClickedPiece(const SDL_Event& e) {	
 	Coordinate c = getClickedBox(e);
 	if (c.getX() < 0 && c.getY() < 0) return;
 	Piece* piece = Board::getPieceAt(c);
