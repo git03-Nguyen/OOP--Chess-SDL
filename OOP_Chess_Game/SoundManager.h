@@ -24,7 +24,6 @@ private:
 	int themeMusicVolume;
 	int eventMusicVolume;
 public:
-
 	SoundManager();
 	~SoundManager();
 
