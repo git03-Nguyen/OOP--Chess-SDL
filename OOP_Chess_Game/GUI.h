@@ -2,7 +2,7 @@
 #include <vector>
 #include <String>
 #include <SDL.h>
-#include "Button.h"
+#include "Image.h"
 #include "Board.h"
 #include "Pieces.h"
 
