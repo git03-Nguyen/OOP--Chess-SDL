@@ -86,6 +86,7 @@ void GameManager::handelEvents() {
 		MatchState matchState = checkWinner();
 		if (matchState != MatchState::IN_PLAY && !subGui) {
 			subGui = new MatchResultGUI(matchState);
+			soundManager->playWinSound();
 		}
 
 		// defualt computer: first => white

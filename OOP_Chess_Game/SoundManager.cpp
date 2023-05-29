@@ -18,6 +18,7 @@ SoundManager::SoundManager() {
 	efMove = Mix_LoadWAV("../Assets/Sounds/move.wav");
 	efCapture = Mix_LoadWAV("../Assets/Sounds/capture.wav");
 	efClickBtn = Mix_LoadWAV("../Assets/Sounds/click.wav");
+	efWin = Mix_LoadWAV("../Assets/Sounds/win.wav");
 
 }
 
@@ -30,7 +31,6 @@ SoundManager::~SoundManager() {
 	Mix_FreeMusic(bgPvP);
 	Mix_FreeMusic(bgPvE);
 	Mix_FreeMusic(bgReplay);
-	Mix_FreeMusic(bgEnd);
 	Mix_CloseAudio();
 }
 
@@ -76,11 +76,8 @@ void SoundManager::playReplayMusic() {
 	if (isMuted) Mix_PauseMusic();
 }
 
-void SoundManager::playEndMusic() {
-	Mix_HaltMusic();
-	Mix_PlayMusic(bgEnd, -1);
-	playing = bgEnd;
-	if (isMuted) Mix_PauseMusic();
+void SoundManager::playWinSound() {
+	if (!isMuted) Mix_PlayChannel(-1, efWin, 0);
 }
 
 void SoundManager::playPieceMoveSound() {

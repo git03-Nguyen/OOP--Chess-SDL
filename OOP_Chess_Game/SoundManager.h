@@ -12,10 +12,10 @@ private:
 	Mix_Music* bgPvP;
 	Mix_Music* bgPvE;
 	Mix_Music* bgReplay;
-	Mix_Music* bgEnd;
 
 	Mix_Music* playing;
 	
+	Mix_Chunk* efWin;
 	Mix_Chunk* efMove;
 	Mix_Chunk* efCapture;
 	Mix_Chunk* efClickBtn;
@@ -33,7 +33,7 @@ public:
 	int getThemeMusicVolume() const;
 	int getEventMusicVolume() const;
 
-	void playEndMusic();
+	void playWinSound();
 	void playMainMenuMusic();
 	void playPvPMusic();
 	void playPvEMusic();
