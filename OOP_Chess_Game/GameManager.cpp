@@ -1,9 +1,5 @@
 #include "GameManager.h"
 
-// init static attribute
-//* GameManager::window = nullptr;
-//SDL_Renderer* GameManager::renderer = nullptr;
-
 GameManager::GameManager(const char* title, int xPos, int yPos, int width, int height) {
 
 	if (SDL_Init(SDL_INIT_EVERYTHING) < 0) throw SDL_GetError();
@@ -71,8 +67,16 @@ void GameManager::render() {
 		GamePlayGUI* tempGui = (GamePlayGUI*)mainGui;
 		tempGui->renderTurn(turn);
 	}
+	if (mainGui->getGUIType() == GUIType::MENU) {
+		MenuGUI* tempGui = (MenuGUI*)mainGui;
+		tempGui->renderMute(soundManager->getIsMuted());
+	}
 	if (subGui) {
 		subGui->render();
+		if(subGui->getGUIType() == GUIType::SETTINGS){
+			SettingGUI* tempGui = (SettingGUI*)subGui;
+			tempGui->renderMute(soundManager->getIsMuted());
+		}
 	}
 	SDL_RenderPresent(Window::renderer);
 }
@@ -122,15 +126,7 @@ void GameManager::handelEvents() {
 		switch (e.type) {
 		case SDL_QUIT:
 			isRunning = false; break;
-		case SDL_MOUSEBUTTONDOWN:
-			/*
-			WHILE ALWAYS FIRST, BLACK SECOND.
-			COMPUTER: EVEN TURN => WHITE; ODD TURN => BLACK; IF PLAYER CHOOSE WHITE => COMPUTER CHOOSE FALSE; AND ...
-			MAYBE: ADD NEW ATTRIBUTE ""
-			if(opponent == Opponent::COMPUTER)
-				// CALL API FROM CLASS COMPUTER => CONSIDER TURN IS EVEN OR ODD; CALCULATE MOVE=> COORDINATE, INCREASE TURN, SAVE HISTORY.
-			*/
-			
+		case SDL_MOUSEBUTTONDOWN:		
 			if (subGui) {
 				// PROMOTION_NOTICE
 				if (subGui->getGUIType() == GUIType::PROMOTION_NOTICE) {
@@ -423,19 +419,6 @@ void GameManager::handleClickedHightlightBox(const SDL_Event& e) {
 
 	chosenPiece = nullptr;
 }
-
-/*
-void GameManager::handleDragButtonOfSlider(const SDL_Event& e, Slider* slider) {
-	int x = e.motion.x;
-	slider->setButtonRectX(x);
-}
-*/
-
-/*
-int GameManager::getValueFromSlider(const SDL_Rect* buttonRect, const SDL_Rect* trackerRect) {
-	return (trackerRect->x - buttonRect->x) * 100 / trackerRect->w;
-}
-*/
 
 bool GameManager::checkFocus(const SDL_Event& e, const SDL_Rect& rect) const {
 	int x = e.motion.x;

@@ -357,21 +357,6 @@ void King::read(std::fstream& is) {
 	is.read((char*)&ableCastling, sizeof(ableCastling));
 }
 
-//King& King::operator=(const Piece* piece) {
-//	if (this == piece) return *this;
-//	King* temp = dynamic_cast<King*>(piece);
-//	this->position = temp->position;
-//	this->color = temp->color;
-//	this->dead = temp->dead;
-//	this->chosen = temp->chosen;
-//	this->imagePath = temp->imagePath;
-//	this->texture = nullptr;
-//	this->type = temp.type;
-//	this->ableCastling = temp.ableCastling;
-//	this->id = piece.id;
-//	return *this;
-//}
-
 //--------------------------------------------------------------------------------------------------
 Queen::Queen() {
 
@@ -554,21 +539,6 @@ void Queen::read(std::fstream& is) {
 	Piece::read(is);
 }
 
-//Queen& Queen::operator=(const Queen& piece) {
-//	if (this == &piece) return *this;
-//
-//	this->position = piece.position;
-//	this->color = piece.color;
-//	this->dead = piece.dead;
-//	this->chosen = piece.chosen;
-//	this->imagePath = piece.imagePath;
-//	this->texture = nullptr;
-//	this->type = piece.type;
-//	this->id = piece.id;
-//
-//	return *this;
-//}
-
 //--------------------------------------------------------------------------------
 Bishop::Bishop() {
 
@@ -692,20 +662,6 @@ void Bishop::read(std::fstream& is) {
 	Piece::read(is);
 }
 
-//Bishop& Bishop::operator=(const Bishop& piece) {
-//	if (this == &piece) return *this;
-//
-//	this->position = piece.position;
-//	this->color = piece.color;
-//	this->dead = piece.dead;
-//	this->chosen = piece.chosen;
-//	this->imagePath = piece.imagePath;
-//	this->texture = nullptr;
-//	this->type = piece.type;
-//	this->id = piece.id;
-//
-//	return *this;
-//}
 //----------------------------------------------------------------------------------
 Rook::Rook() {
 	firstMove = true;
@@ -981,21 +937,6 @@ void Knight::write(std::fstream& os) {
 void Knight::read(std::fstream& is) {
 	Piece::read(is);
 }
-
-//Knight& Knight::operator=(const Knight& piece) {
-//	if (this == &piece) return *this;
-//
-//	this->position = piece.position;
-//	this->color = piece.color;
-//	this->dead = piece.dead;
-//	this->chosen = piece.chosen;
-//	this->imagePath = piece.imagePath;
-//	this->texture = nullptr;
-//	this->type = piece.type;
-//	this->id = piece.id;
-//
-//	return *this;
-//}
 
 //---------------------------------------------------------------------------
 Pawn::Pawn() {
