@@ -113,7 +113,7 @@ void GameManager::handelEvents() {
 			}
 		}
 
-		if (state == GamePlayGUIState::DISPLAY) {
+		if (!subGui && state == GamePlayGUIState::DISPLAY) {
 			if (cnt >= 60) {
 				redo();
 				cnt = 0;
