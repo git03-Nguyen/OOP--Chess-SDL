@@ -24,7 +24,6 @@ private:
 	int themeMusicVolume;
 	int eventMusicVolume;
 public:
-
 	SoundManager();
 	~SoundManager();
 
@@ -35,6 +34,7 @@ public:
 
 	int getThemeMusicVolume() const;
 	int getEventMusicVolume() const;
+
 
 	void playWinSound();
 	void playMainMenuMusic();
