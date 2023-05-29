@@ -34,6 +34,10 @@ SoundManager::~SoundManager() {
 	Mix_CloseAudio();
 }
 
+bool SoundManager::getIsMuted() const {
+	return isMuted;
+}
+
 void SoundManager::setThemeMusicVolume(int themeMusicVolume) {
 }
 

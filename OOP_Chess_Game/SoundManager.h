@@ -27,6 +27,8 @@ public:
 	SoundManager();
 	~SoundManager();
 
+	bool getIsMuted() const;
+
 	void setThemeMusicVolume(int themeMusicVolume);
 	void setEventMusicVolume(int eventMusicVolume);
 

@@ -27,7 +27,7 @@
     <ClInclude Include="Board.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Button.h">
+    <ClInclude Include="Image.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Computer.h">
