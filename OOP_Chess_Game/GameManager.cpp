@@ -50,6 +50,8 @@ void GameManager::gameLoop(int fps) {
 	Uint32 frameStart = 0;
 	int frameTime = 0;
 
+	soundManager->playMainMenuMusic();
+
 	while (isRunning) {
 		frameStart = SDL_GetTicks();
 		handelEvents(); // not here
@@ -97,6 +99,8 @@ void GameManager::handelEvents() {
 			history->setCapturedPiece(capturedPiece);
 			history->updateData(turn);
 			Board::updateBoard();
+			SDL_Delay(100);
+			soundManager->playCapturingSound();
 			turn++;
 			// auto promote to queen
 			if (checkPromotion(piece)) {
@@ -163,20 +167,24 @@ void GameManager::handelEvents() {
 					MatchResultGUI* temp = (MatchResultGUI*)subGui;
 					if (checkFocus(e, temp->getRectOfBtnBackToMenu())) {
 						std::cout << "Clicked menu button" << std::endl;
+						soundManager->playClickBtnSound();
 						delete subGui; 
 						subGui = nullptr;
 						delete mainGui;
 						mainGui = new MenuGUI();
+						soundManager->playMainMenuMusic();
 						resetGame();
 						return;
 					}
 					if (checkFocus(e, temp->getRectOfBtnSave())) {
 						std::cout << "Clicked save button" << std::endl;
+						soundManager->playClickBtnSound();
 						saveCurrentGame("history.bin");
 						return;
 					}
 					if (checkFocus(e, temp->getRectOfBtnPlayAgain())) {
 						std::cout << "Clicked play again button" << std::endl;
+						soundManager->playClickBtnSound();
 						resetGame();
 						state = GamePlayGUIState::PLAY;
 						delete subGui;
@@ -190,15 +198,18 @@ void GameManager::handelEvents() {
 					if (checkFocus(e, temp->getRectOfBtnBackToMenu())) {
 						// Go to menu
 						std::cout << "Clicked menu button" << std::endl;
+						soundManager->playClickBtnSound();
 						delete subGui;
 						subGui = nullptr;
 						delete mainGui;
 						mainGui = new MenuGUI();
+						soundManager->playMainMenuMusic();
 						resetGame();
 						return;
 					}
 					if (checkFocus(e, temp->getRectOfBtnResume())) {
 						std::cout << "Clicked resume button" << std::endl;
+						soundManager->playClickBtnSound();
 						delete subGui;
 						subGui = nullptr;
 						return;
@@ -206,13 +217,16 @@ void GameManager::handelEvents() {
 					if (checkFocus(e, temp->getRectOfBtnSave())) {
 						// Go to menu
 						std::cout << "Clicked save button" << std::endl;
+						soundManager->playClickBtnSound();
 						saveCurrentGame("history.bin");
 						return;
 					}
 					if (checkFocus(e, temp->getRectOfBtnVolume())) {
 						// Go to menu
-						std::cout << "Clicked volume button/ to load previous game" << std::endl;
-						loadPreviousGame("history.bin");
+						std::cout << "Clicked volume button!" << std::endl;
+						soundManager->playClickBtnSound();
+						soundManager->muteXunmute();
+						//loadPreviousGame("history.bin");
 						// delete subGui; subGui = nullptr;
 						return;
 					}
@@ -228,33 +242,42 @@ void GameManager::handelEvents() {
 					mainGui = new GamePlayGUI();
 					opponent = Opponent::HUMAN;
 					state = GamePlayGUIState::PLAY;
+					soundManager->playClickBtnSound();
+					soundManager->playPvPMusic();
 					resetGame();
 					return;
 				}
 				if (checkFocus(e, temp->getRectOfBtnVsComputerEasy())) {
 					std::cout << "Clicked vs_easy_computer button!" << std::endl;
+					soundManager->playClickBtnSound();
 					delete mainGui;
 					mainGui = new GamePlayGUI();
 					opponent = Opponent::EASY_COMPUTER;
 					state = GamePlayGUIState::PLAY;
+					soundManager->playClickBtnSound();
+					soundManager->playPvEMusic();
 					resetGame();
 					return;
 				}
 				if (checkFocus(e, temp->getRectOfBtnVsComputerHard())) {
 					std::cout << "Clicked vs_hard_computer button!" << std::endl;
+					soundManager->playClickBtnSound();
 					delete mainGui;
 					mainGui = new GamePlayGUI();
 					opponent = Opponent::HARD_COMPUTER;
 					state = GamePlayGUIState::PLAY;
+					soundManager->playPvEMusic();
 					resetGame();
 					return;
 				}
 				if (checkFocus(e, temp->getRectOfBtnContinueSavedGame())) {
 					std::cout << "Clicked continue_saved_game button!" << std::endl;
+					soundManager->playClickBtnSound();
 					delete mainGui;
 					mainGui = new GamePlayGUI();
 					opponent = Opponent::HUMAN;
 					state = GamePlayGUIState::PLAY;
+					soundManager->playPvPMusic();
 					resetGame();
 					history->read("history.bin");
 					recoverGameFromHistory();
@@ -262,10 +285,12 @@ void GameManager::handelEvents() {
 				}
 				if (checkFocus(e, temp->getRectOfBtnReplayRecentGame())) {
 					std::cout << "Clicked replay_recent_game button!" << std::endl;
+					soundManager->playClickBtnSound();
 					delete mainGui;
 					mainGui = new GamePlayGUI();
 					opponent = Opponent::HUMAN;
 					state = GamePlayGUIState::DISPLAY;
+					soundManager->playReplayMusic();
 					resetGame();
 					history->read("history.bin");
 					cnt = 0;
@@ -273,6 +298,8 @@ void GameManager::handelEvents() {
 				}
 				if (checkFocus(e, temp->getRectOfBtnVolume())) {
 					std::cout << "Clicked volume button!" << std::endl;
+					soundManager->playClickBtnSound();
+					soundManager->muteXunmute();
 					return;
 				}
 				if (checkFocus(e, temp->getRectOfBtnExit())) {
@@ -288,6 +315,7 @@ void GameManager::handelEvents() {
 				GamePlayGUI* temp = (GamePlayGUI*)mainGui;
 				if (checkFocus(e, temp->getRectOfBtnSetting())) {
 					std::cout << "Setting button clicked!" << std::endl;
+					soundManager->playClickBtnSound();
 					subGui = new SettingGUI();
 					return;
 				}
@@ -299,11 +327,13 @@ void GameManager::handelEvents() {
 
 				if (checkFocus(e, temp->getRectOfBtnUndo())) {
 					std::cout << "Undo button clicked!" << std::endl;
+					soundManager->playClickBtnSound();
 					undo();
 					return;
 				}
 				if (checkFocus(e, temp->getRectOfBtnRedo())) {
 					std::cout << "Redo button clicked!" << std::endl;
+					soundManager->playClickBtnSound();
 					redo();
 					return;
 				}
@@ -335,6 +365,7 @@ Coordinate GameManager::getClickedBox(const SDL_Event& e) const {
 
 // TODO: (current default, white -> first: turn even, black: second -> turn odd;) make it flexible; add music;
 void GameManager::handleClickedPiece(const SDL_Event& e) {
+	
 	Coordinate c = getClickedBox(e);
 	if (c.getX() < 0 && c.getY() < 0) return;
 	Piece* piece = Board::getPieceAt(c);
@@ -342,6 +373,7 @@ void GameManager::handleClickedPiece(const SDL_Event& e) {
 	if (piece->getColor() == Color::White && turn % 2 == 1 || piece->getColor() == Color::Black && turn % 2 == 0) return;
 
 	for (int i = 0; i < 32; i++) Board::piecesList[i]->setChosen(false);
+	soundManager->playPieceMoveSound();
 
 	piece->setChosen(true);
 }
@@ -377,6 +409,7 @@ void GameManager::handleClickedHightlightBox(const SDL_Event& e) {
 			history->setCapturedPiece(capturedPiece);
 			history->updateData(turn);
 			turn++;
+			soundManager->playCapturingSound();
 			Board::updateBoard();
 			break;
 		}
@@ -501,6 +534,7 @@ void GameManager::undo() {
 	if ((opponent == Opponent::EASY_COMPUTER|| opponent == Opponent::HARD_COMPUTER) && turn % 2 == 0) {
 		undo();
 	}
+	soundManager->playCapturingSound();
 }
 
 // TODO - Carefully pointer to texture (I call quick change state)
@@ -541,6 +575,7 @@ void GameManager::redo() {
 	if ((opponent == Opponent::EASY_COMPUTER || opponent == Opponent::HARD_COMPUTER) && turn % 2 == 0) {
 		redo();
 	}
+	soundManager->playCapturingSound();
 }
 
 void GameManager::resetGame() {
