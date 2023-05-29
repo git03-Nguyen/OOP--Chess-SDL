@@ -33,7 +33,6 @@ GUIType MenuGUI::getGUIType() const {
 }
 
 MenuGUI::MenuGUI() {
-	this->mute = false;
 	this->background = new Image({ 0,0,640,560 }, "..\\Assets\\menubackground.png");
 	//column1
 	this->btnVsPlayer = new Image({ 80, 240, 200, 60 }, "..\\Assets\\pvp.png");
@@ -98,7 +97,10 @@ void MenuGUI::render() {
 	this->btnReplayRecentGame->renderImage();
 	this->btnExit->renderImage();
 	//
-	if (this->mute) this->btnUnMute->renderImage();
+}
+//
+void MenuGUI::renderMute(bool mute) {
+	if (mute) this->btnUnMute->renderImage();
 	else this->btnMute->renderImage();
 }
 
@@ -130,64 +132,6 @@ SDL_Rect MenuGUI::getRectOfBtnContinueSavedGame() {
 	return this->btnContinueSavedGame->getRectangle();
 }
 
-
-//ModeOptionGUI::ModeOptionGUI() {
-//}
-//
-//ModeOptionGUI::~ModeOptionGUI() {
-//}
-//
-//void ModeOptionGUI::init() {
-//}
-//
-//void ModeOptionGUI::render() {
-//}
-//
-//GUIType ModeOptionGUI::getGUIType() const {
-//	return GUIType();
-//}
-//
-//SDL_Rect ModeOptionGUI::getRectOfBtnEasy() {
-//	return SDL_Rect();
-//}
-//
-//SDL_Rect ModeOptionGUI::getRectOfBtnHard() {
-//	return SDL_Rect();
-//}
-//
-//SDL_Rect ModeOptionGUI::getRectOfBtnBackToMenu() {
-//	return SDL_Rect();
-//}
-
-//VolumeOptionGUI::VolumeOptionGUI() {
-//}
-//
-//VolumeOptionGUI::~VolumeOptionGUI() {
-//}
-//
-//void VolumeOptionGUI::init() {
-//}
-//
-//void VolumeOptionGUI::render() {
-//}
-//
-//GUIType VolumeOptionGUI::getGUIType() const {
-//	return GUIType();
-//}
-//
-//Slider* VolumeOptionGUI::getSliderThemeMusic() {
-//	return nullptr;
-//}
-//
-//Slider* VolumeOptionGUI::getSliderEventMusic() {
-//	return nullptr;
-//}
-//
-//SDL_Rect VolumeOptionGUI::getRectOfBtnBackToMenu() {
-//	return SDL_Rect();
-//}
-
-// ------------------------------------------------------------------------------------------------------
 // GamePlayGUI
 
 GamePlayGUI::GamePlayGUI() { //LOAD ALL THE ESSENTIALS
@@ -213,12 +157,6 @@ GamePlayGUI::GamePlayGUI() { //LOAD ALL THE ESSENTIALS
 	//TURN
 	this->whiteMove = new Image({ DISPLACE + PIECESIZE * 8, DISPLACE + 15, 120, 210 }, "..\\Assets\\white_move.png");
 	this->blackMove = new Image({ DISPLACE + PIECESIZE * 8, DISPLACE + 15, 120, 210 }, "..\\Assets\\black_move.png");
-	//
-	////promotion buttons
-	//this->btnPromoteQueen = new Image({ 0,0,0,0 }, "..\\Assets\\ProQueen.png");
-	//this->btnPromoteBishop = new Image({ 0,0,0,0 }, "..\\Assets\\ProBishop.png");
-	//this->btnPromoteRook = new Image({ 0,0,0,0 }, "..\\Assets\\ProRook.png");
-	//this->btnPromoteKnight = new Image({ 0,0,0,0 }, "..\\Assets\\ProKnight.png");
 	//LOAD PIECES IMAGEs
 	for (int i = 0; i < Board::piecesList.size(); i++) {
 		//get name
@@ -346,18 +284,6 @@ void GamePlayGUI::render() {
 	}
 
 }
-//void GamePlayGUI::initPromotionButtons() {
-//	this->btnPromoteQueen->setRectangle({ 570,300,70,70 });
-//	this->btnPromoteBishop->setRectangle({ 570,380,70,70 });
-//	this->btnPromoteRook->setRectangle({ 600,300,70,70 });
-//	this->btnPromoteKnight->setRectangle({ 600,380,70,70 });
-//}	 //call when needed
-//void GamePlayGUI::clearPromotionButtons() {
-//	this->btnPromoteQueen->setRectangle({ 0,0,0,0 });
-//	this->btnPromoteBishop->setRectangle({ 0,0,0,0 });
-//	this->btnPromoteRook->setRectangle({ 0,0,0,0 });
-//	this->btnPromoteKnight->setRectangle({ 0,0,0,0 });
-//}   //must call after use
 void GamePlayGUI::renderTurn(int turn) {
 	if (turn % 2 == 0) {//white
 		this->whiteMove->renderImage();
@@ -384,18 +310,6 @@ SDL_Rect GamePlayGUI::getRectOfBtnSetting() {
 SDL_Rect GamePlayGUI::getRectOfBtnRedo() {
 	return this->btnRedo->getRectangle();
 }
-//SDL_Rect GamePlayGUI::getRectOfBtnPromoteQueen() {
-//	return this->btnPromoteQueen->getRectangle();
-//}
-//SDL_Rect GamePlayGUI::getRectOfBtnPromoteRook() {
-//	return this->btnPromoteRook->getRectangle();
-//}
-//SDL_Rect GamePlayGUI::getRectOfBtnPromoteBishop() {
-//	return this->btnPromoteBishop->getRectangle();
-//}
-//SDL_Rect GamePlayGUI::getRectOfBtnPromoteKnight() {
-//	return this->btnPromoteKnight->getRectangle();
-//}
 void GamePlayGUI::destroy() {
 	for (int i = 0; i < this->piece.size(); i++) {
 		this->piece[i]->destroy();
@@ -448,9 +362,6 @@ MatchResultGUI::MatchResultGUI() {
 
 	this->background = new Image({ SUBDISPLACE,SUBDISPLACE,SUBSIZEX, SUBSIZEY }, "..\\Assets\\subback.png");
 	this->result = nullptr;
-	//this->blackWin = new Image({ SUBDISPLACE + 30,SUBDISPLACE + 20, 230, 80 }, "..\\Assets\\BlackWin.png");
-	//this->whiteWin = new Image({ SUBDISPLACE + 30,SUBDISPLACE + 20, 230, 80 }, "..\\Assets\\WhiteWin.png");
-	//this->draw = new Image({ SUBDISPLACE + 40,SUBDISPLACE + 20, 210, 70 }, "..\\Assets\\Draw.png");
 	this->btnPlayAgain = new Image({ SUBDISPLACE + 20 + PIECESIZE, SUBDISPLACE + 120, PIECESIZE, PIECESIZE }, "..\\Assets\\undo.png");
 	this->btnBackToMenu = new Image({ SUBDISPLACE + 30 + PIECESIZE * 2, SUBDISPLACE + 120, PIECESIZE, PIECESIZE }, "..\\Assets\\tomenu.png");
 	this->btnSave = new Image({ SUBDISPLACE + 28 + 27 + 27 + PIECESIZE * 2, SUBDISPLACE + 120, PIECESIZE, PIECESIZE }, "..\\Assets\\save.png");
@@ -593,7 +504,6 @@ void PromotionGUI::destroy() {
 }
 
 SettingGUI::SettingGUI() {
-	this->mute = false; // set mute
 	//
 	this->symbol = new Image({ SUBDISPLACE + 110, WINDOWSIZEY - 360, 70, 70 }, "..\\Assets\\settingSymbol.png");
 	this->background = new Image({ SUBDISPLACE,SUBDISPLACE,SUBSIZEX, SUBSIZEY }, "..\\Assets\\subback.png");
@@ -612,7 +522,6 @@ SettingGUI::~SettingGUI() {
 
 
 void SettingGUI::render() {
-	this->mute = false;//set mute
 	//
 	this->background->renderImage();
 	this->symbol->renderImage();
@@ -620,9 +529,11 @@ void SettingGUI::render() {
 	this->btnSave->renderImage();
 	this->btnBackToMenu->renderImage();
 	//
-	if (this->mute) this->btnUnMute->renderImage();
+}
+
+void SettingGUI::renderMute(bool mute) {
+	if (mute) this->btnUnMute->renderImage();
 	else this->btnMute->renderImage();
-	//
 }
 
 GUIType SettingGUI::getGUIType() const {

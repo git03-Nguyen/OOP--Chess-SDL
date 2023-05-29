@@ -37,7 +37,6 @@ public:
 //
 class MenuGUI : public GUI {
 protected:
-	bool mute;
 	Image* btnContinueSavedGame;
 	Image* btnVsComputerEasy;
 	Image* btnVsComputerHard;
@@ -52,6 +51,7 @@ public:
 	~MenuGUI();
 
 	void render();
+	void renderMute(bool mute);
 	GUIType getGUIType() const;
 
 	SDL_Rect getRectOfBtnContinueSavedGame();
@@ -65,44 +65,6 @@ public:
 	void destroy();
 };
 
-//class ModeOptionGUI : public GUI {
-//private:
-//	static Button btnEasy;
-//	static Button btnHard;
-//	static Button btnBackToMenu;
-//public:
-//	ModeOptionGUI();
-//	virtual ~ModeOptionGUI();
-//
-//	void init();
-//	void render();
-//	GUIType getGUIType() const;
-//
-//	static SDL_Rect getRectOfBtnEasy();
-//	static SDL_Rect getRectOfBtnHard();
-//	static SDL_Rect getRectOfBtnBackToMenu();
-//};
-
-//class VolumeOptionGUI : public GUI {
-//private:
-//	static Slider sliderThemeMusic;
-//	static Slider sliderEventMusic;
-//	static Button btnBackToMenu;
-//public:
-//	VolumeOptionGUI();
-//	virtual ~VolumeOptionGUI();
-//
-//	void init();
-//	void render();
-//	GUIType getGUIType() const;
-//
-//	static Slider* getSliderThemeMusic();
-//	static Slider* getSliderEventMusic();
-//	static SDL_Rect getRectOfBtnBackToMenu();
-//};
-
-//class ReplayGameGUI : public GUI {
-//};
 
 class GamePlayGUI : public GUI {
 protected:
@@ -196,13 +158,12 @@ private:
 	//
 	Image* btnBackToMenu;
 	Image* btnSave;
-	//
-	bool mute;
 public:
 	SettingGUI();
 	~SettingGUI();
 
 	void render();
+	void renderMute(bool mute);
 	GUIType getGUIType() const;
 	void destroy();
 
@@ -212,7 +173,3 @@ public:
 	SDL_Rect getRectOfBtnSave();
 };
 
-//TODO: use full parameter constructor
-//static Button btnContinue;
-//static Button btnVolumeOption;
-//static Button btnBackToMenu;
