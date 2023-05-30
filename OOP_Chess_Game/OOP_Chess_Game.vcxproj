@@ -150,7 +150,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Board.cpp" />
-    <ClCompile Include="Button.cpp" />
+    <ClCompile Include="Image.cpp" />
     <ClCompile Include="Computer.cpp" />
     <ClCompile Include="Coordinate.cpp" />
     <ClCompile Include="GUI.cpp" />
