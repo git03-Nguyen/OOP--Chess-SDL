@@ -320,7 +320,7 @@ void GameManager::handelEvents() {
 				if (state == GamePlayGUIState::DISPLAY) return;
 
 				handleClickedPiece(e);
-				handleClickedHightlightBox(e);
+				handleClickedHighlightBox(e);
 
 				if (checkFocus(e, temp->getRectOfBtnUndo())) {
 					std::cout << "Undo button clicked!" << std::endl;
@@ -375,7 +375,7 @@ void GameManager::handleClickedPiece(const SDL_Event& e) {
 }
 
 //TODO: add music
-void GameManager::handleClickedHightlightBox(const SDL_Event& e) {
+void GameManager::handleClickedHighlightBox(const SDL_Event& e) {
 	std::vector<Coordinate> possibleMoves;
 	Coordinate c = getClickedBox(e);
 	if (c.getX() < 0 && c.getY() < 0) return;

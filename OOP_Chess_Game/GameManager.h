@@ -51,7 +51,7 @@ public:
 
 	void handleClickedPiece(const SDL_Event& e);
 
-	void handleClickedHightlightBox(const SDL_Event& e);
+	void handleClickedHighlightBox(const SDL_Event& e);
 
 	//void handleDragButtonOfSlider(const SDL_Event& e, Slider* slider);
 
