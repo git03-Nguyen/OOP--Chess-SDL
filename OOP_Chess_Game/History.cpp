@@ -114,7 +114,7 @@ void History::read(std::string path) {
     is.close();
 } 
 
-void History::setInitalState(const Piece* initialState) {
+void History::setInitialState(const Piece* initialState) {
     if (!initialState) {
         this->initialState = nullptr;
         return;

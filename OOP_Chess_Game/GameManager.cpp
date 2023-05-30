@@ -98,7 +98,7 @@ void GameManager::handelEvents() {
 			std::pair<int, Coordinate> res = (opponent == Opponent::HARD_COMPUTER) ? computer->playWithHardMode() : computer->playWithEasyMode();
 			Piece* piece = Board::piecesList[res.first];
 			Piece* capturedPiece = nullptr;
-			history->setInitalState(piece);
+			history->setInitialState(piece);
 			capturedPiece = piece->move(res.second, Board::piecesOnBoard);
 			history->setFinalState(piece);
 			history->setCapturedPiece(capturedPiece);
@@ -398,7 +398,7 @@ void GameManager::handleClickedHightlightBox(const SDL_Event& e) {
 	for (auto& move : possibleMoves) {
 		if (c == move) {
 			Piece* capturedPiece = nullptr;
-			history->setInitalState(chosenPiece);
+			history->setInitialState(chosenPiece);
 			capturedPiece = chosenPiece->move(c, Board::piecesOnBoard);
 			chosenPiece->setChosen(false);
 			history->setFinalState(chosenPiece);
@@ -471,7 +471,7 @@ void GameManager::promote(PieceType type) {
 
 	// update history
 	std::vector<Piece*> data = history->getData(turn - 1);
-	history->setInitalState(data[0]);
+	history->setInitialState(data[0]);
 	history->setFinalState(Board::piecesList[index]);
 	history->setCapturedPiece(data[2]);
 	history->updateData(turn - 1);
