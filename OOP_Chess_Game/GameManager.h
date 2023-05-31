@@ -53,8 +53,6 @@ public:
 
 	void handleClickedHightlightBox(const SDL_Event& e);
 
-	//void handleDragButtonOfSlider(const SDL_Event& e, Slider* slider);
-
 	bool checkFocus(const SDL_Event& e, const SDL_Rect& rect) const;
 
 	bool checkPromotion(Piece* piece);
