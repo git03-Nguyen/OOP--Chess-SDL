@@ -50,7 +50,7 @@ public:
 
 	void handleClickedPiece(const SDL_Event& e);
 
-	void handleClickedHightlightBox(const SDL_Event& e);
+	void handleClickedHighlightBox(const SDL_Event& e);
 
 	bool checkFocus(const SDL_Event& e, const SDL_Rect& rect) const;
 
@@ -72,5 +72,4 @@ public:
 
 	void recoverGameFromHistory();
 };
-
 

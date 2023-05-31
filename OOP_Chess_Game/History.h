@@ -16,7 +16,7 @@ public:
 	virtual ~History();
 	void write(std::string path) const;
 	void read(std::string path);
-	void setInitalState(const Piece* initialState); // allocation and deep copy
+	void setInitialState(const Piece* initialState); // allocation and deep copy
 	void setFinalState(const Piece* finalState); // allocation and deep copy
 	void setCapturedPiece(const Piece* capturedPiece); // allocation and deep copy
 	void updateData(int turn); // copy to data and set initalState, finalState = null

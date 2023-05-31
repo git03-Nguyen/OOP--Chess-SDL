@@ -86,7 +86,7 @@ void GameManager::handelEvents() {
 	SDL_Event e;
 
 	//check winner
-	if (mainGui->getGUIType() == GUIType::GAME_PLAY){
+	if (mainGui->getGUIType() == GUIType::GAME_PLAY) {
 		MatchState matchState = checkWinner();
 		if (matchState != MatchState::IN_PLAY && !subGui) {
 			subGui = new MatchResultGUI(matchState);
@@ -98,7 +98,7 @@ void GameManager::handelEvents() {
 			std::pair<int, Coordinate> res = (opponent == Opponent::HARD_COMPUTER) ? computer->playWithHardMode() : computer->playWithEasyMode();
 			Piece* piece = Board::piecesList[res.first];
 			Piece* capturedPiece = nullptr;
-			history->setInitalState(piece);
+			history->setInitialState(piece);
 			capturedPiece = piece->move(res.second, Board::piecesOnBoard);
 			history->setFinalState(piece);
 			history->setCapturedPiece(capturedPiece);
@@ -320,7 +320,7 @@ void GameManager::handelEvents() {
 				if (state == GamePlayGUIState::DISPLAY) return;
 
 				handleClickedPiece(e);
-				handleClickedHightlightBox(e);
+				handleClickedHighlightBox(e);
 
 				if (checkFocus(e, temp->getRectOfBtnUndo())) {
 					std::cout << "Undo button clicked!" << std::endl;
@@ -375,7 +375,7 @@ void GameManager::handleClickedPiece(const SDL_Event& e) {
 }
 
 //TODO: add music
-void GameManager::handleClickedHightlightBox(const SDL_Event& e) {
+void GameManager::handleClickedHighlightBox(const SDL_Event& e) {
 	std::vector<Coordinate> possibleMoves;
 	Coordinate c = getClickedBox(e);
 	if (c.getX() < 0 && c.getY() < 0) return;
@@ -398,7 +398,7 @@ void GameManager::handleClickedHightlightBox(const SDL_Event& e) {
 	for (auto& move : possibleMoves) {
 		if (c == move) {
 			Piece* capturedPiece = nullptr;
-			history->setInitalState(chosenPiece);
+			history->setInitialState(chosenPiece);
 			capturedPiece = chosenPiece->move(c, Board::piecesOnBoard);
 			chosenPiece->setChosen(false);
 			history->setFinalState(chosenPiece);
@@ -471,7 +471,7 @@ void GameManager::promote(PieceType type) {
 
 	// update history
 	std::vector<Piece*> data = history->getData(turn - 1);
-	history->setInitalState(data[0]);
+	history->setInitialState(data[0]);
 	history->setFinalState(Board::piecesList[index]);
 	history->setCapturedPiece(data[2]);
 	history->updateData(turn - 1);
@@ -514,7 +514,7 @@ void GameManager::undo() {
 	std::cout << "captured piece: " << history->getData(turn)[2] << std::endl;
 	std::cout << "------------------ end redo -----------------" << std::endl;
 
-	if ((opponent == Opponent::EASY_COMPUTER|| opponent == Opponent::HARD_COMPUTER) && turn % 2 == 0) {
+	if ((opponent == Opponent::EASY_COMPUTER || opponent == Opponent::HARD_COMPUTER) && turn % 2 == 0) {
 		undo();
 	}
 	soundManager->playCapturingSound();
@@ -593,7 +593,7 @@ MatchState GameManager::checkWinner() {
 			cnt += temp[0].size() + temp[1].size();
 			Board::piecesList[i]->setChosen(pieceChosen);
 		}
-		
+
 		king->setChosen(true);
 		if (cnt == 0) {
 			if (king->checkmate(king->getPosition(), Board::piecesOnBoard)) return MatchState::BLACK_WIN;
@@ -630,7 +630,7 @@ void GameManager::recoverGameFromHistory() {
 	Board::resetPiecesList();
 	Board::updateBoard();
 	turn = 0;
-	
+
 	for (int i = 0; i < history->getLengthData(); i++) {
 		redo();
 	}
