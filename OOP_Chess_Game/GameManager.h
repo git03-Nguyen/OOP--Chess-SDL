@@ -25,7 +25,6 @@ private:
 	History* history;
 
 	// control view
-	// TODO: create subGui (display on gui)
 	GUI* mainGui;
 	GUI* subGui;
 
