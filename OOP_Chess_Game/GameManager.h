@@ -61,8 +61,6 @@ public:
 
 	void promote(PieceType type);
 
-	int getValueFromSlider(const SDL_Rect* buttonRect, const SDL_Rect* trackerRect);
-
 	void undo();
 
 	void redo();
