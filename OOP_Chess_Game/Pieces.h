@@ -120,7 +120,6 @@ public:
 	void read(std::fstream& is);
 };
 
-
 class Rook : public Piece {
 private:
 	bool firstMove;
