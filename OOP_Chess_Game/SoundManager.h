@@ -10,7 +10,8 @@ private:
 
 	Mix_Music* bgMenu;
 	Mix_Music* bgPvP;
-	Mix_Music* bgPvE;
+	Mix_Music* bgPvE_hard;
+	Mix_Music* bgPvE_easy;
 	Mix_Music* bgReplay;
 
 	Mix_Music* playing;
@@ -39,7 +40,8 @@ public:
 	void playWinSound();
 	void playMainMenuMusic();
 	void playPvPMusic();
-	void playPvEMusic();
+	void playPvEHardMusic();
+	void playPvEEasyMusic();
 	void playReplayMusic();
 
 	void playPieceMoveSound();

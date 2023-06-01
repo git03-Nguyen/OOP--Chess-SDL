@@ -253,7 +253,7 @@ void GameManager::handelEvents() {
 					opponent = Opponent::EASY_COMPUTER;
 					state = GamePlayGUIState::PLAY;
 					soundManager->playClickBtnSound();
-					soundManager->playPvEMusic();
+					soundManager->playPvEEasyMusic();
 					resetGame();
 					return;
 				}
@@ -264,7 +264,7 @@ void GameManager::handelEvents() {
 					mainGui = new GamePlayGUI();
 					opponent = Opponent::HARD_COMPUTER;
 					state = GamePlayGUIState::PLAY;
-					soundManager->playPvEMusic();
+					soundManager->playPvEHardMusic();
 					resetGame();
 					return;
 				}

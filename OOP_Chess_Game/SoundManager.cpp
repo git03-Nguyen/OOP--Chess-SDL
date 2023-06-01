@@ -11,7 +11,8 @@ SoundManager::SoundManager() {
 	// Load background musics
 	bgMenu = Mix_LoadMUS("../Assets/Sounds/bgMenu.mp3");
 	bgPvP = Mix_LoadMUS("../Assets/Sounds/PvP.mp3");
-	bgPvE = Mix_LoadMUS("../Assets/Sounds/PvE.mp3");
+	bgPvE_easy = Mix_LoadMUS("../Assets/Sounds/PvE_Easy.mp3");
+	bgPvE_hard = Mix_LoadMUS("../Assets/Sounds/PvE_Hard.mp3");
 	bgReplay = Mix_LoadMUS("../Assets/Sounds/replay.mp3");
 	
 	// Load sound effects
@@ -29,7 +30,8 @@ SoundManager::~SoundManager() {
 	Mix_FreeChunk(efClickBtn);
 	Mix_FreeMusic(bgMenu);
 	Mix_FreeMusic(bgPvP);
-	Mix_FreeMusic(bgPvE);
+	Mix_FreeMusic(bgPvE_hard);
+	Mix_FreeMusic(bgPvE_easy);
 	Mix_FreeMusic(bgReplay);
 	Mix_CloseAudio();
 }
@@ -66,10 +68,17 @@ void SoundManager::playPvPMusic() {
 	if (isMuted) Mix_PauseMusic();
 }
 
-void SoundManager::playPvEMusic() {
+void SoundManager::playPvEHardMusic() {
 	Mix_HaltMusic();
-	Mix_PlayMusic(bgPvE, -1);
-	playing = bgPvE;
+	Mix_PlayMusic(bgPvE_hard, -1);
+	playing = bgPvE_hard;
+	if (isMuted) Mix_PauseMusic();
+}
+
+void SoundManager::playPvEEasyMusic() {
+	Mix_HaltMusic();
+	Mix_PlayMusic(bgPvE_easy, -1);
+	playing = bgPvE_easy;
 	if (isMuted) Mix_PauseMusic();
 }
 
