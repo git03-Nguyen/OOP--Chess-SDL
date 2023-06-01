@@ -116,6 +116,7 @@ void GameManager::handelEvents() {
 		if (!subGui && state == GamePlayGUIState::DISPLAY) {
 			if (cnt >= 60) {
 				redo();
+				soundManager->playCapturingSound();
 				cnt = 0;
 			}
 			cnt++;
@@ -517,7 +518,6 @@ void GameManager::undo() {
 	if ((opponent == Opponent::EASY_COMPUTER || opponent == Opponent::HARD_COMPUTER) && turn % 2 == 0) {
 		undo();
 	}
-	soundManager->playCapturingSound();
 }
 
 // TODO - Carefully pointer to texture (I call quick change state)
@@ -558,7 +558,6 @@ void GameManager::redo() {
 	if ((opponent == Opponent::EASY_COMPUTER || opponent == Opponent::HARD_COMPUTER) && turn % 2 == 0) {
 		redo();
 	}
-	soundManager->playCapturingSound();
 }
 
 void GameManager::resetGame() {
