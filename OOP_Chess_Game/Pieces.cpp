@@ -138,10 +138,10 @@ Piece* King::move(const Coordinate& c, std::vector<std::vector<Piece*>> board) {
 		if (moves.size() != 0) {
 			for (auto& pos : moves) {
 				if (pos == c) {
-					if (this->position.getX() > c.getX()) {
+					if (this->position.getX() > c.getX() && !board[0][c.getY()]) {
 						board[0][c.getY()]->move(Coordinate(2, c.getY()), board);
 					}
-					else if (this->position.getX() < c.getX()) {
+					else if (this->position.getX() < c.getX() && !board[7][c.getY()]) {
 						board[7][c.getY()]->move(Coordinate(4, c.getY()), board);
 					}
 					this->updatePawnState(board);
