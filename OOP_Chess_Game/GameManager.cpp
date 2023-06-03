@@ -93,7 +93,7 @@ void GameManager::handelEvents() {
 			soundManager->playWinSound();
 		}
 
-		// defualt computer: first => white
+		// default computer: first => white
 		if (!subGui && state == GamePlayGUIState::PLAY && (opponent == Opponent::HARD_COMPUTER || opponent == Opponent::EASY_COMPUTER) && turn % 2 == 0 && matchState == MatchState::IN_PLAY) {
 			std::pair<int, Coordinate> res = (opponent == Opponent::HARD_COMPUTER) ? computer->playWithHardMode() : computer->playWithEasyMode();
 			Piece* piece = Board::piecesList[res.first];
@@ -239,6 +239,7 @@ void GameManager::handelEvents() {
 					delete mainGui;
 					mainGui = new GamePlayGUI();
 					opponent = Opponent::HUMAN;
+					history->setOpponent(opponent);
 					state = GamePlayGUIState::PLAY;
 					soundManager->playClickBtnSound();
 					soundManager->playPvPMusic();
@@ -251,6 +252,7 @@ void GameManager::handelEvents() {
 					delete mainGui;
 					mainGui = new GamePlayGUI();
 					opponent = Opponent::EASY_COMPUTER;
+					history->setOpponent(opponent);
 					state = GamePlayGUIState::PLAY;
 					soundManager->playClickBtnSound();
 					soundManager->playPvEEasyMusic();
@@ -263,6 +265,7 @@ void GameManager::handelEvents() {
 					delete mainGui;
 					mainGui = new GamePlayGUI();
 					opponent = Opponent::HARD_COMPUTER;
+					history->setOpponent(opponent);
 					state = GamePlayGUIState::PLAY;
 					soundManager->playPvEHardMusic();
 					resetGame();
@@ -273,11 +276,11 @@ void GameManager::handelEvents() {
 					soundManager->playClickBtnSound();
 					delete mainGui;
 					mainGui = new GamePlayGUI();
-					opponent = Opponent::HUMAN;
 					state = GamePlayGUIState::PLAY;
 					soundManager->playPvPMusic();
 					resetGame();
 					history->read("history.bin");
+					opponent = history->getOpponent();
 					recoverGameFromHistory();
 					return;
 				}
@@ -286,11 +289,11 @@ void GameManager::handelEvents() {
 					soundManager->playClickBtnSound();
 					delete mainGui;
 					mainGui = new GamePlayGUI();
-					opponent = Opponent::HUMAN;
 					state = GamePlayGUIState::DISPLAY;
 					soundManager->playReplayMusic();
 					resetGame();
 					history->read("history.bin");
+					opponent = history->getOpponent();
 					cnt = 0;
 					return;
 				}

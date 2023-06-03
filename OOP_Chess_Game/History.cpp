@@ -1,6 +1,7 @@
 #include "History.h"
 
 History::History() {
+    opponent = Opponent::HUMAN; //defualt
     initialState = nullptr;
     finalState = nullptr;
     capturedPiece = nullptr;
@@ -15,8 +16,9 @@ History::~History() {
 
 void History::write(std::string path) const {
     std::fstream os(path, std::fstream::out| std::fstream::binary);
+    os.write((char*)&opponent, sizeof(opponent));
+
     int32_t size = this->history.size();
-    
     // write int32_t size of vector to file
     os.write((char*) &size, sizeof(size));
 
@@ -58,6 +60,7 @@ void History::read(std::string path) {
     bool isNull;
     PieceType type;
     Piece* piece = nullptr;
+    is.read((char*)&opponent, sizeof(opponent));
     is.read((char*)&size, sizeof(size));
     history.resize(size);
     for (int i = 0; i < size; i++) {
@@ -114,6 +117,14 @@ void History::read(std::string path) {
     is.close();
 } 
 
+void History::setOpponent(Opponent opponent){
+    this->opponent = opponent;
+}
+
+Opponent History::getOpponent() {
+    return this->opponent;
+}
+
 void History::setInitialState(const Piece* initialState) {
     if (!initialState) {
         this->initialState = nullptr;
@@ -161,7 +172,6 @@ std::vector<Piece*> History::getData(int turn) {
 int History::getLengthData() {
     return history.size();
 }
-
 
 void History::clear() {
     for (auto& v : history) {

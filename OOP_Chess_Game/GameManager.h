@@ -12,7 +12,6 @@
 #include "Window.h"
 
 enum class MatchResult { PLAYING, PLAYER1_WIN, PLAYER2_WIN, DRAW };
-enum class Opponent { HUMAN, EASY_COMPUTER, HARD_COMPUTER };
 enum class GamePlayGUIState {DISPLAY, PLAY};
 
 
