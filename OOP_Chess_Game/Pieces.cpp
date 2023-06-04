@@ -133,15 +133,15 @@ King::~King() {
 
 }
 Piece* King::move(const Coordinate& c, std::vector<std::vector<Piece*>> board) {
-	if (ableCastling) {
+	if (ableCastling && this->chosen) {
 		std::vector<Coordinate> moves = getCastlingMove(board);
 		if (moves.size() != 0) {
 			for (auto& pos : moves) {
 				if (pos == c) {
-					if (this->position.getX() > c.getX()) {
+					if (this->position.getX() > c.getX() && !board[0][c.getY()]) {
 						board[0][c.getY()]->move(Coordinate(2, c.getY()), board);
 					}
-					else if (this->position.getX() < c.getX()) {
+					else if (this->position.getX() < c.getX() && !board[7][c.getY()]) {
 						board[7][c.getY()]->move(Coordinate(4, c.getY()), board);
 					}
 					this->updatePawnState(board);
@@ -154,6 +154,7 @@ Piece* King::move(const Coordinate& c, std::vector<std::vector<Piece*>> board) {
 		}
 		ableCastling = false;
 	}
+
 	if (!board[c.getX()][c.getY()]) {
 		this->updatePawnState(board);
 		this->setPosition(c);
@@ -285,10 +286,11 @@ std::vector<Coordinate> King::getCastlingMove(std::vector<std::vector<Piece*>> b
 	std::vector<Rook*> rooks;
 	for (int i = 0; i <= 7; i += 7) {
 		Rook* temp = dynamic_cast<Rook*>(board[i][this->position.getY()]);
-		if (temp) rooks.push_back(temp);
+		rooks.push_back(temp);
 	}
+
 	// Violate Rule 1
-	if (!ableCastling || rooks.size() == 0) {
+	if (!ableCastling || !rooks[0] && !rooks[1]) {
 		ableCastling = false; 
 		return moves;
 	}
@@ -297,7 +299,7 @@ std::vector<Coordinate> King::getCastlingMove(std::vector<std::vector<Piece*>> b
 
 	for (int i = 0; i < 2; i++) {
 		// Violate rule 1
-		if (i >= rooks.size()) continue;
+		if (!rooks[i]) continue;
 		if (!rooks[i]->getFirstMove()) continue;
 
 		bool flag = false;
