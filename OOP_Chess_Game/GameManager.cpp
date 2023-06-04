@@ -115,8 +115,8 @@ void GameManager::handelEvents() {
 
 		if (!subGui && state == GamePlayGUIState::DISPLAY) {
 			if (cnt >= 60) {
+				if (turn < history->getLengthData()) soundManager->playCapturingSound();
 				redo();
-				soundManager->playCapturingSound();
 				cnt = 0;
 			}
 			cnt++;
