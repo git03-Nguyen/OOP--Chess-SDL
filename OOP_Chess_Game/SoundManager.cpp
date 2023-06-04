@@ -20,6 +20,7 @@ SoundManager::SoundManager() {
 	efCapture = Mix_LoadWAV("../Assets/Sounds/capture.wav");
 	efClickBtn = Mix_LoadWAV("../Assets/Sounds/click.wav");
 	efWin = Mix_LoadWAV("../Assets/Sounds/win.wav");
+	efDraw = Mix_LoadWAV("../Assets/Sounds/draw.wav");
 
 }
 
@@ -28,6 +29,8 @@ SoundManager::~SoundManager() {
 	Mix_FreeChunk(efMove);
 	Mix_FreeChunk(efCapture);
 	Mix_FreeChunk(efClickBtn);
+	Mix_FreeChunk(efWin);
+	Mix_FreeChunk(efDraw);
 	Mix_FreeMusic(bgMenu);
 	Mix_FreeMusic(bgPvP);
 	Mix_FreeMusic(bgPvE_hard);
@@ -91,6 +94,10 @@ void SoundManager::playReplayMusic() {
 
 void SoundManager::playWinSound() {
 	if (!isMuted) Mix_PlayChannel(-1, efWin, 0);
+}
+
+void SoundManager::playDrawSound() {
+	if (!isMuted) Mix_PlayChannel(-1, efDraw, 0);
 }
 
 void SoundManager::playPieceMoveSound() {

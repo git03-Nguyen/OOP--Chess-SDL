@@ -90,7 +90,8 @@ void GameManager::handelEvents() {
 		MatchState matchState = checkWinner();
 		if (matchState != MatchState::IN_PLAY && !subGui) {
 			subGui = new MatchResultGUI(matchState);
-			soundManager->playWinSound();
+			if (matchState == MatchState::DRAW) soundManager->playDrawSound();
+			else soundManager->playWinSound();
 		}
 
 		// default computer: first => white

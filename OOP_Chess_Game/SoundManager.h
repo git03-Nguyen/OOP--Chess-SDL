@@ -17,6 +17,7 @@ private:
 	Mix_Music* playing;
 	
 	Mix_Chunk* efWin;
+	Mix_Chunk* efDraw;
 	Mix_Chunk* efMove;
 	Mix_Chunk* efCapture;
 	Mix_Chunk* efClickBtn;
@@ -38,6 +39,7 @@ public:
 
 
 	void playWinSound();
+	void playDrawSound();
 	void playMainMenuMusic();
 	void playPvPMusic();
 	void playPvEHardMusic();
